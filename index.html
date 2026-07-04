@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Ghaith CMMS Portal (Read-Only Viewer)</title>
+    <title>Al Ghaith CMMS Portal - Read-Only Viewer</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght=400;500;700&family=Inter:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -33,9 +33,8 @@
                     <div>
                         <div class="flex items-center space-x-2">
                             <span class="text-sm font-bold tracking-tight text-slate-900 max-w-[220px] md:max-w-none block truncate">Al Ghaith Trading &amp; Industrial Services</span>
-                            <span class="px-2 py-0.5 text-[10px] bg-slate-100 text-slate-600 border border-slate-200 rounded font-semibold tracking-wider uppercase">Viewer</span>
                         </div>
-                        <p class="text-xs text-slate-500">Maintenance Management System</p>
+                        <p class="text-xs text-slate-500">Maintenance Management System (Read-Only Viewer)</p>
                     </div>
                 </div>
                 <button onclick="toggleMobileSidebar()" class="md:hidden flex items-center text-slate-600 hover:text-slate-900 p-1 rounded border border-slate-200 cursor-pointer">
@@ -112,16 +111,18 @@
 
             <main class="flex-1 p-4 md:p-8 overflow-y-auto">
                 <div class="flex-1">
-                    <!-- MASTER FLEET REGISTRY -->
+                    <!-- SECTION PANELS -->
                     <section id="pane-fleet" class="pane-view space-y-4">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Master Fleet Registry</h2>
                                 <p class="text-xs text-slate-500">Primary technical index indexed by unique hardware Asset IDs.</p>
                             </div>
-                            <div class="relative flex items-center">
-                                <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                <input type="text" id="in-f-search" oninput="refreshWorkspaceView()" placeholder="Search ID, model, status, location..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-f-search" oninput="refreshWorkspaceView()" placeholder="Search ID, model, status, location..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
                             </div>
                         </div>
 
@@ -152,15 +153,17 @@
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Third Party Certificates</h2>
                                 <p class="text-xs text-slate-500">Manage external verification, compliance certifications, and alignment validations.</p>
                             </div>
-                            <div class="relative flex items-center">
-                                <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                <input type="text" id="in-c-search" oninput="refreshWorkspaceView()" placeholder="Search asset ID, model, status..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-c-search" oninput="refreshWorkspaceView()" placeholder="Search asset ID, model, status..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
                             </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
                             <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[1000px]">
+                                <table class="w-full text-left border-collapse text-xs min-w-[1050px]">
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Assigned Equipment ID</th>
@@ -169,6 +172,7 @@
                                             <th class="p-4">Serial Number</th>
                                             <th class="p-4">Expiry Date</th>
                                             <th class="p-4">Status Alarm</th>
+                                            <th class="p-4 text-center w-64">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-cert" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -179,9 +183,11 @@
 
                     <!-- WORK ORDERS -->
                     <section id="pane-wo" class="pane-view space-y-4 hidden">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Work Orders</h2>
-                            <p class="text-xs text-slate-500">Operational tracking and scheduling logs.</p>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Work Orders</h2>
+                                <p class="text-xs text-slate-500">Operational tracking and scheduling logs.</p>
+                            </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
@@ -210,9 +216,11 @@
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Logs & Service History</h2>
                                 <p class="text-xs text-slate-500">Execution records from resolved or active maintenance sequences.</p>
                             </div>
-                            <div class="relative flex items-center">
-                                <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                <input type="text" id="in-l-search" oninput="refreshWorkspaceView()" placeholder="Search logs..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-l-search" oninput="refreshWorkspaceView()" placeholder="Search logs..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
                             </div>
                         </div>
 
@@ -228,7 +236,7 @@
                                             <th class="p-4">Fault Report & Action Taken</th>
                                             <th class="p-4">Parts & Tech</th>
                                             <th class="p-4">Asset Status</th>
-                                            <th class="p-4 text-center w-28">Actions</th>
+                                            <th class="p-4 text-center w-36">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-log" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -239,9 +247,11 @@
 
                     <!-- DISPATCH -->
                     <section id="pane-dispatch" class="pane-view space-y-4 hidden">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">In/Out Dispatch Logs</h2>
-                            <p class="text-xs text-slate-500">Mobilization tracking panel.</p>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">In/Out Dispatch Logs</h2>
+                                <p class="text-xs text-slate-500">Mobilization tracking panel.</p>
+                            </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
@@ -264,9 +274,11 @@
 
                     <!-- TECHNICIANS -->
                     <section id="pane-tech" class="pane-view space-y-4 hidden">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Technician Profile Directory</h2>
-                            <p class="text-xs text-slate-500">Engineering roster and technical credentials.</p>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Technician Profile Directory</h2>
+                                <p class="text-xs text-slate-500">Engineering roster and technical credentials.</p>
+                            </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
@@ -294,7 +306,6 @@
                                 <p class="text-xs text-slate-500">Live operational intelligence breakdowns across registered machinery indices.</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-3">
-                                <!-- Location Filter Group -->
                                 <div class="flex items-center space-x-1.5 bg-white border border-slate-300 rounded px-2.5 py-1.5 shadow-xs w-full sm:w-auto">
                                     <span class="material-symbols-outlined text-sm text-slate-500">location_on</span>
                                     <select id="print-location-select" class="text-xs bg-transparent border-none outline-none pr-1 font-semibold text-slate-700 focus:ring-0 w-full sm:w-auto">
@@ -305,7 +316,6 @@
                                     </button>
                                 </div>
 
-                                <!-- Asset Operational Status Filter Group -->
                                 <div class="flex items-center space-x-1.5 bg-white border border-slate-300 rounded px-2.5 py-1.5 shadow-xs w-full sm:w-auto">
                                     <span class="material-symbols-outlined text-sm text-emerald-600">check_circle</span>
                                     <select id="print-status-select" class="text-xs bg-transparent border-none outline-none pr-1 font-semibold text-slate-700 focus:ring-0 w-full sm:w-auto">
@@ -321,7 +331,6 @@
                                     </button>
                                 </div>
 
-                                <!-- Third Party Certificate Status Filter Group -->
                                 <div class="flex items-center space-x-1.5 bg-white border border-slate-300 rounded px-2.5 py-1.5 shadow-xs w-full sm:w-auto">
                                     <span class="material-symbols-outlined text-sm text-blue-600">verified</span>
                                     <select id="print-cert-status-select" class="text-xs bg-transparent border-none outline-none pr-1 font-semibold text-slate-700 focus:ring-0 w-full sm:w-auto">
@@ -342,7 +351,6 @@
                             </div>
                         </div>
 
-                        <!-- Counters layout -->
                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                             <div class="bg-white border border-slate-200 rounded p-4 shadow-xs flex flex-col justify-between">
                                 <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wide">Operational</span>
@@ -395,7 +403,23 @@
         </footer>
     </div>
 
-    <!-- CORE CHIP LOGIC ENGINE (READ ONLY CONFIG) -->
+    <!-- DETAILED CERTIFICATE IMAGE OVERLAY VIEW MODAL -->
+    <div id="modal-view-cert-image" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-2xl p-6 space-y-4 shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h3 id="view-cert-image-title" class="text-xs font-bold text-slate-900 uppercase tracking-wide">Certificate Document Attachment</h3>
+                <button onclick="toggleModal('modal-view-cert-image', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
+            </div>
+            <div class="flex-1 overflow-auto flex items-center justify-center bg-slate-900/5 rounded border p-2">
+                <img id="img-view-cert-expanded" src="" alt="Certificate Document File Not Loaded" class="max-w-full h-auto max-h-[60vh] object-contain rounded shadow-xs">
+            </div>
+            <div class="flex justify-end pt-2 border-t border-slate-100">
+                <button onclick="toggleModal('modal-view-cert-image', false)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs px-4 py-2 rounded font-semibold cursor-pointer">Close Document</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CORE REVENUE APPLICATION SCRIPT ENGINE -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCS6OIQ6wFFKDRcq-SFGCLP2aVq6faq5fo",
@@ -577,8 +601,20 @@
             refreshWorkspaceView();
         }
 
+        function toggleModal(modalId, displayState) {
+            const el = document.getElementById(modalId);
+            if (!el) return;
+            if (displayState) {
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+            } else {
+                el.classList.remove('flex');
+                el.classList.add('hidden');
+            }
+        }
+
         function checkCertificateStatusAlarm(expiryString) {
-            if (!expiryString) return { alarm: false, text: "No Cert Found", statusKey: "Expired", class: "text-slate-400" };
+            if (!expiryString) return { alarm: false, text: "No Cert Found", statusKey: "Expired", class: "bg-slate-100 text-slate-600 border border-slate-200" };
             
             const expiryDate = new Date(expiryString);
             const today = new Date();
@@ -586,7 +622,7 @@
             expiryDate.setHours(0,0,0,0);
             
             if (isNaN(expiryDate.getTime())) {
-                return { alarm: false, text: "Malformed Date", statusKey: "Expired", class: "text-slate-400" };
+                return { alarm: false, text: "Malformed Date", statusKey: "Expired", class: "bg-slate-100 text-slate-600 border border-slate-200" };
             }
 
             const timeDiff = expiryDate.getTime() - today.getTime();
@@ -595,13 +631,235 @@
             if (daysDiff < 0) {
                 return { alarm: true, text: `❌ EXPIRED`, statusKey: "Expired", class: "bg-rose-100 text-rose-800 font-bold border border-rose-300" };
             } else if (daysDiff <= 30) {
-                return { alarm: true, text: `⚠️Near to Expire (${daysDiff} Days)`, statusKey: "Near", class: "bg-amber-100 text-amber-800 font-bold border border-amber-300" };
+                return { alarm: true, text: `⚠️ Expiring (${daysDiff} Days)`, statusKey: "Near", class: "bg-amber-100 text-amber-800 font-bold border border-amber-300" };
             } else {
-                return { alarm: false, text: `${daysDiff} Days OK`, statusKey: "Valid", class: "bg-emerald-50 text-emerald-700 border border-emerald-200" };
+                return { alarm: false, text: `✅ Valid (${daysDiff} Days)`, statusKey: "Valid", class: "bg-emerald-50 text-emerald-700 border border-emerald-200" };
             }
         }
 
-        // --- REPORT GENERATOR PRINTERS ---
+        function viewCertificateImage(certId) {
+            const cert = memory.certificates.find(c => c.id === certId);
+            if (!cert || !cert.certificateImage) {
+                alert("No image document attachment linked with this certificate record.");
+                return;
+            }
+            document.getElementById('view-cert-image-title').innerText = `Document File Attachment Preview [${cert.id}]`;
+            document.getElementById('img-view-cert-expanded').src = cert.certificateImage;
+            toggleModal('modal-view-cert-image', true);
+        }
+
+        function printCertificateDocument(certId) {
+            const cert = memory.certificates.find(c => c.id === certId);
+            if (!cert || !cert.certificateImage) {
+                alert("No verified document image attachment was uploaded for this certificate record.");
+                return;
+            }
+
+            const pSec = document.getElementById('print-section');
+            pSec.innerHTML = `
+                <div style="text-align:center; width:100%; height:100%; display:flex; justify-content:center; align-items:center; background:white;">
+                    <img src="${cert.certificateImage}" style="max-width:100%; max-height:98vh; object-fit:contain; border:none;" alt="Third Party Certificate Attachment Scan" />
+                </div>
+            `;
+            window.print();
+        }
+
+        function refreshWorkspaceView() {
+            // Fleet Registry rendering with repaired color coding mapping
+            if (currentActiveModule === "fleet") {
+                const search = document.getElementById('in-f-search').value.toLowerCase();
+                const container = document.getElementById('rows-fleet');
+                container.innerHTML = "";
+                
+                const filtered = memory.assets.filter(a => 
+                    a.id.toLowerCase().includes(search) || 
+                    a.model.toLowerCase().includes(search) || 
+                    a.description.toLowerCase().includes(search) || 
+                    a.status.toLowerCase().includes(search) || 
+                    (a.location && a.location.toLowerCase().includes(search))
+                );
+
+                filtered.forEach(a => {
+                    const cert = memory.certificates.find(c => c.assetId === a.id);
+                    const statusCheck = cert ? checkCertificateStatusAlarm(cert.expiryDate) : { text: "No Cert Assigned", class: "bg-slate-100 text-slate-500 border border-slate-200" };
+                    
+                    let badgeColorClass = "bg-slate-100 text-slate-700 border border-slate-200";
+                    if (a.status === "Operational") badgeColorClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                    else if (a.status === "In Maintenance") badgeColorClass = "bg-amber-100 text-amber-800 border border-amber-200";
+                    else if (a.status === "Down") badgeColorClass = "bg-rose-100 text-rose-800 border border-rose-200";
+                    else if (a.status === "Dispatched") badgeColorClass = "bg-blue-100 text-blue-800 border border-blue-200";
+                    else if (a.status === "Standby") badgeColorClass = "bg-slate-200 text-slate-800 border border-slate-300";
+
+                    container.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold font-code text-slate-900">${a.id}</td>
+                            <td class="p-4 font-code">${a.model}</td>
+                            <td class="p-4 max-w-xs truncate">${a.description}</td>
+                            <td class="p-4 font-code text-slate-500">${a.serial || 'N/A'}</td>
+                            <td class="p-4 uppercase font-semibold text-slate-600">${a.location || 'WORKSHOP'}</td>
+                            <td class="p-4"><span class="px-2 py-0.5 rounded text-[11px] font-semibold ${statusCheck.class}">${statusCheck.text}</span></td>
+                            <td class="p-4"><span class="px-2.5 py-1 rounded-sm text-[11px] font-bold ${badgeColorClass}">${a.status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Certificate view grid module rendering with Repaired Color Alarms
+            if (currentActiveModule === "cert") {
+                const search = document.getElementById('in-c-search').value.toLowerCase();
+                const container = document.getElementById('rows-cert');
+                container.innerHTML = "";
+
+                const filtered = memory.certificates.filter(c => 
+                    c.assetId.toLowerCase().includes(search) || 
+                    c.id.toLowerCase().includes(search)
+                );
+
+                filtered.forEach(c => {
+                    const asset = memory.assets.find(a => a.id === c.assetId) || { model: 'N/A', description: 'N/A', serial: 'N/A' };
+                    const statusCheck = checkCertificateStatusAlarm(c.expiryDate);
+                    
+                    const attachmentButtonHtml = c.certificateImage 
+                        ? `<button onclick="viewCertificateImage('${c.id}')" class="text-emerald-600 hover:text-emerald-900 font-bold cursor-pointer inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">image</span> View</button>`
+                        : `<span class="text-slate-300 font-normal italic pointer-events-none">No File</span>`;
+
+                    container.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold font-code text-slate-900">${c.assetId}</td>
+                            <td class="p-4 font-code">${asset.model}</td>
+                            <td class="p-4 max-w-xs truncate">${asset.description}</td>
+                            <td class="p-4 font-code text-slate-500">${asset.serial || 'N/A'}</td>
+                            <td class="p-4 font-code">${c.expiryDate}</td>
+                            <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${statusCheck.class}">${statusCheck.text}</span></td>
+                            <td class="p-4 text-center space-x-2">
+                                ${attachmentButtonHtml}
+                                <button onclick="printCertificateDocument('${c.id}')" class="text-slate-900 hover:text-black font-bold cursor-pointer inline-flex items-center gap-0.5 pl-1 border border-slate-200 rounded px-1.5 py-0.5 bg-slate-50 hover:bg-slate-100"><span class="material-symbols-outlined text-xs">print</span> Print Image</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Work Orders tracking render with dynamically repaired color coding mapping
+            if (currentActiveModule === "wo") {
+                const container = document.getElementById('rows-wo');
+                container.innerHTML = "";
+                memory.workOrders.forEach(w => {
+                    let metricInfo = w.type === 'hours' ? `${w.currentHours} Hrs` : (w.type === 'date' ? w.currentDate : 'N/A');
+                    let targetInfo = w.type === 'hours' ? `${w.targetHours} Hrs` : (w.type === 'date' ? w.targetDate : 'N/A');
+                    let diffInfo = w.type === 'hours' ? `${w.targetHours - w.currentHours} Hours Remaining` : 'Target Schedule Bound';
+                    
+                    let woColorClass = "bg-slate-100 text-slate-700 border border-slate-200";
+                    if (w.status === "Pending") woColorClass = "bg-amber-100 text-amber-800 border border-amber-200";
+                    else if (w.status === "In Progress") woColorClass = "bg-blue-100 text-blue-800 border border-blue-200";
+                    else if (w.status === "Check-up/Inspection") woColorClass = "bg-indigo-100 text-indigo-800 border border-indigo-200";
+                    else if (w.status === "Completed") woColorClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                    else if (w.status === "Cancelled") woColorClass = "bg-rose-100 text-rose-800 border border-rose-200";
+
+                    container.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold font-code text-slate-900">${w.id}</td>
+                            <td class="p-4 font-code font-medium">${w.assetId}</td>
+                            <td class="p-4 font-code">${metricInfo}</td>
+                            <td class="p-4 font-code">${targetInfo}</td>
+                            <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
+                            <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woColorClass}">${w.status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Maintenance Service History execution logs view grid with repaired asset status indicators
+            if (currentActiveModule === "log") {
+                const search = document.getElementById('in-l-search').value.toLowerCase();
+                const container = document.getElementById('rows-log');
+                container.innerHTML = "";
+
+                const filtered = memory.maintenanceLogs.filter(l => 
+                    l.id.toLowerCase().includes(search) || 
+                    l.assetId.toLowerCase().includes(search) || 
+                    l.fault.toLowerCase().includes(search) || 
+                    l.action.toLowerCase().includes(search)
+                );
+
+                filtered.forEach(l => {
+                    let logStatusColorClass = "bg-slate-100 text-slate-700 border border-slate-200";
+                    if (l.status === "Operational") logStatusColorClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                    else if (l.status === "In Maintenance") logStatusColorClass = "bg-amber-100 text-amber-800 border border-amber-200";
+                    else if (l.status === "Down") logStatusColorClass = "bg-rose-100 text-rose-800 border border-rose-200";
+                    else if (l.status === "Standby") logStatusColorClass = "bg-slate-200 text-slate-800 border border-slate-300";
+
+                    container.innerHTML += `
+                        <tr class="hover:bg-slate-50 text-xs">
+                            <td class="p-4 font-code"><div class="font-bold text-slate-900">${l.id}</div><div class="text-[10px] text-slate-400 mt-0.5">${l.date}</div></td>
+                            <td class="p-4 font-code font-bold text-slate-700">${l.assetId}</td>
+                            <td class="p-4 font-code text-slate-500">${l.currentMetric} / ${l.targetMetric}</td>
+                            <td class="p-4 font-semibold text-slate-600">${l.remainingHours}</td>
+                            <td class="p-4 max-w-xs"><div class="truncate text-rose-700 font-medium">⚠️ ${l.fault}</div><div class="truncate text-slate-600 mt-0.5">⚙️ ${l.action}</div></td>
+                            <td class="p-4"><div class="font-medium">${l.technician}</div><div class="text-[10px] text-slate-400 mt-0.5">Parts: ${l.parts}</div></td>
+                            <td class="p-4"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${logStatusColorClass}">${l.status}</span></td>
+                            <td class="p-4 text-center justify-center">
+                                <button onclick="printMaintenanceLog('${l.id}')" class="text-slate-900 border border-slate-300 px-2 py-1 rounded font-bold hover:bg-slate-100 flex items-center gap-1 cursor-pointer w-full text-center justify-center"><span class="material-symbols-outlined text-xs">print</span> Print Slip</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Dispatch mobilization tracking panels updates
+            if (currentActiveModule === "dispatch") {
+                const container = document.getElementById('rows-dispatch');
+                container.innerHTML = "";
+                memory.dispatches.forEach(d => {
+                    container.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold font-code text-slate-900">${d.id}</td>
+                            <td class="p-4 font-code font-bold">${d.assetId}</td>
+                            <td class="p-4 font-medium">${d.type}</td>
+                            <td class="p-4 uppercase text-slate-600">${d.destination}</td>
+                            <td class="p-4 font-code">${d.date}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Onboarded engineering profiles lists directories panels updates
+            if (currentActiveModule === "tech") {
+                const container = document.getElementById('rows-tech');
+                container.innerHTML = "";
+                memory.technicians.forEach(t => {
+                    container.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold font-code text-slate-900">${t.id}</td>
+                            <td class="p-4 font-bold">${t.name}</td>
+                            <td class="p-4 text-slate-600 font-medium">${t.designation}</td>
+                            <td class="p-4 font-code text-slate-500">${t.contact || 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Reports breakdown layout setup
+            if (currentActiveModule === "reports") {
+                document.getElementById('rep-stat-operational').innerText = memory.assets.filter(a => a.status === 'Operational').length;
+                document.getElementById('rep-stat-maintenance').innerText = memory.assets.filter(a => a.status === 'In Maintenance').length;
+                document.getElementById('rep-stat-down').innerText = memory.assets.filter(a => a.status === 'Down').length;
+                document.getElementById('rep-stat-dispatched').innerText = memory.assets.filter(a => a.status === 'Dispatched').length;
+                document.getElementById('rep-stat-standby').innerText = memory.assets.filter(a => a.status === 'Standby').length;
+
+                const allocContainer = document.getElementById('rep-rows-allocation');
+                allocContainer.innerHTML = memory.assets.map(a => `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50">
+                        <td class="p-3 font-bold font-code text-slate-900">${a.id}</td>
+                        <td class="p-3 font-code">${a.model}</td>
+                        <td class="p-3 text-slate-600">${a.description}</td>
+                        <td class="p-3 font-semibold uppercase">${a.location || 'WORKSHOP'}</td>
+                        <td class="p-3 font-medium">${a.status}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
         function printFilteredLocationReport() {
             const loc = document.getElementById('print-location-select').value;
             const filtered = memory.assets.filter(a => loc === "ALL" || (a.location && a.location.trim().toUpperCase() === loc));
@@ -665,7 +923,7 @@
                 <div style="font-family:sans-serif; padding:10px; color:#0f172a;">
                     <h2 style="text-align:center; margin-bottom:2px; font-size:18px;">Al Ghaith Trading & Industrial Services</h2>
                     <h3 style="text-align:center; margin-top:0; font-size:12px; text-transform:uppercase; color:#475569;">Executive System Diagnostic Summary</h3>
-                    <p style="font-size:11px; text-align:right;">Report Generated: 2026-07-01</p>
+                    <p style="font-size:11px; text-align:right;">Report Generated: 2026-07-04</p>
                     <hr style="border:0; border-top:2px solid #0f172a; margin-bottom:15px;"/>
                     <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:20px;">
                         <tr style="background:#f1f5f9;">
@@ -713,216 +971,24 @@
         function printMaintenanceLog(logId) {
             const log = memory.maintenanceLogs.find(l => l.id === logId);
             if (!log) return;
-            const assetInfo = memory.assets.find(a => a.id === log.assetId) || {};
             const pSec = document.getElementById('print-section');
-
-            const checklistItems = [
-                { category: "Engine – Daily Check Sequence", tasks: ["Check control panel layout parameters", "Inspect belts for structural cracking", "Verify oil levels", "Lubricate release bearing components"] },
-                { category: "Pump Components Checks", tasks: ["Check crankcase fluid alignment", "Inspect plunger well accumulation", "Verify water filter inlet bag clear", "Confirm belt tension tolerances"] }
-            ];
-
-            let checklistHtml = '';
-            checklistItems.forEach(cat => {
-                checklistHtml += `<tr style="background-color: #f8fafc; font-weight: bold; border-bottom: 1px solid #cbd5e1;"><td colspan="4" style="padding: 6px; font-size: 11px;">${cat.category}</td></tr>`;
-                cat.tasks.forEach(task => {
-                    checklistHtml += `<tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 5px 6px; font-size: 11px;">• ${task}</td><td style="border-left: 1px solid #e2e8f0; width:10%;"></td><td style="border-left: 1px solid #e2e8f0; width:10%;"></td><td style="border-left: 1px solid #e2e8f0; width:10%;"></td></tr>`;
-                });
-            });
-
             pSec.innerHTML = `
-                <div style="font-family:sans-serif; padding:20px; border:1px solid #cbd5e1; max-width:800px; margin:0 auto; background:#fff;">
-                    <h2 style="text-align:center; margin-bottom:4px;">Al Ghaith Trading & Industrial Services</h2>
-                    <h4 style="text-align:center; color:#475569; margin:0 0 15px 0;">Machinery Preventive Maintenance Ledger</h4>
-                    <table style="width:100%; font-size:11px; margin-bottom:15px; border-collapse:collapse;">
-                        <tr><td><strong>Asset ID Tag:</strong> ${log.assetId}</td><td><strong>Date Serviced:</strong> ${log.date}</td></tr>
-                        <tr><td><strong>Model:</strong> ${assetInfo.model || 'N/A'}</td><td><strong>Technician:</strong> ${log.technician}</td></tr>
-                    </table>
-                    <p style="font-size:11px;"><strong>Action Performance:</strong> ${log.action}</p>
-                    <table style="width:100%; border-collapse:collapse; font-size:10px;">
-                        <thead><tr style="background:#0f172a; color:#fff;"><th style="padding:6px; text-align:left;">Task Metrics</th><th style="width:10%;">Yes</th><th style="width:10%;">No</th><th style="width:10%;">N/A</th></tr></thead>
-                        <tbody>${checklistHtml}</tbody>
+                <div style="font-family:monospace; padding:20px; border:1px solid #000; max-width:600px; margin:auto;">
+                    <h2 style="text-align:center; margin-bottom:5px;">Al Ghaith Maintenance Execution Slip</h2>
+                    <p style="text-align:center; margin-top:0; font-size:11px;">Verification Terminal Sequence Record Slip</p>
+                    <hr style="border-top:1px dashed #000;"/>
+                    <table style="width:100%; font-size:12px; text-align:left;">
+                        <tr><th style="padding:4px 0;">Log ID:</th><td>${log.id}</td></tr>
+                        <tr><th style="padding:4px 0;">Date:</th><td>${log.date}</td></tr>
+                        <tr><th style="padding:4px 0;">Asset Ref:</th><td>${log.assetId}</td></tr>
+                        <tr><th style="padding:4px 0;">Fault:</th><td>${log.fault}</td></tr>
+                        <tr><th style="padding:4px 0;">Action Taken:</th><td>${log.action}</td></tr>
+                        <tr><th style="padding:4px 0;">Technician:</th><td>${log.technician}</td></tr>
+                        <tr><th style="padding:4px 0;">Status After:</th><td>${log.status}</td></tr>
                     </table>
                 </div>
             `;
             window.print();
-        }
-
-        // --- RE-RENDER DOM WORKSPACE VIEWPORTS ---
-        function refreshWorkspaceView() {
-            if (currentActiveModule === "fleet") {
-                const query = document.getElementById('in-f-search').value.toLowerCase();
-                const container = document.getElementById('rows-fleet');
-                const filtered = memory.assets.filter(a => {
-                    const loc = (a.location || 'WORKSHOP').toLowerCase();
-                    const stat = (a.status || 'operational').toLowerCase();
-                    return a.id.toLowerCase().includes(query) || a.model.toLowerCase().includes(query) || a.description.toLowerCase().includes(query) || loc.includes(query) || stat.includes(query);
-                });
-
-                if (filtered.length === 0) {
-                    container.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">No assets matching options.</td></tr>`;
-                    return;
-                }
-
-                container.innerHTML = filtered.map(asset => {
-                    let badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200";
-                    if (asset.status === "In Maintenance") badgeClass = "bg-amber-50 text-amber-700 border border-amber-200";
-                    else if (asset.status === "Down") badgeClass = "bg-rose-50 text-rose-700 border border-rose-200";
-                    else if (asset.status === "Dispatched") badgeClass = "bg-blue-50 text-blue-700 border border-blue-200";
-                    else if (asset.status === "Standby") badgeClass = "bg-slate-100 text-slate-600 border border-slate-300";
-
-                    const associatedCert = memory.certificates.find(c => c.assetId === asset.id);
-                    let certBadgeHtml = `<span class="text-slate-400 italic text-[11px]">No Certificate</span>`;
-                    if (associatedCert) {
-                        const stateStatus = checkCertificateStatusAlarm(associatedCert.expiryDate);
-                        certBadgeHtml = `<span class="px-2 py-0.5 rounded text-[10px] tracking-wide ${stateStatus.class}">${stateStatus.text}</span>`;
-                    }
-
-                    return `
-                        <tr class="hover:bg-slate-50 border-b border-slate-100">
-                            <td class="p-4 font-code font-bold text-slate-900">${asset.id}</td>
-                            <td class="p-4 font-code text-slate-600">${asset.model}</td>
-                            <td class="p-4 font-medium text-slate-800">${asset.description}</td>
-                            <td class="p-4 text-slate-500 font-code">${asset.serial || 'N/A'}</td>
-                            <td class="p-4 text-slate-500 font-medium font-code">${asset.location || 'WORKSHOP'}</td>
-                            <td class="p-4">${certBadgeHtml}</td>
-                            <td class="p-4"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${badgeClass}">${asset.status || 'Operational'}</span></td>
-                        </tr>
-                    `;
-                }).join('');
-
-            } else if (currentActiveModule === "cert") {
-                const queryCert = document.getElementById('in-c-search').value.toLowerCase();
-                const containerCert = document.getElementById('rows-cert');
-
-                const filteredCerts = memory.certificates.filter(c => {
-                    const assetInfo = memory.assets.find(a => a.id === c.assetId) || { model: '', description: '', serial: '' };
-                    return c.assetId.toLowerCase().includes(queryCert) || (assetInfo.model || '').toLowerCase().includes(queryCert);
-                });
-
-                if (filteredCerts.length === 0) {
-                    containerCert.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">No verification data records inside ledger.</td></tr>`;
-                    return;
-                }
-
-                containerCert.innerHTML = filteredCerts.map(c => {
-                    const statusState = checkCertificateStatusAlarm(c.expiryDate);
-                    const assetInfo = memory.assets.find(a => a.id === c.assetId) || { model: 'N/A', description: 'N/A', serial: 'N/A' };
-                    
-                    return `
-                        <tr class="hover:bg-slate-50 border-b border-slate-100">
-                            <td class="p-4 font-code font-bold text-blue-600">${c.assetId}</td>
-                            <td class="p-4 font-code text-slate-600">${assetInfo.model || 'N/A'}</td>
-                            <td class="p-4 text-slate-800 font-medium">${assetInfo.description || 'N/A'}</td>
-                            <td class="p-4 font-code text-slate-500">${assetInfo.serial || 'N/A'}</td>
-                            <td class="p-4 font-code text-slate-700 font-semibold">${c.expiryDate}</td>
-                            <td class="p-4"><span class="px-2 py-1 rounded text-[10px] ${statusState.class}">${statusState.text}</span></td>
-                        </tr>
-                    `;
-                }).join('');
-
-            } else if (currentActiveModule === "wo") {
-                const containerWo = document.getElementById('rows-wo');
-                if (memory.workOrders.length === 0) {
-                    containerWo.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">No work orders recorded.</td></tr>`;
-                    return;
-                }
-
-                containerWo.innerHTML = memory.workOrders.map(w => {
-                    let metricCurrent = w.type === 'hours' ? `${w.currentHours} Hrs` : (w.currentDate || 'N/A');
-                    let metricTarget = w.type === 'hours' ? `${w.targetHours} Hrs` : (w.targetDate || 'N/A');
-                    let outputRemaining = w.type === 'hours' ? `${w.targetHours - w.currentHours} Hrs Remaining` : (w.type === 'date' ? 'Calendar Baseline' : 'No Parameters Loaded');
-                    
-                    let woBadgeClass = "bg-slate-100 text-slate-700 border border-slate-300";
-                    if (w.status === "Pending") woBadgeClass = "bg-amber-50 text-amber-700 border border-amber-200";
-                    else if (w.status === "In Progress") woBadgeClass = "bg-blue-50 text-blue-700 border border-blue-200";
-                    else if (w.status === "Completed") woBadgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200";
-
-                    return `
-                        <tr class="hover:bg-slate-50 border-b border-slate-100">
-                            <td class="p-4 font-code font-bold text-slate-900">${w.id}</td>
-                            <td class="p-4 font-code font-medium text-slate-600">${w.assetId}</td>
-                            <td class="p-4 font-code text-slate-700">${metricCurrent}</td>
-                            <td class="p-4 font-code text-slate-700">${metricTarget}</td>
-                            <td class="p-4 font-medium text-slate-500">${outputRemaining}</td>
-                            <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${woBadgeClass}">${w.status || 'Pending'}</span></td>
-                        </tr>
-                    `;
-                }).join('');
-
-            } else if (currentActiveModule === "log") {
-                const queryLog = document.getElementById('in-l-search').value.toLowerCase();
-                const containerLog = document.getElementById('rows-log');
-                const filteredLogs = memory.maintenanceLogs.filter(l => l.id.toLowerCase().includes(queryLog) || l.assetId.toLowerCase().includes(queryLog));
-
-                if (filteredLogs.length === 0) {
-                    containerLog.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">No service actions tracked.</td></tr>`;
-                    return;
-                }
-
-                containerLog.innerHTML = filteredLogs.map(l => `
-                    <tr class="hover:bg-slate-50 border-b border-slate-100">
-                        <td class="p-4 font-code font-bold text-slate-900">${l.id}<br/><span class="text-[10px] text-slate-400 font-normal">${l.date}</span></td>
-                        <td class="p-4 font-code font-bold text-slate-600">${l.assetId}</td>
-                        <td class="p-4 font-code text-slate-500">${l.currentMetric} -> ${l.targetMetric}</td>
-                        <td class="p-4 font-code font-medium text-amber-700">${l.remainingHours}</td>
-                        <td class="p-4 font-medium"><strong class="text-rose-700">Fault:</strong> ${l.fault}<br/><strong class="text-emerald-700">Action:</strong> ${l.action}</td>
-                        <td class="p-4 text-slate-600 font-medium">${l.parts}<br/><span class="text-[10px] text-slate-400">Tech: ${l.technician}</span></td>
-                        <td class="p-4 font-bold text-slate-900 uppercase text-[10px]">${l.status}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="printMaintenanceLog('${l.id}')" class="text-slate-600 hover:text-slate-900 font-bold bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded px-2.5 py-1 text-[11px] transition cursor-pointer">Print Slip</button>
-                        </td>
-                    </tr>
-                `).join('');
-
-            } else if (currentActiveModule === "dispatch") {
-                const containerDisp = document.getElementById('rows-dispatch');
-                if (memory.dispatches.length === 0) {
-                    containerDisp.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No active dispatch events logged.</td></tr>`;
-                    return;
-                }
-                containerDisp.innerHTML = memory.dispatches.map(d => `
-                    <tr class="hover:bg-slate-50 border-b border-slate-100 text-xs">
-                        <td class="p-4 font-code font-bold text-slate-900">${d.id}</td>
-                        <td class="p-4 font-code font-bold text-blue-600">${d.assetId}</td>
-                        <td class="p-4 font-medium ${d.type==='Dispatch Out'?'text-blue-600':'text-purple-600'}">${d.type}</td>
-                        <td class="p-4 font-medium text-slate-700">${d.destination}</td>
-                        <td class="p-4 font-code text-slate-500">${d.date}</td>
-                    </tr>
-                `).join('');
-
-            } else if (currentActiveModule === "tech") {
-                const containerTech = document.getElementById('rows-tech');
-                if (memory.technicians.length === 0) {
-                    containerTech.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">No engineers onboarded.</td></tr>`;
-                    return;
-                }
-                containerTech.innerHTML = memory.technicians.map(t => `
-                    <tr class="hover:bg-slate-50 border-b border-slate-100">
-                        <td class="p-4 font-code font-bold text-slate-900">${t.id}</td>
-                        <td class="p-4 font-semibold text-slate-800">${t.name}</td>
-                        <td class="p-4 font-medium text-slate-600">${t.designation}</td>
-                        <td class="p-4 font-code text-slate-500">${t.contact}</td>
-                    </tr>
-                `).join('');
-
-            } else if (currentActiveModule === "reports") {
-                document.getElementById('rep-stat-operational').innerText = memory.assets.filter(a => a.status === 'Operational').length;
-                document.getElementById('rep-stat-maintenance').innerText = memory.assets.filter(a => a.status === 'In Maintenance').length;
-                document.getElementById('rep-stat-down').innerText = memory.assets.filter(a => a.status === 'Down').length;
-                document.getElementById('rep-stat-dispatched').innerText = memory.assets.filter(a => a.status === 'Dispatched').length;
-                document.getElementById('rep-stat-standby').innerText = memory.assets.filter(a => a.status === 'Standby').length;
-
-                const allocationContainer = document.getElementById('rep-rows-allocation');
-                allocationContainer.innerHTML = memory.assets.map(a => `
-                    <tr class="border-b border-slate-100 text-xs hover:bg-slate-50/40">
-                        <td class="p-3 font-code font-bold text-slate-900">${a.id}</td>
-                        <td class="p-3 font-code text-slate-600">${a.model}</td>
-                        <td class="p-3 text-slate-600">${a.description}</td>
-                        <td class="p-3 font-code font-medium text-slate-700">${a.location || 'WORKSHOP'}</td>
-                        <td class="p-3 font-bold text-[11px]">${a.status}</td>
-                    </tr>
-                `).join('');
-            }
         }
     </script>
 </body>
