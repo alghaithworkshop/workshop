@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Ghaith CMMS Portal - Read-Only Viewer</title>
+    <title>Al Ghaith CMMS Portal - Read Only Viewer</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
@@ -34,7 +34,7 @@
                         <div class="flex items-center space-x-2">
                             <span class="text-sm font-bold tracking-tight text-slate-900 max-w-[220px] md:max-w-none block truncate">Al Ghaith Trading &amp; Industrial Services</span>
                         </div>
-                        <p class="text-xs text-slate-500">Maintenance Management System (Read-Only Viewer)</p>
+                        <p class="text-xs text-slate-500">Maintenance Management System (Viewer Only)</p>
                     </div>
                 </div>
                 <button onclick="toggleMobileSidebar()" class="md:hidden flex items-center text-slate-600 hover:text-slate-900 p-1 rounded border border-slate-200 cursor-pointer">
@@ -111,7 +111,7 @@
 
             <main class="flex-1 p-4 md:p-8 overflow-y-auto">
                 <div class="flex-1">
-                    <!-- SECTION PANELS -->
+                    <!-- MASTER FLEET REGISTRY -->
                     <section id="pane-fleet" class="pane-view space-y-4">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
@@ -172,7 +172,7 @@
                                             <th class="p-4">Serial Number</th>
                                             <th class="p-4">Expiry Date</th>
                                             <th class="p-4">Status Alarm</th>
-                                            <th class="p-4 text-center w-64">Actions</th>
+                                            <th class="p-4 text-center w-48">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-cert" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -419,7 +419,7 @@
         </div>
     </div>
 
-    <!-- CORE REVENUE APPLICATION SCRIPT ENGINE -->
+    <!-- CORE APPLICATION SCRIPT ENGINE -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCS6OIQ6wFFKDRcq-SFGCLP2aVq6faq5fo",
@@ -466,7 +466,7 @@
                 const badge = document.getElementById('connection-badge');
                 if (snap.val() === true) {
                     badge.className = "text-xs text-emerald-600 font-medium flex items-center";
-                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>Firebase Terminal Live`;
+                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>Viewer Mode Terminal Live`;
                 } else {
                     badge.className = "text-xs text-rose-600 font-medium flex items-center";
                     badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-rose-500 mr-2 animate-pulse"></span>Offline / Reconnecting`;
@@ -637,6 +637,17 @@
             }
         }
 
+        function getAssetStatusBadgeClass(status) {
+            switch (status) {
+                case "Operational": return "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                case "In Maintenance": return "bg-amber-100 text-amber-800 border border-amber-200";
+                case "Down": return "bg-rose-100 text-rose-800 border border-rose-200";
+                case "Dispatched": return "bg-blue-100 text-blue-800 border border-blue-200";
+                case "Standby": return "bg-slate-200 text-slate-800 border border-slate-300";
+                default: return "bg-slate-100 text-slate-700 border border-slate-200";
+            }
+        }
+
         function viewCertificateImage(certId) {
             const cert = memory.certificates.find(c => c.id === certId);
             if (!cert || !cert.certificateImage) {
@@ -664,8 +675,25 @@
             window.print();
         }
 
+        function executeTablePrint(title, rowsHtml, headers) {
+            const pSec = document.getElementById('print-section');
+            let headerCells = headers.map(h => `<th style="padding:8px; border:1px solid #cbd5e1; background:#f8fafc; font-weight:bold; text-align:left;">${h}</th>`).join('');
+            
+            pSec.innerHTML = `
+                <div style="font-family:sans-serif; padding:10px; color:#0f172a;">
+                    <h2 style="text-align:center; margin-bottom:2px; font-size:16px;">Al Ghaith Trading & Industrial Services</h2>
+                    <h3 style="text-align:center; margin-top:0; font-size:12px; color:#475569; text-transform:uppercase;">${title}</h3>
+                    <hr style="border:0; border-top:1px solid #0f172a; margin-bottom:15px;"/>
+                    <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                        <thead><tr>${headerCells}</tr></thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                </div>
+            `;
+            window.print();
+        }
+
         function refreshWorkspaceView() {
-            // Fleet Registry rendering with repaired color coding mapping
             if (currentActiveModule === "fleet") {
                 const search = document.getElementById('in-f-search').value.toLowerCase();
                 const container = document.getElementById('rows-fleet');
@@ -682,13 +710,7 @@
                 filtered.forEach(a => {
                     const cert = memory.certificates.find(c => c.assetId === a.id);
                     const statusCheck = cert ? checkCertificateStatusAlarm(cert.expiryDate) : { text: "No Cert Assigned", class: "bg-slate-100 text-slate-500 border border-slate-200" };
-                    
-                    let badgeColorClass = "bg-slate-100 text-slate-700 border border-slate-200";
-                    if (a.status === "Operational") badgeColorClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
-                    else if (a.status === "In Maintenance") badgeColorClass = "bg-amber-100 text-amber-800 border border-amber-200";
-                    else if (a.status === "Down") badgeColorClass = "bg-rose-100 text-rose-800 border border-rose-200";
-                    else if (a.status === "Dispatched") badgeColorClass = "bg-blue-100 text-blue-800 border border-blue-200";
-                    else if (a.status === "Standby") badgeColorClass = "bg-slate-200 text-slate-800 border border-slate-300";
+                    const badgeColorClass = getAssetStatusBadgeClass(a.status);
 
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50">
@@ -704,7 +726,6 @@
                 });
             }
 
-            // Certificate view grid module rendering with Repaired Color Alarms
             if (currentActiveModule === "cert") {
                 const search = document.getElementById('in-c-search').value.toLowerCase();
                 const container = document.getElementById('rows-cert');
@@ -730,7 +751,7 @@
                             <td class="p-4 max-w-xs truncate">${asset.description}</td>
                             <td class="p-4 font-code text-slate-500">${asset.serial || 'N/A'}</td>
                             <td class="p-4 font-code">${c.expiryDate}</td>
-                            <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${statusCheck.class}">${statusCheck.text}</span></td>
+                            <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${statusCheck.class}">${statusCheck.text}</span></td>
                             <td class="p-4 text-center space-x-2">
                                 ${attachmentButtonHtml}
                                 <button onclick="printCertificateDocument('${c.id}')" class="text-slate-900 hover:text-black font-bold cursor-pointer inline-flex items-center gap-0.5 pl-1 border border-slate-200 rounded px-1.5 py-0.5 bg-slate-50 hover:bg-slate-100"><span class="material-symbols-outlined text-xs">print</span> Print Image</button>
@@ -740,7 +761,6 @@
                 });
             }
 
-            // Work Orders tracking render with dynamically repaired color coding mapping
             if (currentActiveModule === "wo") {
                 const container = document.getElementById('rows-wo');
                 container.innerHTML = "";
@@ -749,12 +769,12 @@
                     let targetInfo = w.type === 'hours' ? `${w.targetHours} Hrs` : (w.type === 'date' ? w.targetDate : 'N/A');
                     let diffInfo = w.type === 'hours' ? `${w.targetHours - w.currentHours} Hours Remaining` : 'Target Schedule Bound';
                     
-                    let woColorClass = "bg-slate-100 text-slate-700 border border-slate-200";
-                    if (w.status === "Pending") woColorClass = "bg-amber-100 text-amber-800 border border-amber-200";
-                    else if (w.status === "In Progress") woColorClass = "bg-blue-100 text-blue-800 border border-blue-200";
-                    else if (w.status === "Check-up/Inspection") woColorClass = "bg-indigo-100 text-indigo-800 border border-indigo-200";
-                    else if (w.status === "Completed") woColorClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
-                    else if (w.status === "Cancelled") woColorClass = "bg-rose-100 text-rose-800 border border-rose-200";
+                    let woStatusClass = "bg-slate-100 text-slate-700 border border-slate-200";
+                    if (w.status === "Pending") woStatusClass = "bg-slate-100 text-slate-700 border border-slate-300";
+                    else if (w.status === "In Progress") woStatusClass = "bg-blue-100 text-blue-800 border border-blue-200";
+                    else if (w.status === "Check-up/Inspection") woStatusClass = "bg-amber-100 text-amber-800 border border-amber-200";
+                    else if (w.status === "Completed") woStatusClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                    else if (w.status === "Cancelled") woStatusClass = "bg-rose-100 text-rose-800 border border-rose-200";
 
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50">
@@ -763,13 +783,12 @@
                             <td class="p-4 font-code">${metricInfo}</td>
                             <td class="p-4 font-code">${targetInfo}</td>
                             <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
-                            <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woColorClass}">${w.status}</span></td>
+                            <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woStatusClass}">${w.status}</span></td>
                         </tr>
                     `;
                 });
             }
 
-            // Maintenance Service History execution logs view grid with repaired asset status indicators
             if (currentActiveModule === "log") {
                 const search = document.getElementById('in-l-search').value.toLowerCase();
                 const container = document.getElementById('rows-log');
@@ -783,11 +802,7 @@
                 );
 
                 filtered.forEach(l => {
-                    let logStatusColorClass = "bg-slate-100 text-slate-700 border border-slate-200";
-                    if (l.status === "Operational") logStatusColorClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
-                    else if (l.status === "In Maintenance") logStatusColorClass = "bg-amber-100 text-amber-800 border border-amber-200";
-                    else if (l.status === "Down") logStatusColorClass = "bg-rose-100 text-rose-800 border border-rose-200";
-                    else if (l.status === "Standby") logStatusColorClass = "bg-slate-200 text-slate-800 border border-slate-300";
+                    const logBadgeColorClass = getAssetStatusBadgeClass(l.status);
 
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50 text-xs">
@@ -795,27 +810,29 @@
                             <td class="p-4 font-code font-bold text-slate-700">${l.assetId}</td>
                             <td class="p-4 font-code text-slate-500">${l.currentMetric} / ${l.targetMetric}</td>
                             <td class="p-4 font-semibold text-slate-600">${l.remainingHours}</td>
-                            <td class="p-4 max-w-xs"><div class="truncate text-rose-700 font-medium">⚠️ ${l.fault}</div><div class="truncate text-slate-600 mt-0.5">⚙️ ${l.action}</div></td>
+                            <td class="p-4 max-w-xs"><div class="truncate text-rose-700 font-medium">⚠️ ${l.fault}</div><div class="whitespace-pre-line text-slate-660 mt-0.5 text-[11px]">⚙️ ${l.action}</div></td>
                             <td class="p-4"><div class="font-medium">${l.technician}</div><div class="text-[10px] text-slate-400 mt-0.5">Parts: ${l.parts}</div></td>
-                            <td class="p-4"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${logStatusColorClass}">${l.status}</span></td>
-                            <td class="p-4 text-center justify-center">
-                                <button onclick="printMaintenanceLog('${l.id}')" class="text-slate-900 border border-slate-300 px-2 py-1 rounded font-bold hover:bg-slate-100 flex items-center gap-1 cursor-pointer w-full text-center justify-center"><span class="material-symbols-outlined text-xs">print</span> Print Slip</button>
+                            <td class="p-4"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${logBadgeColorClass}">${l.status}</span></td>
+                            <td class="p-4 text-center">
+                                <button onclick="printMaintenanceLog('${l.id}')" class="text-slate-900 border border-slate-300 px-3 py-1 rounded font-bold hover:bg-slate-100 flex items-center gap-1 cursor-pointer w-full text-center justify-center"><span class="material-symbols-outlined text-xs">print</span> Print Slip</button>
                             </td>
                         </tr>
                     `;
                 });
             }
 
-            // Dispatch mobilization tracking panels updates
             if (currentActiveModule === "dispatch") {
                 const container = document.getElementById('rows-dispatch');
                 container.innerHTML = "";
                 memory.dispatches.forEach(d => {
+                    let dispatchTypeClass = "bg-amber-50 text-amber-700 border border-amber-200";
+                    if(d.type === "Return In") dispatchTypeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200";
+
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50">
                             <td class="p-4 font-bold font-code text-slate-900">${d.id}</td>
                             <td class="p-4 font-code font-bold">${d.assetId}</td>
-                            <td class="p-4 font-medium">${d.type}</td>
+                            <td class="p-4 font-medium"><span class="px-2 py-0.5 rounded text-[11px] font-semibold ${dispatchTypeClass}">${d.type}</span></td>
                             <td class="p-4 uppercase text-slate-600">${d.destination}</td>
                             <td class="p-4 font-code">${d.date}</td>
                         </tr>
@@ -823,7 +840,6 @@
                 });
             }
 
-            // Onboarded engineering profiles lists directories panels updates
             if (currentActiveModule === "tech") {
                 const container = document.getElementById('rows-tech');
                 container.innerHTML = "";
@@ -839,7 +855,6 @@
                 });
             }
 
-            // Reports breakdown layout setup
             if (currentActiveModule === "reports") {
                 document.getElementById('rep-stat-operational').innerText = memory.assets.filter(a => a.status === 'Operational').length;
                 document.getElementById('rep-stat-maintenance').innerText = memory.assets.filter(a => a.status === 'In Maintenance').length;
@@ -848,15 +863,18 @@
                 document.getElementById('rep-stat-standby').innerText = memory.assets.filter(a => a.status === 'Standby').length;
 
                 const allocContainer = document.getElementById('rep-rows-allocation');
-                allocContainer.innerHTML = memory.assets.map(a => `
-                    <tr class="border-b border-slate-100 hover:bg-slate-50">
-                        <td class="p-3 font-bold font-code text-slate-900">${a.id}</td>
-                        <td class="p-3 font-code">${a.model}</td>
-                        <td class="p-3 text-slate-600">${a.description}</td>
-                        <td class="p-3 font-semibold uppercase">${a.location || 'WORKSHOP'}</td>
-                        <td class="p-3 font-medium">${a.status}</td>
-                    </tr>
-                `).join('');
+                allocContainer.innerHTML = memory.assets.map(a => {
+                    const allocBadgeColorClass = getAssetStatusBadgeClass(a.status);
+                    return `
+                        <tr class="border-b border-slate-100 hover:bg-slate-50">
+                            <td class="p-3 font-bold font-code text-slate-900">${a.id}</td>
+                            <td class="p-3 font-code">${a.model}</td>
+                            <td class="p-3 text-slate-600">${a.description}</td>
+                            <td class="p-3 font-semibold uppercase">${a.location || 'WORKSHOP'}</td>
+                            <td class="p-3"><span class="px-2.5 py-1 rounded-sm text-[11px] font-bold ${allocBadgeColorClass}">${a.status}</span></td>
+                        </tr>
+                    `;
+                }).join('');
             }
         }
 
@@ -890,7 +908,6 @@
 
         function printThirdPartyCertReport() {
             const targetStatus = document.getElementById('print-cert-status-select').value;
-            
             const filteredCerts = memory.certificates.filter(c => {
                 const check = checkCertificateStatusAlarm(c.expiryDate);
                 return targetStatus === "ALL" || check.statusKey === targetStatus;
@@ -923,7 +940,7 @@
                 <div style="font-family:sans-serif; padding:10px; color:#0f172a;">
                     <h2 style="text-align:center; margin-bottom:2px; font-size:18px;">Al Ghaith Trading & Industrial Services</h2>
                     <h3 style="text-align:center; margin-top:0; font-size:12px; text-transform:uppercase; color:#475569;">Executive System Diagnostic Summary</h3>
-                    <p style="font-size:11px; text-align:right;">Report Generated: 2026-07-04</p>
+                    <p style="font-size:11px; text-align:right;">Report Generated: 2026-07-01</p>
                     <hr style="border:0; border-top:2px solid #0f172a; margin-bottom:15px;"/>
                     <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:20px;">
                         <tr style="background:#f1f5f9;">
@@ -949,43 +966,65 @@
             window.print();
         }
 
-        function executeTablePrint(title, rowsContent, headers) {
-            const pSec = document.getElementById('print-section');
-            let headerCells = headers.map(h => `<th style="padding:8px; background:#0f172a; color:#ffffff; text-align:left; border:1px solid #0f172a;">${h}</th>`).join('');
-            
-            pSec.innerHTML = `
-                <div style="font-family:sans-serif; color:#1e293b; width:100%;">
-                    <div style="text-align:center; border-b:2px solid #0f172a; padding-bottom:10px; margin-bottom:20px;">
-                        <h1 style="font-size:18px; margin:0; font-weight:bold; color:#0f172a;">Al Ghaith Trading & Industrial Services</h1>
-                        <h2 style="font-size:12px; margin:4px 0 0 0; text-transform:uppercase; color:#64748b; letter-spacing:0.5px;">${title}</h2>
-                    </div>
-                    <table style="width:100%; border-collapse:collapse; font-size:11px;">
-                        <thead><tr>${headerCells}</tr></thead>
-                        <tbody>${rowsContent}</tbody>
-                    </table>
-                </div>
-            `;
-            window.print();
-        }
-
         function printMaintenanceLog(logId) {
             const log = memory.maintenanceLogs.find(l => l.id === logId);
             if (!log) return;
+            
+            const asset = memory.assets.find(a => a.id === log.assetId) || { model: 'N/A', serial: 'N/A' };
+            
             const pSec = document.getElementById('print-section');
             pSec.innerHTML = `
-                <div style="font-family:monospace; padding:20px; border:1px solid #000; max-width:600px; margin:auto;">
-                    <h2 style="text-align:center; margin-bottom:5px;">Al Ghaith Maintenance Execution Slip</h2>
-                    <p style="text-align:center; margin-top:0; font-size:11px;">Verification Terminal Sequence Record Slip</p>
-                    <hr style="border-top:1px dashed #000;"/>
-                    <table style="width:100%; font-size:12px; text-align:left;">
-                        <tr><th style="padding:4px 0;">Log ID:</th><td>${log.id}</td></tr>
-                        <tr><th style="padding:4px 0;">Date:</th><td>${log.date}</td></tr>
-                        <tr><th style="padding:4px 0;">Asset Ref:</th><td>${log.assetId}</td></tr>
-                        <tr><th style="padding:4px 0;">Fault:</th><td>${log.fault}</td></tr>
-                        <tr><th style="padding:4px 0;">Action Taken:</th><td>${log.action}</td></tr>
-                        <tr><th style="padding:4px 0;">Technician:</th><td>${log.technician}</td></tr>
-                        <tr><th style="padding:4px 0;">Status After:</th><td>${log.status}</td></tr>
+                <div style="font-family: Arial, sans-serif; color: #0f172a; padding: 30px; line-height: 1.5; max-width: 850px; margin: 0 auto; background: #ffffff;">
+                    <div style="text-align: center; border-bottom: 3px double #0f172a; padding-bottom: 12px; margin-bottom: 24px;">
+                        <h1 style="margin: 0; font-size: 22px; font-weight: bold; text-transform: uppercase;">Al Ghaith Trading & Industrial Services</h1>
+                        <h2 style="margin: 4px 0 0 0; font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 1.5px;">Maintenance Execution Slip</h2>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px;">
+                        <tr>
+                            <td style="vertical-align: top; width: 50%; padding-right: 20px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 35%;">Log Entry ID:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; font-size: 13px;">${log.id}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Execution Date:</td><td style="padding: 5px 0;">${log.date}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Assigned Tech:</td><td style="padding: 5px 0; font-weight: 500;">${log.technician}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Resulting Status:</td><td style="padding: 5px 0;"><span style="font-weight: bold; color: #059669;">${log.status}</span></td></tr>
+                                </table>
+                            </td>
+                            <td style="vertical-align: top; width: 50%; padding-left: 20px; border-left: 1px solid #e2e8f0;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 35%;">Asset Tag ID:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; color: #1e293b;">${log.assetId}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Model Number:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; color: #0f172a;">${asset.model || 'N/A'}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Serial Number:</td><td style="padding: 5px 0; font-family: monospace; color: #334155;">${asset.serial || 'N/A'}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Metrics Log:</td><td style="padding: 5px 0; font-family: monospace;">${log.currentMetric} / ${log.targetMetric} (${log.remainingHours})</td></tr>
+                                </table>
+                            </td>
+                        </tr>
                     </table>
+                    
+                    <div style="font-size: 12px; border-top: 1px solid #cbd5e1; padding-top: 16px;">
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Fault Discovery / Inspection Diagnostics:</strong>
+                            <div style="font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; color: #991b1b; white-space: pre-line;">⚠️ ${log.fault}</div>
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Service Maintenance Performed / Corrective Action:</strong>
+                            <div style="font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; color: #1e293b; white-space: pre-line; line-height: 1.6;">⚙️ ${log.action}</div>
+                        </div>
+                        
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
+                            <tr>
+                                <td style="width: 50%; padding-right: 10px; vertical-align: top;">
+                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Components / Parts Applied:</strong>
+                                    <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.parts || '<span style="color:#94a3b8; font-style:italic">None recorded</span>'}</div>
+                                </td>
+                                <td style="width: 50%; padding-left: 10px; vertical-align: top;">
+                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Operations Constraint Remarks:</strong>
+                                    <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.remarks || '<span style="color:#94a3b8; font-style:italic">None</span>'}</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             `;
             window.print();
