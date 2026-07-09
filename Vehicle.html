@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vehicle Management Portal - Read Only</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
@@ -10,13 +10,20 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .font-code { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Desktop Sidebar Active State */
         .nav-btn.active { background-color: #0f172a; color: white; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
         .nav-btn:not(.active) { background-color: transparent; color: #475569; }
         .nav-btn:not(.active):hover { background-color: #f1f5f9; color: #0f172a; }
 
+        /* Mobile Bottom Nav Active State */
+        .mob-nav-btn.active { color: #0f172a; }
+        .mob-nav-btn.active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
+        .mob-nav-btn:not(.active) { color: #94a3b8; }
+
         @media print {
             body { background-color: white !important; color: black !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            #sidebar, nav, .no-print, button, input, select { display: none !important; }
+            #sidebar, nav, .no-print, button, input, select, #mobile-nav { display: none !important; }
             main { padding: 0 !important; margin: 0 !important; overflow: visible !important; }
             .overflow-x-auto { overflow: visible !important; }
             table { min-width: 100% !important; page-break-inside: auto; }
@@ -25,28 +32,25 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased pb-16 md:pb-0">
 
     <div id="app-container" class="flex flex-col min-h-screen">
-        <nav class="bg-white border-b border-slate-200 px-4 md:px-6 py-3 flex flex-col lg:flex-row lg:items-center lg:justify-between shadow-sm z-20 gap-4">
-            <div class="flex items-center justify-between w-full lg:w-auto">
-                <div class="flex items-center space-x-3.5">
-                    <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-10 w-auto object-contain">
-                    <div class="border-l border-slate-200 pl-3.5">
-                        <span class="text-sm font-bold tracking-tight text-slate-900 max-w-[220px] md:max-w-none block truncate">Al Ghaith Trading &amp; Industrial Services</span>
-                        <span class="text-sm font-black tracking-tight text-slate-400 block truncate">Vehicle Management System (Viewer)</span>
-                    </div>
+        <!-- Top Navigation -->
+        <nav class="bg-white border-b border-slate-200 px-4 py-3 flex flex-row items-center justify-between shadow-sm z-20 sticky top-0">
+            <div class="flex items-center space-x-2 md:space-x-3.5">
+                <div class="flex flex-col border-l-2 border-slate-900 pl-2 md:pl-3.5">
+                    <span class="text-[11px] md:text-sm font-bold tracking-tight text-slate-900 w-[180px] md:w-auto truncate">Al Ghaith Trading</span>
+                    <span class="text-[9px] md:text-sm font-black tracking-tight text-slate-400 block truncate">Fleet Viewer</span>
                 </div>
             </div>
 
-            <div class="w-full lg:w-auto">
-                <div class="flex items-center gap-5 text-xs font-code text-slate-600 bg-slate-50 p-3 lg:p-0 rounded border border-slate-100 lg:border-none lg:bg-transparent">
-                    <div>Registered Vehicles: <span id="stat-fleet-count" class="text-slate-900 font-bold">0</span></div>
-                </div>
+            <div class="flex items-center gap-2 md:gap-5 text-[10px] md:text-xs font-code text-slate-600 bg-slate-50 p-2 md:p-0 rounded border border-slate-100 md:border-none md:bg-transparent">
+                <div>Vehicles: <span id="stat-fleet-count" class="text-slate-900 font-bold">0</span></div>
             </div>
         </nav>
 
         <div class="flex flex-1 overflow-hidden relative">
+            <!-- Desktop Sidebar -->
             <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 p-4 flex flex-col justify-between shadow-sm h-full shrink-0 hidden md:flex">
                 <div class="space-y-1">
                     <div class="flex items-center justify-between px-3 mb-2">
@@ -88,35 +92,34 @@
                 </div>
             </aside>
 
-            <main class="flex-1 p-4 md:p-8 overflow-y-auto relative">
+            <!-- Main Workspace -->
+            <main class="flex-1 p-3 md:p-8 overflow-y-auto relative w-full">
                 
                 <section id="pane-fleet" class="space-y-4">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex flex-col gap-3">
                         <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Master Vehicle Registry</h2>
-                            <p class="text-xs text-slate-500">Primary tracking index for all registered company vehicles.</p>
+                            <h2 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Master Vehicle Registry</h2>
+                            <p class="text-[10px] md:text-xs text-slate-500">Primary tracking index for all registered company vehicles.</p>
                         </div>
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                            <div class="relative flex items-center flex-1">
-                                <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                <input type="text" id="in-f-search" oninput="window.refreshWorkspaceView()" placeholder="Search registration..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-sm">
-                            </div>
+                        <div class="relative flex items-center w-full">
+                            <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                            <input type="text" id="in-f-search" oninput="window.refreshWorkspaceView()" placeholder="Search registration..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2.5 focus:outline-none focus:border-slate-900 w-full shadow-sm">
                         </div>
                     </div>
 
-                    <div class="bg-white border border-slate-200 rounded shadow-sm overflow-hidden">
-                        <div class="overflow-x-auto w-full">
+                    <div class="bg-white border border-slate-200 rounded shadow-sm overflow-hidden w-full">
+                        <div class="overflow-x-auto w-full max-w-[100vw]">
                             <table class="w-full text-left border-collapse text-xs min-w-[700px]">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                        <th class="p-4">Registration Number</th>
-                                        <th class="p-4">Make</th>
-                                        <th class="p-4">Model Year</th>
-                                        <th class="p-4">Type of Vehicle</th>
-                                        <th class="p-4">Location</th>
-                                        <th class="p-4">Physical Condition</th>
-                                        <th class="p-4">Istimara Validity</th>
-                                        <th class="p-4">Status</th>
+                                        <th class="p-3 md:p-4">Registration</th>
+                                        <th class="p-3 md:p-4">Make</th>
+                                        <th class="p-3 md:p-4">Year</th>
+                                        <th class="p-3 md:p-4">Type</th>
+                                        <th class="p-3 md:p-4">Location</th>
+                                        <th class="p-3 md:p-4">Condition</th>
+                                        <th class="p-3 md:p-4">Istimara</th>
+                                        <th class="p-3 md:p-4">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="rows-fleet" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -126,39 +129,39 @@
                 </section>
 
                 <section id="pane-maintenance" class="space-y-4 hidden">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex flex-col gap-3">
                         <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Logs</h2>
-                            <p class="text-xs text-slate-500">Service records, repairs, and condition reports.</p>
+                            <h2 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Maintenance Logs</h2>
+                            <p class="text-[10px] md:text-xs text-slate-500">Service records, repairs, and condition reports.</p>
                         </div>
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                            <select id="filter-m-vehicle" onchange="window.refreshMaintenanceView()" class="bg-white border border-slate-300 text-slate-800 rounded text-xs px-3 py-2 focus:outline-none focus:border-slate-900 shadow-sm shrink-0">
+                        <div class="flex flex-col gap-2 w-full">
+                            <select id="filter-m-vehicle" onchange="window.refreshMaintenanceView()" class="w-full bg-white border border-slate-300 text-slate-800 rounded text-xs px-3 py-2.5 focus:outline-none focus:border-slate-900 shadow-sm">
                                 <option value="">All Vehicles</option>
                             </select>
-                            <div class="relative flex items-center flex-1">
+                            <div class="relative flex items-center w-full">
                                 <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                <input type="text" id="in-m-search" oninput="window.refreshMaintenanceView()" placeholder="Search logs..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-sm">
+                                <input type="text" id="in-m-search" oninput="window.refreshMaintenanceView()" placeholder="Search logs..." class="w-full bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2.5 focus:outline-none focus:border-slate-900 shadow-sm">
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white border border-slate-200 rounded shadow-sm overflow-hidden">
-                        <div class="overflow-x-auto w-full">
+                    <div class="bg-white border border-slate-200 rounded shadow-sm overflow-hidden w-full">
+                        <div class="overflow-x-auto w-full max-w-[100vw]">
                             <table class="w-full text-left border-collapse text-xs min-w-[1000px]">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                        <th class="p-4">Maint. ID</th>
-                                        <th class="p-4">Vehicle</th>
-                                        <th class="p-4">Vehicle Status</th>
-                                        <th class="p-4">Location</th>
-                                        <th class="p-4">Date Started</th>
-                                        <th class="p-4">Date Completed</th>
-                                        <th class="p-4">Description</th>
-                                        <th class="p-4">Mechanic</th>
-                                        <th class="p-4">Parts</th>
-                                        <th class="p-4">Condition</th>
-                                        <th class="p-4">Remarks</th>
-                                        <th class="p-4 text-center">Print</th>
+                                        <th class="p-3 md:p-4">Maint. ID</th>
+                                        <th class="p-3 md:p-4">Vehicle</th>
+                                        <th class="p-3 md:p-4">Status</th>
+                                        <th class="p-3 md:p-4">Location</th>
+                                        <th class="p-3 md:p-4">Started</th>
+                                        <th class="p-3 md:p-4">Completed</th>
+                                        <th class="p-3 md:p-4">Description</th>
+                                        <th class="p-3 md:p-4">Mechanic</th>
+                                        <th class="p-3 md:p-4">Parts</th>
+                                        <th class="p-3 md:p-4">Condition</th>
+                                        <th class="p-3 md:p-4">Remarks</th>
+                                        <th class="p-3 md:p-4 text-center">Print</th>
                                     </tr>
                                 </thead>
                                 <tbody id="rows-maintenance" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -168,31 +171,31 @@
                 </section>
 
                 <section id="pane-istimara" class="space-y-4 hidden">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex flex-col gap-3">
                         <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Istimara Validity</h2>
-                            <p class="text-xs text-slate-500">View vehicle registration expiries and status.</p>
+                            <h2 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Istimara Validity</h2>
+                            <p class="text-[10px] md:text-xs text-slate-500">View vehicle registration expiries and status.</p>
                         </div>
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                             <select id="filter-e-vehicle" onchange="window.refreshIstimaraView()" class="bg-white border border-slate-300 text-slate-800 rounded text-xs px-3 py-2 focus:outline-none focus:border-slate-900 shadow-sm shrink-0">
+                        <div class="flex flex-col gap-2 w-full">
+                             <select id="filter-e-vehicle" onchange="window.refreshIstimaraView()" class="w-full bg-white border border-slate-300 text-slate-800 rounded text-xs px-3 py-2.5 focus:outline-none focus:border-slate-900 shadow-sm">
                                 <option value="">All Vehicles</option>
                             </select>
-                            <div class="relative flex items-center flex-1">
+                            <div class="relative flex items-center w-full">
                                 <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                <input type="text" id="in-e-search" oninput="window.refreshIstimaraView()" placeholder="Search registration..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-sm">
+                                <input type="text" id="in-e-search" oninput="window.refreshIstimaraView()" placeholder="Search registration..." class="w-full bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2.5 focus:outline-none focus:border-slate-900 shadow-sm">
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white border border-slate-200 rounded shadow-sm overflow-hidden">
-                        <div class="overflow-x-auto w-full">
+                    <div class="bg-white border border-slate-200 rounded shadow-sm overflow-hidden w-full">
+                        <div class="overflow-x-auto w-full max-w-[100vw]">
                             <table class="w-full text-left border-collapse text-xs min-w-[600px]">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                        <th class="p-4">Vehicle Registration</th>
-                                        <th class="p-4">Make / Model</th>
-                                        <th class="p-4">Istimara Expiry Date</th>
-                                        <th class="p-4">Status</th>
+                                        <th class="p-3 md:p-4">Registration</th>
+                                        <th class="p-3 md:p-4">Make / Model</th>
+                                        <th class="p-3 md:p-4">Expiry Date</th>
+                                        <th class="p-3 md:p-4">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="rows-istimara" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -202,26 +205,26 @@
                 </section>
 
                 <section id="pane-expenses" class="space-y-4 hidden">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex flex-col gap-3">
                         <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Expense Records</h2>
-                            <p class="text-xs text-slate-500">Track company fleet overheads, fuels, and transactional logs.</p>
+                            <h2 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Expense Records</h2>
+                            <p class="text-[10px] md:text-xs text-slate-500">Track company fleet overheads, fuels, and logs.</p>
                         </div>
                     </div>
 
-                    <div class="bg-white border border-slate-200 rounded shadow-sm overflow-hidden">
-                        <div class="overflow-x-auto w-full">
+                    <div class="bg-white border border-slate-200 rounded shadow-sm overflow-hidden w-full">
+                        <div class="overflow-x-auto w-full max-w-[100vw]">
                             <table class="w-full text-left border-collapse text-xs min-w-[800px]">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                        <th class="p-4">Expense ID</th>
-                                        <th class="p-4">Vehicle</th>
-                                        <th class="p-4">Date Purchase</th>
-                                        <th class="p-4">Parts Purchased</th>
-                                        <th class="p-4">Purpose</th>
-                                        <th class="p-4 text-right">Quantity</th>
-                                        <th class="p-4 text-right">Price</th>
-                                        <th class="p-4 text-right">Total Price</th>
+                                        <th class="p-3 md:p-4">Expense ID</th>
+                                        <th class="p-3 md:p-4">Vehicle</th>
+                                        <th class="p-3 md:p-4">Date</th>
+                                        <th class="p-3 md:p-4">Parts</th>
+                                        <th class="p-3 md:p-4">Purpose</th>
+                                        <th class="p-3 md:p-4 text-right">Qty</th>
+                                        <th class="p-3 md:p-4 text-right">Price</th>
+                                        <th class="p-3 md:p-4 text-right">Total Price</th>
                                     </tr>
                                 </thead>
                                 <tbody id="rows-expenses" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -231,20 +234,20 @@
                 </section>
 
                 <section id="pane-reports" class="space-y-4 hidden">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Analytical Statement Logs</h2>
-                            <p class="text-xs text-slate-500">Compile operational metrics and print custom ledger summaries by running dates.</p>
-                        </div>
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 no-print">
-                            <button onclick="window.print()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm shrink-0">
+                    <div class="flex flex-col gap-3">
+                        <div class="flex justify-between items-center w-full">
+                            <div>
+                                <h2 class="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Analytical Logs</h2>
+                            </div>
+                            <button onclick="window.print()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[10px] md:text-xs px-3 py-2 rounded flex items-center justify-center space-x-1 transition cursor-pointer shadow-sm no-print">
                                 <span class="material-symbols-outlined text-sm">print</span>
-                                <span>Print Report Sheet</span>
+                                <span class="hidden sm:inline">Print Report</span>
                             </button>
                         </div>
+                        <p class="text-[10px] md:text-xs text-slate-500">Compile operational metrics and print custom ledger summaries.</p>
                     </div>
 
-                    <div class="bg-white border border-slate-200 rounded p-4 shadow-sm grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs no-print">
+                    <div class="bg-white border border-slate-200 rounded p-3 md:p-4 shadow-sm grid grid-cols-1 gap-3 text-xs no-print">
                         <div>
                             <label class="block text-slate-600 font-medium mb-1">Report Data Target *</label>
                             <select id="report-type" onchange="window.refreshReportsView()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900 font-semibold">
@@ -252,17 +255,19 @@
                                 <option value="expenses">Expenses Statement Log</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-slate-600 font-medium mb-1">Filter Date From</label>
-                            <input type="date" id="report-date-from" onchange="window.refreshReportsView()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                        </div>
-                        <div>
-                            <label class="block text-slate-600 font-medium mb-1">Filter Date To</label>
-                            <input type="date" id="report-date-to" onchange="window.refreshReportsView()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-slate-600 font-medium mb-1">Filter Date From</label>
+                                <input type="date" id="report-date-from" onchange="window.refreshReportsView()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 font-medium mb-1">Filter Date To</label>
+                                <input type="date" id="report-date-to" onchange="window.refreshReportsView()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
+                            </div>
                         </div>
                     </div>
 
-                    <div id="report-print-sheet" class="bg-white border border-slate-200 rounded shadow-sm overflow-hidden p-1">
+                    <div id="report-print-sheet" class="bg-white border border-slate-200 rounded shadow-sm overflow-hidden p-1 w-full">
                         <div class="p-6 hidden print:block border-b-2 border-slate-900 mb-4">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -274,7 +279,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="overflow-x-auto w-full">
+                        <div class="overflow-x-auto w-full max-w-[100vw]">
                             <table class="w-full text-left border-collapse text-xs">
                                 <thead id="report-table-head" class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase"></thead>
                                 <tbody id="rows-reports" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -285,11 +290,38 @@
 
             </main>
         </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav id="mobile-nav" class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 flex justify-around items-center z-50 pb-safe pt-1 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <button onclick="window.switchPane('fleet')" id="mob-nav-fleet" class="mob-nav-btn active flex flex-col items-center p-2 flex-1">
+                <span class="material-symbols-outlined text-xl mb-0.5">directions_car</span>
+                <span class="text-[9px] font-semibold tracking-wide">Registry</span>
+            </button>
+            
+            <button onclick="window.switchPane('maintenance')" id="mob-nav-maintenance" class="mob-nav-btn flex flex-col items-center p-2 flex-1">
+                <span class="material-symbols-outlined text-xl mb-0.5">build</span>
+                <span class="text-[9px] font-semibold tracking-wide">Maint</span>
+            </button>
+
+            <button onclick="window.switchPane('istimara')" id="mob-nav-istimara" class="mob-nav-btn flex flex-col items-center p-2 flex-1">
+                <span class="material-symbols-outlined text-xl mb-0.5">description</span>
+                <span class="text-[9px] font-semibold tracking-wide">Istimara</span>
+            </button>
+
+            <button onclick="window.switchPane('expenses')" id="mob-nav-expenses" class="mob-nav-btn flex flex-col items-center p-2 flex-1">
+                <span class="material-symbols-outlined text-xl mb-0.5">payments</span>
+                <span class="text-[9px] font-semibold tracking-wide">Expenses</span>
+            </button>
+
+            <button onclick="window.switchPane('reports')" id="mob-nav-reports" class="mob-nav-btn flex flex-col items-center p-2 flex-1">
+                <span class="material-symbols-outlined text-xl mb-0.5">assessment</span>
+                <span class="text-[9px] font-semibold tracking-wide">Reports</span>
+            </button>
+        </nav>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-        // Removed 'update' and 'remove' logic entirely for Read-Only setup
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
         const firebaseConfig = {
@@ -314,21 +346,32 @@
 
         // UI Management
         window.switchPane = function(pane) {
-            document.getElementById('pane-fleet').classList.add('hidden');
-            document.getElementById('pane-maintenance').classList.add('hidden');
-            document.getElementById('pane-istimara').classList.add('hidden');
-            document.getElementById('pane-expenses').classList.add('hidden');
-            document.getElementById('pane-reports').classList.add('hidden');
+            // Hide all sections
+            ['fleet', 'maintenance', 'istimara', 'expenses', 'reports'].forEach(p => {
+                document.getElementById(`pane-${p}`).classList.add('hidden');
+            });
+            // Show target
             document.getElementById(`pane-${pane}`).classList.remove('hidden');
 
+            // Reset desktop nav
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`nav-${pane}`).classList.add('active');
+            const desktopNav = document.getElementById(`nav-${pane}`);
+            if (desktopNav) desktopNav.classList.add('active');
 
+            // Reset mobile nav
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => btn.classList.remove('active'));
+            const mobileNav = document.getElementById(`mob-nav-${pane}`);
+            if (mobileNav) mobileNav.classList.add('active');
+
+            // Refresh specific pane data
             if(pane === 'fleet') window.refreshWorkspaceView();
             if(pane === 'maintenance') window.refreshMaintenanceView();
             if(pane === 'istimara') window.refreshIstimaraView();
             if(pane === 'expenses') window.refreshExpensesView();
             if(pane === 'reports') window.refreshReportsView();
+            
+            // Scroll to top automatically when switching tabs on mobile
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         function populateVehicleFilters() {
@@ -348,9 +391,7 @@
             if (currentE) eFilter.value = currentE;
         }
 
-        /* -----------------------------------------------------
-           MODULE: FLEET REGISTRY
-        ----------------------------------------------------- */
+        /* FLEET REGISTRY */
         window.refreshWorkspaceView = function() {
             const query = document.getElementById('in-f-search').value.toLowerCase();
             const container = document.getElementById('rows-fleet');
@@ -378,32 +419,30 @@
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
                     if (diffDays < 0) {
-                        estValidityHtml = `<span class="text-rose-600 font-bold bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[10px]">${expiry} (Expired)</span>`;
+                        estValidityHtml = `<span class="text-rose-600 font-bold bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[10px] whitespace-nowrap">${expiry} (Expired)</span>`;
                     } else if (diffDays <= 30) {
-                        estValidityHtml = `<span class="text-amber-600 font-bold bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-[10px]">${expiry} (${diffDays}d left)</span>`;
+                        estValidityHtml = `<span class="text-amber-600 font-bold bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-[10px] whitespace-nowrap">${expiry} (${diffDays}d)</span>`;
                     } else {
-                        estValidityHtml = `<span class="text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[10px]">${expiry}</span>`;
+                        estValidityHtml = `<span class="text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[10px] whitespace-nowrap">${expiry}</span>`;
                     }
                 }
 
                 return `
                     <tr class="hover:bg-slate-50/50 transition">
-                        <td class="p-4 font-code font-bold text-slate-900 tracking-wide">${vehicle.id}</td>
-                        <td class="p-4 font-semibold text-slate-800">${vehicle.make || 'N/A'}</td>
-                        <td class="p-4 font-code font-medium text-slate-600">${vehicle.year || 'N/A'}</td>
-                        <td class="p-4 font-medium text-slate-800">${vehicle.type || 'N/A'}</td>
-                        <td class="p-4 text-slate-500 font-code">${vehicle.location || 'HQ BASE'}</td>
-                        <td class="p-4 font-medium text-slate-700 font-code uppercase">${vehicle.condition || '<span class="text-slate-300">-</span>'}</td>
-                        <td class="p-4">${estValidityHtml}</td>
-                        <td class="p-4"><span class="px-2.5 py-1 border rounded text-[10px] font-bold uppercase ${badgeClass}">${vehicle.status || 'Operational'}</span></td>
+                        <td class="p-3 md:p-4 font-code font-bold text-slate-900 tracking-wide whitespace-nowrap">${vehicle.id}</td>
+                        <td class="p-3 md:p-4 font-semibold text-slate-800 whitespace-nowrap">${vehicle.make || 'N/A'}</td>
+                        <td class="p-3 md:p-4 font-code font-medium text-slate-600">${vehicle.year || 'N/A'}</td>
+                        <td class="p-3 md:p-4 font-medium text-slate-800 whitespace-nowrap">${vehicle.type || 'N/A'}</td>
+                        <td class="p-3 md:p-4 text-slate-500 font-code whitespace-nowrap">${vehicle.location || 'HQ BASE'}</td>
+                        <td class="p-3 md:p-4 font-medium text-slate-700 font-code uppercase whitespace-nowrap">${vehicle.condition || '<span class="text-slate-300">-</span>'}</td>
+                        <td class="p-3 md:p-4">${estValidityHtml}</td>
+                        <td class="p-3 md:p-4"><span class="px-2.5 py-1 border rounded text-[10px] font-bold uppercase whitespace-nowrap ${badgeClass}">${vehicle.status || 'Operational'}</span></td>
                     </tr>
                 `;
             }).join('');
         };
 
-        /* -----------------------------------------------------
-           MODULE: MAINTENANCE LOG
-        ----------------------------------------------------- */
+        /* MAINTENANCE LOG */
         window.printMaintenanceRecord = function(id) {
             const m = memory.maintenance.find(x => x.id === id);
             if (!m) return;
@@ -549,28 +588,26 @@
 
                 return `
                     <tr class="hover:bg-slate-50/50 transition border-b border-slate-50 last:border-0">
-                        <td class="p-4 font-code text-slate-900 font-bold">${m.id}</td>
-                        <td class="p-4 font-code text-slate-700">${m.vehicle}</td>
-                        <td class="p-4"><span class="px-2 py-0.5 border rounded text-[10px] font-bold uppercase ${statusBadgeClass}">${logStatus}</span></td>
-                        <td class="p-4 text-slate-500 font-code uppercase">${m.location || '-'}</td>
-                        <td class="p-4 text-slate-600">${m.date}</td>
-                        <td class="p-4 text-emerald-600 font-medium">${m.dateCompleted || '-'}</td>
-                        <td class="p-4 text-slate-800">${m.description}</td>
-                        <td class="p-4 text-slate-600">${m.mechanic}</td>
-                        <td class="p-4 text-slate-500">${m.parts}</td>
-                        <td class="p-4 text-slate-600 font-semibold font-code uppercase">${m.condition || '-'}</td>
-                        <td class="p-4 text-slate-500 italic max-w-xs truncate">${m.remarks || '-'}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="window.printMaintenanceRecord('${m.id}')" class="text-blue-600 hover:text-blue-800 font-medium transition cursor-pointer">Print</button>
+                        <td class="p-3 md:p-4 font-code text-slate-900 font-bold whitespace-nowrap">${m.id}</td>
+                        <td class="p-3 md:p-4 font-code text-slate-700 whitespace-nowrap">${m.vehicle}</td>
+                        <td class="p-3 md:p-4"><span class="px-2 py-0.5 border rounded text-[10px] font-bold uppercase whitespace-nowrap ${statusBadgeClass}">${logStatus}</span></td>
+                        <td class="p-3 md:p-4 text-slate-500 font-code uppercase whitespace-nowrap">${m.location || '-'}</td>
+                        <td class="p-3 md:p-4 text-slate-600 whitespace-nowrap">${m.date}</td>
+                        <td class="p-3 md:p-4 text-emerald-600 font-medium whitespace-nowrap">${m.dateCompleted || '-'}</td>
+                        <td class="p-3 md:p-4 text-slate-800 min-w-[200px]">${m.description}</td>
+                        <td class="p-3 md:p-4 text-slate-600 whitespace-nowrap">${m.mechanic}</td>
+                        <td class="p-3 md:p-4 text-slate-500 min-w-[150px]">${m.parts}</td>
+                        <td class="p-3 md:p-4 text-slate-600 font-semibold font-code uppercase whitespace-nowrap">${m.condition || '-'}</td>
+                        <td class="p-3 md:p-4 text-slate-500 italic max-w-xs truncate">${m.remarks || '-'}</td>
+                        <td class="p-3 md:p-4 text-center">
+                            <button onclick="window.printMaintenanceRecord('${m.id}')" class="text-blue-600 hover:text-blue-800 font-medium transition cursor-pointer whitespace-nowrap">Print</button>
                         </td>
                     </tr>
                 `;
             }).join('');
         };
 
-        /* -----------------------------------------------------
-           MODULE: ISTIMARA VALIDITY
-        ----------------------------------------------------- */
+        /* ISTIMARA VALIDITY */
         window.refreshIstimaraView = function() {
             const container = document.getElementById('rows-istimara');
             const query = document.getElementById('in-e-search').value.toLowerCase();
@@ -600,29 +637,27 @@
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
                     if (diffDays < 0) {
-                        statusHtml = `<span class="text-rose-600 font-bold bg-rose-50 px-2 py-1 rounded">Expired</span>`;
+                        statusHtml = `<span class="text-rose-600 font-bold bg-rose-50 px-2 py-1 rounded whitespace-nowrap">Expired</span>`;
                     } else if (diffDays <= 30) {
-                        statusHtml = `<span class="text-amber-600 font-bold bg-amber-50 px-2 py-1 rounded">Expires soon (${diffDays} days)</span>`;
+                        statusHtml = `<span class="text-amber-600 font-bold bg-amber-50 px-2 py-1 rounded whitespace-nowrap">Expires in ${diffDays}d</span>`;
                     } else {
-                        statusHtml = `<span class="text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded">Valid</span>`;
+                        statusHtml = `<span class="text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded whitespace-nowrap">Valid</span>`;
                     }
                 }
 
                 return `
                     <tr class="hover:bg-slate-50/50 transition">
-                        <td class="p-4 font-code font-bold text-slate-900">${v.id}</td>
-                        <td class="p-4 text-slate-700">${v.make || '-'} / ${v.type || '-'}</td>
-                        <td class="p-4 font-semibold text-slate-800">${expiry || 'Not Set'}</td>
-                        <td class="p-4">${statusHtml}</td>
+                        <td class="p-3 md:p-4 font-code font-bold text-slate-900 whitespace-nowrap">${v.id}</td>
+                        <td class="p-3 md:p-4 text-slate-700 whitespace-nowrap">${v.make || '-'} / ${v.type || '-'}</td>
+                        <td class="p-3 md:p-4 font-semibold text-slate-800 whitespace-nowrap">${expiry || 'Not Set'}</td>
+                        <td class="p-3 md:p-4">${statusHtml}</td>
                     </tr>
                 `;
             }).join('');
         };
 
 
-        /* -----------------------------------------------------
-           MODULE: EXPENSES MODULE
-        ----------------------------------------------------- */
+        /* EXPENSES MODULE */
         window.refreshExpensesView = function() {
             const container = document.getElementById('rows-expenses');
             if (memory.expenses.length === 0) {
@@ -633,23 +668,21 @@
             container.innerHTML = sorted.map(ex => {
                 return `
                     <tr class="hover:bg-slate-50/50 transition border-b border-slate-50 last:border-0">
-                        <td class="p-4 font-code text-slate-900 font-bold">${ex.id}</td>
-                        <td class="p-4 font-code text-slate-700">${ex.vehicle}</td>
-                        <td class="p-4 text-slate-600">${ex.datePurchase || '-'}</td>
-                        <td class="p-4 text-slate-800">${ex.partsPurchased || '-'}</td>
-                        <td class="p-4 font-medium text-slate-800">${ex.purpose || '-'}</td>
-                        <td class="p-4 font-code text-slate-600 text-right">${ex.quantity || 0}</td>
-                        <td class="p-4 font-code text-slate-600 text-right">${Number(ex.price || 0).toFixed(2)}</td>
-                        <td class="p-4 font-code font-bold text-slate-900 text-right">${Number(ex.totalPrice || 0).toFixed(2)} QAR</td>
+                        <td class="p-3 md:p-4 font-code text-slate-900 font-bold whitespace-nowrap">${ex.id}</td>
+                        <td class="p-3 md:p-4 font-code text-slate-700 whitespace-nowrap">${ex.vehicle}</td>
+                        <td class="p-3 md:p-4 text-slate-600 whitespace-nowrap">${ex.datePurchase || '-'}</td>
+                        <td class="p-3 md:p-4 text-slate-800 min-w-[150px]">${ex.partsPurchased || '-'}</td>
+                        <td class="p-3 md:p-4 font-medium text-slate-800 whitespace-nowrap">${ex.purpose || '-'}</td>
+                        <td class="p-3 md:p-4 font-code text-slate-600 text-right">${ex.quantity || 0}</td>
+                        <td class="p-3 md:p-4 font-code text-slate-600 text-right">${Number(ex.price || 0).toFixed(2)}</td>
+                        <td class="p-3 md:p-4 font-code font-bold text-slate-900 text-right whitespace-nowrap">${Number(ex.totalPrice || 0).toFixed(2)} QAR</td>
                     </tr>
                 `;
             }).join('');
         };
 
 
-        /* -----------------------------------------------------
-           MODULE: ANALYTICAL METRIC REPORTS
-        ----------------------------------------------------- */
+        /* ANALYTICAL METRIC REPORTS */
         window.refreshReportsView = function() {
             const targetType = document.getElementById('report-type').value;
             const rawFrom = document.getElementById('report-date-from').value;
@@ -661,7 +694,6 @@
             const dFrom = rawFrom ? new Date(rawFrom) : null;
             const dTo = rawTo ? new Date(rawTo) : null;
 
-            // Update print headers meta metrics dynamically
             const subTitleStr = `Timeline Range Scope: ${rawFrom || 'All Registered History'} to ${rawTo || 'Current Standings'} | Computed on: ${new Date().toLocaleDateString()}`;
             document.getElementById('print-header-title').innerText = targetType === 'maintenance' ? 'Operational Maintenance Log Summary Report' : 'Operational Expenditures Summary Statement Ledger';
             document.getElementById('print-header-meta').innerText = subTitleStr;
@@ -669,15 +701,15 @@
             if (targetType === 'maintenance') {
                 tableHeadEl.innerHTML = `
                     <tr class="border-b border-slate-200 text-slate-500 tracking-wide uppercase">
-                        <th class="p-4">Maint. ID</th>
-                        <th class="p-4">Vehicle</th>
-                        <th class="p-4">Started</th>
-                        <th class="p-4">Completed</th>
-                        <th class="p-4">Location</th>
-                        <th class="p-4">Description</th>
-                        <th class="p-4">Mechanic</th>
-                        <th class="p-4">Parts Utilized</th>
-                        <th class="p-4">Condition</th>
+                        <th class="p-3 md:p-4">Maint. ID</th>
+                        <th class="p-3 md:p-4">Vehicle</th>
+                        <th class="p-3 md:p-4">Started</th>
+                        <th class="p-3 md:p-4">Completed</th>
+                        <th class="p-3 md:p-4">Location</th>
+                        <th class="p-3 md:p-4">Description</th>
+                        <th class="p-3 md:p-4">Mechanic</th>
+                        <th class="p-3 md:p-4">Parts Utilized</th>
+                        <th class="p-3 md:p-4">Condition</th>
                     </tr>
                 `;
 
@@ -696,29 +728,29 @@
 
                 tableBodyEl.innerHTML = matches.map(m => `
                     <tr class="hover:bg-slate-50/50 border-b border-slate-100 last:border-0">
-                        <td class="p-4 font-code font-bold text-slate-900">${m.id}</td>
-                        <td class="p-4 font-code text-slate-700">${m.vehicle}</td>
-                        <td class="p-4 whitespace-nowrap">${m.date}</td>
-                        <td class="p-4 text-emerald-600 font-medium whitespace-nowrap">${m.dateCompleted || '-'}</td>
-                        <td class="p-4 font-code text-slate-500 uppercase">${m.location || '-'}</td>
-                        <td class="p-4 text-slate-800">${m.description}</td>
-                        <td class="p-4 text-slate-600">${m.mechanic}</td>
-                        <td class="p-4 text-slate-500">${m.parts || 'None'}</td>
-                        <td class="p-4 font-code uppercase font-semibold text-slate-700">${m.condition || '-'}</td>
+                        <td class="p-3 md:p-4 font-code font-bold text-slate-900 whitespace-nowrap">${m.id}</td>
+                        <td class="p-3 md:p-4 font-code text-slate-700 whitespace-nowrap">${m.vehicle}</td>
+                        <td class="p-3 md:p-4 whitespace-nowrap">${m.date}</td>
+                        <td class="p-3 md:p-4 text-emerald-600 font-medium whitespace-nowrap">${m.dateCompleted || '-'}</td>
+                        <td class="p-3 md:p-4 font-code text-slate-500 uppercase whitespace-nowrap">${m.location || '-'}</td>
+                        <td class="p-3 md:p-4 text-slate-800 min-w-[200px]">${m.description}</td>
+                        <td class="p-3 md:p-4 text-slate-600 whitespace-nowrap">${m.mechanic}</td>
+                        <td class="p-3 md:p-4 text-slate-500 min-w-[150px]">${m.parts || 'None'}</td>
+                        <td class="p-3 md:p-4 font-code uppercase font-semibold text-slate-700 whitespace-nowrap">${m.condition || '-'}</td>
                     </tr>
                 `).join('');
 
             } else if (targetType === 'expenses') {
                 tableHeadEl.innerHTML = `
                     <tr class="border-b border-slate-200 text-slate-500 tracking-wide uppercase">
-                        <th class="p-4">Expense ID</th>
-                        <th class="p-4">Vehicle ID</th>
-                        <th class="p-4">Purchase Date</th>
-                        <th class="p-4">Purpose Category</th>
-                        <th class="p-4">Itemized Inventory</th>
-                        <th class="p-4 text-right">Quantity</th>
-                        <th class="p-4 text-right">Unit Price</th>
-                        <th class="p-4 text-right">Total Outflow</th>
+                        <th class="p-3 md:p-4">Expense ID</th>
+                        <th class="p-3 md:p-4">Vehicle ID</th>
+                        <th class="p-3 md:p-4">Purchase Date</th>
+                        <th class="p-3 md:p-4">Purpose Category</th>
+                        <th class="p-3 md:p-4">Itemized Inventory</th>
+                        <th class="p-3 md:p-4 text-right">Quantity</th>
+                        <th class="p-3 md:p-4 text-right">Unit Price</th>
+                        <th class="p-3 md:p-4 text-right">Total Outflow</th>
                     </tr>
                 `;
 
@@ -741,32 +773,29 @@
                     sumAggregateTotal += transactionalCost;
                     return `
                         <tr class="hover:bg-slate-50/50 border-b border-slate-100 last:border-0">
-                            <td class="p-4 font-code font-bold text-slate-900">${ex.id}</td>
-                            <td class="p-4 font-code text-slate-700">${ex.vehicle}</td>
-                            <td class="p-4 whitespace-nowrap">${ex.datePurchase}</td>
-                            <td class="p-4 font-medium text-slate-800">${ex.purpose}</td>
-                            <td class="p-4 text-slate-500">${ex.partsPurchased || '-'}</td>
-                            <td class="p-4 font-code text-right">${ex.quantity || 0}</td>
-                            <td class="p-4 font-code text-right">${Number(ex.price || 0).toFixed(2)}</td>
-                            <td class="p-4 font-code font-bold text-slate-900 text-right">${transactionalCost.toFixed(2)} QAR</td>
+                            <td class="p-3 md:p-4 font-code font-bold text-slate-900 whitespace-nowrap">${ex.id}</td>
+                            <td class="p-3 md:p-4 font-code text-slate-700 whitespace-nowrap">${ex.vehicle}</td>
+                            <td class="p-3 md:p-4 whitespace-nowrap">${ex.datePurchase}</td>
+                            <td class="p-3 md:p-4 font-medium text-slate-800 whitespace-nowrap">${ex.purpose}</td>
+                            <td class="p-3 md:p-4 text-slate-500 min-w-[150px]">${ex.partsPurchased || '-'}</td>
+                            <td class="p-3 md:p-4 font-code text-right">${ex.quantity || 0}</td>
+                            <td class="p-3 md:p-4 font-code text-right">${Number(ex.price || 0).toFixed(2)}</td>
+                            <td class="p-3 md:p-4 font-code font-bold text-slate-900 text-right whitespace-nowrap">${transactionalCost.toFixed(2)} QAR</td>
                         </tr>
                     `;
                 }).join('');
 
                 rowsHtml += `
                     <tr class="bg-slate-100 font-bold border-t-2 border-slate-300">
-                        <td colspan="7" class="p-4 text-right text-slate-700 text-xs uppercase tracking-wider">Total Combined System Outflow:</td>
-                        <td class="p-4 text-right font-code text-sm text-slate-950 font-black">${sumAggregateTotal.toFixed(2)} QAR</td>
+                        <td colspan="7" class="p-3 md:p-4 text-right text-slate-700 text-[10px] md:text-xs uppercase tracking-wider">Combined Outflow:</td>
+                        <td class="p-3 md:p-4 text-right font-code text-xs md:text-sm text-slate-950 font-black whitespace-nowrap">${sumAggregateTotal.toFixed(2)} QAR</td>
                     </tr>
                 `;
                 tableBodyEl.innerHTML = rowsHtml;
             }
         };
 
-
-        /* -----------------------------------------------------
-           FIREBASE REALTIME LISTENERS
-        ----------------------------------------------------- */
+        /* FIREBASE REALTIME LISTENERS */
         onValue(ref(db, '.info/connected'), (snap) => {
             const badge = document.getElementById('connection-badge');
             if (snap.val() === true) {
