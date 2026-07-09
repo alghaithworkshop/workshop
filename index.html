@@ -3,1031 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Ghaith CMMS Portal - Read Only Viewer</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
+    <title>Al Ghaith Asset Management Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .font-code { font-family: 'JetBrains Mono', monospace; }
-        
-        @media print {
-            #app-container { display: none !important; }
-            #print-section { display: block !important; width: 100%; position: absolute; left: 0; top: 0; background: white; color: black; }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
-
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-rose-500 selection:text-white">
 
-    <div id="print-section" class="hidden p-8 bg-white text-slate-900"></div>
-
-    <div id="app-container" class="flex flex-col min-h-screen">
-        <!-- RESPONSIVE HEADER NAV -->
-        <nav class="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between shadow-xs z-20 gap-4">
-            <div class="flex items-center justify-between w-full lg:w-auto">
-                <div class="flex items-center space-x-3.5">
-                    <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-9 w-9 object-contain rounded">
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <span class="text-sm font-bold tracking-tight text-slate-900 max-w-[220px] md:max-w-none block truncate">Al Ghaith Trading &amp; Industrial Services</span>
-                        </div>
-                        <p class="text-xs text-slate-500">Maintenance Management System (Viewer Only)</p>
-                    </div>
-                </div>
-                <button onclick="toggleMobileSidebar()" class="md:hidden flex items-center text-slate-600 hover:text-slate-900 p-1 rounded border border-slate-200 cursor-pointer">
-                    <span class="material-symbols-outlined">menu</span>
-                </button>
-            </div>
-
-            <div class="w-full lg:w-auto">
-                <div class="grid grid-cols-2 sm:flex sm:items-center gap-3 lg:gap-5 text-xs font-code text-slate-600 bg-slate-50 p-3 lg:p-0 rounded border border-slate-100 lg:border-none lg:bg-transparent">
-                    <div>Assets: <span id="stat-fleet-count" class="text-slate-900 font-bold">0</span></div>
-                    <div>Work Orders: <span id="stat-wo-count" class="text-slate-900 font-bold">0</span></div>
-                    <div>Logs Saved: <span id="stat-log-count" class="text-slate-900 font-bold">0</span></div>
-                    <div>Dispatches: <span id="stat-dispatch-count" class="text-slate-900 font-bold">0</span></div>
-                    <div>3rd Party Certs: <span id="stat-cert-count" class="text-slate-900 font-bold">0</span></div>
-                    <div class="col-span-2 sm:col-span-1">Technicians: <span id="stat-tech-count" class="text-slate-900 font-bold">0</span></div>
-                </div>
-            </div>
-        </nav>
-
-        <div class="flex flex-1 overflow-hidden relative">
-            <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-200 w-64 bg-white border-r border-slate-200 p-4 flex flex-col justify-between shadow-md md:shadow-xs h-full shrink-0">
-                <div class="space-y-1">
-                    <div class="flex items-center justify-between px-3 mb-4 md:mb-2">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Operations Modules</p>
-                        <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined text-sm">close</span></button>
-                    </div>
-                    
-                    <button onclick="setModule('fleet')" id="tab-fleet" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition bg-slate-900 text-white shadow-xs">
-                        <span class="material-symbols-outlined">analytics</span>
-                        <span>Master Fleet Registry</span>
-                    </button>
-
-                    <button onclick="setModule('cert')" id="tab-cert" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
-                        <span class="material-symbols-outlined">verified</span>
-                        <span>Third Party Certificate</span>
-                    </button>
-
-                    <button onclick="setModule('wo')" id="tab-wo" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
-                        <span class="material-symbols-outlined">build</span>
-                        <span>Maintenance Work Orders</span>
-                    </button>
-
-                    <button onclick="setModule('log')" id="tab-log" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
-                        <span class="material-symbols-outlined">history_edu</span>
-                        <span>Maintenance Logs / History</span>
-                    </button>
-
-                    <button onclick="setModule('dispatch')" id="tab-dispatch" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
-                        <span class="material-symbols-outlined">local_shipping</span>
-                        <span>In/Out Dispatch</span>
-                    </button>
-
-                    <button onclick="setModule('tech')" id="tab-tech" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
-                        <span class="material-symbols-outlined">badge</span>
-                        <span>Technician Profile</span>
-                    </button>
-
-                    <button onclick="setModule('reports')" id="tab-reports" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
-                        <span class="material-symbols-outlined">monitoring</span>
-                        <span>Reports & Diagnostics</span>
-                    </button>
-                </div>
-
-                <div class="p-3 bg-slate-50 rounded border border-slate-200 mt-4">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Authorization Matrix</div>
-                    <div id="connection-badge" class="text-xs text-amber-600 font-medium flex items-center">
-                        <span class="h-2 w-2 rounded-full bg-amber-500 mr-2 animate-pulse"></span>
-                        Connecting Terminal...
-                    </div>
-                </div>
-            </aside>
-
-            <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="hidden fixed inset-0 bg-slate-900/40 z-20 md:hidden"></div>
-
-            <main class="flex-1 p-4 md:p-8 overflow-y-auto">
-                <div class="flex-1">
-                    <!-- MASTER FLEET REGISTRY -->
-                    <section id="pane-fleet" class="pane-view space-y-4">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Master Fleet Registry</h2>
-                                <p class="text-xs text-slate-500">Primary technical index indexed by unique hardware Asset IDs.</p>
-                            </div>
-                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                                <div class="relative flex items-center flex-1">
-                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                    <input type="text" id="in-f-search" oninput="refreshWorkspaceView()" placeholder="Search ID, model, status, location..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
-                            <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[850px]">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Primary ID</th>
-                                            <th class="p-4">Model Number</th>
-                                            <th class="p-4">Equipment Description</th>
-                                            <th class="p-4">Serial Number</th>
-                                            <th class="p-4">Location</th>
-                                            <th class="p-4">Cert Status</th>
-                                            <th class="p-4">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="rows-fleet" class="divide-y divide-slate-100 text-slate-700"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- THIRD PARTY CERTIFICATE MODULE -->
-                    <section id="pane-cert" class="pane-view space-y-4 hidden">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Third Party Certificates</h2>
-                                <p class="text-xs text-slate-500">Manage external verification, compliance certifications, and alignment validations.</p>
-                            </div>
-                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                                <div class="relative flex items-center flex-1">
-                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                    <input type="text" id="in-c-search" oninput="refreshWorkspaceView()" placeholder="Search asset ID, model, status..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
-                            <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[1050px]">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Assigned Equipment ID</th>
-                                            <th class="p-4">Model Number</th>
-                                            <th class="p-4">Equipment Description</th>
-                                            <th class="p-4">Serial Number</th>
-                                            <th class="p-4">Expiry Date</th>
-                                            <th class="p-4">Status Alarm</th>
-                                            <th class="p-4 text-center w-48">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="rows-cert" class="divide-y divide-slate-100 text-slate-700"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- WORK ORDERS -->
-                    <section id="pane-wo" class="pane-view space-y-4 hidden">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Work Orders</h2>
-                                <p class="text-xs text-slate-500">Operational tracking and scheduling logs.</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
-                            <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[700px]">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Order ID</th>
-                                            <th class="p-4">Equipment Asset</th>
-                                            <th class="p-4">Current Metric</th>
-                                            <th class="p-4">Target Metric</th>
-                                            <th class="p-4">Remaining Hours / Status Info</th>
-                                            <th class="p-4">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="rows-wo" class="divide-y divide-slate-100 text-slate-700"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- MAINTENANCE LOGS -->
-                    <section id="pane-log" class="pane-view space-y-4 hidden">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Logs & Service History</h2>
-                                <p class="text-xs text-slate-500">Execution records from resolved or active maintenance sequences.</p>
-                            </div>
-                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                                <div class="relative flex items-center flex-1">
-                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                    <input type="text" id="in-l-search" oninput="refreshWorkspaceView()" placeholder="Search logs..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
-                            <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[900px]">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Log ID / Date</th>
-                                            <th class="p-4">Equipment Asset</th>
-                                            <th class="p-4">Interval Bounds</th>
-                                            <th class="p-4">Remaining Before Maint.</th>
-                                            <th class="p-4">Fault Report & Action Taken</th>
-                                            <th class="p-4">Parts & Tech</th>
-                                            <th class="p-4">Asset Status</th>
-                                            <th class="p-4 text-center w-36">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="rows-log" class="divide-y divide-slate-100 text-slate-700"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- DISPATCH -->
-                    <section id="pane-dispatch" class="pane-view space-y-4 hidden">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">In/Out Dispatch Logs</h2>
-                                <p class="text-xs text-slate-500">Mobilization tracking panel.</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
-                            <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[650px]">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Dispatch ID</th>
-                                            <th class="p-4">Equipment Asset</th>
-                                            <th class="p-4">Event Type</th>
-                                            <th class="p-4">Destination / Project</th>
-                                            <th class="p-4">Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="rows-dispatch" class="divide-y divide-slate-100 text-slate-700"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- TECHNICIANS -->
-                    <section id="pane-tech" class="pane-view space-y-4 hidden">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Technician Profile Directory</h2>
-                                <p class="text-xs text-slate-500">Engineering roster and technical credentials.</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
-                            <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[600px]">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Tech ID</th>
-                                            <th class="p-4">Full Name</th>
-                                            <th class="p-4">Designation</th>
-                                            <th class="p-4">Contact Info</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="rows-tech" class="divide-y divide-slate-100 text-slate-700"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- REPORTS & ANALYTICS -->
-                    <section id="pane-reports" class="pane-view space-y-6 hidden">
-                        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Reports & Analytical Diagnostics</h2>
-                                <p class="text-xs text-slate-500">Live operational intelligence breakdowns across registered machinery indices.</p>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-3">
-                                <div class="flex items-center space-x-1.5 bg-white border border-slate-300 rounded px-2.5 py-1.5 shadow-xs w-full sm:w-auto">
-                                    <span class="material-symbols-outlined text-sm text-slate-500">location_on</span>
-                                    <select id="print-location-select" class="text-xs bg-transparent border-none outline-none pr-1 font-semibold text-slate-700 focus:ring-0 w-full sm:w-auto">
-                                        <option value="ALL">All Locations</option>
-                                    </select>
-                                    <button onclick="printFilteredLocationReport()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] px-3 py-1 rounded transition cursor-pointer shadow-sm shrink-0">
-                                        Print
-                                    </button>
-                                </div>
-
-                                <div class="flex items-center space-x-1.5 bg-white border border-slate-300 rounded px-2.5 py-1.5 shadow-xs w-full sm:w-auto">
-                                    <span class="material-symbols-outlined text-sm text-emerald-600">check_circle</span>
-                                    <select id="print-status-select" class="text-xs bg-transparent border-none outline-none pr-1 font-semibold text-slate-700 focus:ring-0 w-full sm:w-auto">
-                                        <option value="ALL">All Statuses</option>
-                                        <option value="Operational">Operational</option>
-                                        <option value="In Maintenance">In Maintenance</option>
-                                        <option value="Down">Down</option>
-                                        <option value="Standby">Standby</option>
-                                        <option value="Dispatched">Dispatched</option>
-                                    </select>
-                                    <button onclick="printFilteredStatusReport()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] px-3 py-1 rounded transition cursor-pointer shadow-sm shrink-0">
-                                        Print
-                                    </button>
-                                </div>
-
-                                <div class="flex items-center space-x-1.5 bg-white border border-slate-300 rounded px-2.5 py-1.5 shadow-xs w-full sm:w-auto">
-                                    <span class="material-symbols-outlined text-sm text-blue-600">verified</span>
-                                    <select id="print-cert-status-select" class="text-xs bg-transparent border-none outline-none pr-1 font-semibold text-slate-700 focus:ring-0 w-full sm:w-auto">
-                                        <option value="ALL">All Cert Statuses</option>
-                                        <option value="Valid">Valid / Active</option>
-                                        <option value="Near">Near to Expire (≤30 Days)</option>
-                                        <option value="Expired">Expired</option>
-                                    </select>
-                                    <button onclick="printThirdPartyCertReport()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] px-3 py-1 rounded transition cursor-pointer shadow-sm shrink-0">
-                                        Print Certs
-                                    </button>
-                                </div>
-
-                                <button onclick="printExecutiveReport()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm w-full sm:w-auto">
-                                    <span class="material-symbols-outlined text-sm">print</span>
-                                    <span>Print Executive Sheet</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                            <div class="bg-white border border-slate-200 rounded p-4 shadow-xs flex flex-col justify-between">
-                                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wide">Operational</span>
-                                <span id="rep-stat-operational" class="text-2xl md:text-3xl font-black text-emerald-600 mt-2">0</span>
-                            </div>
-                            <div class="bg-white border border-slate-200 rounded p-4 shadow-xs flex flex-col justify-between">
-                                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wide">In Maintenance</span>
-                                <span id="rep-stat-maintenance" class="text-2xl md:text-3xl font-black text-amber-600 mt-2">0</span>
-                            </div>
-                            <div class="bg-white border border-slate-200 rounded p-4 shadow-xs flex flex-col justify-between">
-                                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wide">Down</span>
-                                <span id="rep-stat-down" class="text-2xl md:text-3xl font-black text-rose-600 mt-2">0</span>
-                            </div>
-                            <div class="bg-white border border-slate-200 rounded p-4 shadow-xs flex flex-col justify-between">
-                                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wide">Dispatched</span>
-                                <span id="rep-stat-dispatched" class="text-2xl md:text-3xl font-black text-blue-600 mt-2">0</span>
-                            </div>
-                            <div class="bg-white border border-slate-200 rounded p-4 shadow-xs flex flex-col justify-between col-span-2 md:col-span-1">
-                                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wide">Standby</span>
-                                <span id="rep-stat-standby" class="text-2xl md:text-3xl font-black text-slate-600 mt-2">0</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-white border border-slate-200 rounded shadow-xs p-4 md:p-6 space-y-4">
-                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100 pb-2">Active Fleet Asset Allocation Index</h3>
-                            <div class="overflow-hidden">
-                                <div class="overflow-x-auto w-full">
-                                    <table class="w-full text-left border-collapse text-xs min-w-[650px]">
-                                        <thead>
-                                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
-                                                <th class="p-3">Asset ID</th>
-                                                <th class="p-3">Model</th>
-                                                <th class="p-3">Description</th>
-                                                <th class="p-3">Live Location</th>
-                                                <th class="p-3">Live Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="rep-rows-allocation" class="divide-y divide-slate-100 text-slate-700"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </main>
-        </div>
-
-        <footer class="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-400 font-medium z-10 shrink-0">
-            2026 Michael. All rights reserved.
-        </footer>
+    <div id="floating-back-btn" class="hidden fixed bottom-6 right-6 z-50 animate-fade-in">
+        <button onclick="returnToHub()" class="flex items-center space-x-2 bg-slate-900/90 text-white hover:bg-rose-600 border border-slate-700 hover:border-rose-500 font-semibold text-xs px-4 py-3 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 backdrop-blur-sm cursor-pointer">
+            <span class="material-symbols-outlined text-sm">hub</span>
+            <span>Switch Portal Menu</span>
+        </button>
     </div>
 
-    <!-- DETAILED CERTIFICATE IMAGE OVERLAY VIEW MODAL -->
-    <div id="modal-view-cert-image" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-2xl p-6 space-y-4 shadow-2xl flex flex-col max-h-[90vh]">
-            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
-                <h3 id="view-cert-image-title" class="text-xs font-bold text-slate-900 uppercase tracking-wide">Certificate Document Attachment</h3>
-                <button onclick="toggleModal('modal-view-cert-image', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
+    <div id="hub-view" class="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 relative z-10 max-w-5xl mx-auto w-full animate-fade-in">
+        
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center justify-center bg-white p-3 rounded-xl shadow-lg mb-4 transform hover:rotate-3 transition-transform duration-300">
+                <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-14 w-auto object-contain" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
             </div>
-            <div class="flex-1 overflow-auto flex items-center justify-center bg-slate-900/5 rounded border p-2">
-                <img id="img-view-cert-expanded" src="" alt="Certificate Document File Not Loaded" class="max-w-full h-auto max-h-[60vh] object-contain rounded shadow-xs">
-            </div>
-            <div class="flex justify-end pt-2 border-t border-slate-100">
-                <button onclick="toggleModal('modal-view-cert-image', false)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs px-4 py-2 rounded font-semibold cursor-pointer">Close Document</button>
-            </div>
+            <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
+                Al Ghaith Trading & Industrial Services
+            </h1>
+            <p class="text-slate-400 font-medium text-sm sm:text-base max-w-xl mx-auto">
+                Centralized Enterprise Resource & Asset Management Control Center
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 w-full max-w-4xl mx-auto">
+            
+            <button onclick="openPortal('pump')" class="group relative flex flex-col justify-between text-left bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-2xl p-6 sm:p-8 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 cursor-pointer overflow-hidden min-h-[220px]">
+                <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity duration-300 text-rose-500">
+                    <span class="material-symbols-outlined !text-8xl select-none">precision_manufacturing</span>
+                </div>
+                <div>
+                    <div class="h-12 w-12 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center mb-5 group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
+                        <span class="material-symbols-outlined text-2xl font-medium">precision_manufacturing</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-white tracking-tight mb-2 flex items-center gap-2">
+                        <span>High Pressure Pump Portal</span>
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-[280px] sm:max-w-none">
+                        Manage master fleet registries, maintenance work orders, logs, dispatch histories, and technician credentials.
+                    </p>
+                </div>
+                <div class="mt-6 flex items-center text-xs font-semibold text-rose-400 group-hover:text-rose-300 transition-colors">
+                    <span>Launch Portal Panel</span>
+                    <span class="material-symbols-outlined text-sm ml-1.5 transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </div>
+            </button>
+
+            <button onclick="openPortal('vehicle')" class="group relative flex flex-col justify-between text-left bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-2xl p-6 sm:p-8 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 cursor-pointer overflow-hidden min-h-[220px]">
+                <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity duration-300 text-sky-500">
+                    <span class="material-symbols-outlined !text-8xl select-none">directions_car</span>
+                </div>
+                <div>
+                    <div class="h-12 w-12 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center mb-5 group-hover:bg-sky-50 group-hover:text-white transition-all duration-300">
+                        <span class="material-symbols-outlined text-2xl font-medium">directions_car</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-white tracking-tight mb-2 flex items-center gap-2">
+                        <span>Vehicle Management Portal</span>
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-[280px] sm:max-w-none">
+                        Track company vehicles, manage Istimara validities, registration renewals, service maintenance metrics, and operational expenses.
+                    </p>
+                </div>
+                <div class="mt-6 flex items-center text-xs font-semibold text-sky-400 group-hover:text-sky-300 transition-colors">
+                    <span>Launch Portal Panel</span>
+                    <span class="material-symbols-outlined text-sm ml-1.5 transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </div>
+            </button>
+
         </div>
     </div>
 
-    <!-- CORE APPLICATION SCRIPT ENGINE -->
+    <div id="portal-frame-container" class="hidden fixed inset-0 w-full h-full bg-slate-50 z-40">
+        <iframe id="portal-iframe" src="" class="w-full h-full border-0 m-0 p-0 overflow-hidden" allow="autoplay; clipboard-write"></iframe>
+    </div>
+
+    <footer id="hub-footer" class="py-6 border-t border-slate-800 text-center text-xs text-slate-500 relative z-10 bg-slate-950/40 w-full">
+        <div>&copy; 2026 Al Ghaith Trading & Industrial Services. All Rights Reserved.</div>
+        <div class="mt-1 text-[10px] font-mono text-slate-600">Enterprise Unified Application Environment v2.0.0</div>
+    </footer>
+
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCS6OIQ6wFFKDRcq-SFGCLP2aVq6faq5fo",
-            authDomain: "cmms-e5cce.firebaseapp.com",
-            databaseURL: "https://cmms-e5cce-default-rtdb.firebaseio.com",
-            projectId: "cmms-e5cce",
-            storageBucket: "cmms-e5cce.firebasestorage.app",
-            messagingSenderId: "143521296047",
-            appId: "1:143521296047:web:3f6b2b46d025ec32f36e5a"
+        const config = {
+            pump: "nlb - Copy.html",
+            vehicle: "Vehicle.html"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        function openPortal(type) {
+            const fileTarget = config[type];
+            if (!fileTarget) return;
 
-        let memory = {
-            assets: [],
-            workOrders: [],
-            maintenanceLogs: [],
-            dispatches: [],
-            technicians: [],
-            certificates: []
-        };
+            const hubView = document.getElementById('hub-view');
+            const hubFooter = document.getElementById('hub-footer');
+            const frameContainer = document.getElementById('portal-frame-container');
+            const iframe = document.getElementById('portal-iframe');
+            const floatingBtn = document.getElementById('floating-back-btn');
 
-        let currentActiveModule = "fleet";
+            // Set destination document resource target path 
+            iframe.src = fileTarget;
 
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            if(sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
+            // Manipulate CSS Display parameters smoothly
+            hubView.classList.add('hidden');
+            if (hubFooter) hubFooter.classList.add('hidden');
+            document.body.classList.remove('bg-slate-900', 'text-slate-100');
+            document.body.classList.add('bg-white');
+
+            frameContainer.classList.remove('hidden');
+            floatingBtn.classList.remove('hidden');
         }
 
-        window.onload = function() {
-            initDataPipeline();
-        };
+        function returnToHub() {
+            const hubView = document.getElementById('hub-view');
+            const hubFooter = document.getElementById('hub-footer');
+            const frameContainer = document.getElementById('portal-frame-container');
+            const iframe = document.getElementById('portal-iframe');
+            const floatingBtn = document.getElementById('floating-back-btn');
 
-        function initDataPipeline() {
-            db.ref('.info/connected').on('value', (snap) => {
-                const badge = document.getElementById('connection-badge');
-                if (snap.val() === true) {
-                    badge.className = "text-xs text-emerald-600 font-medium flex items-center";
-                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>Viewer Mode Terminal Live`;
-                } else {
-                    badge.className = "text-xs text-rose-600 font-medium flex items-center";
-                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-rose-500 mr-2 animate-pulse"></span>Offline / Reconnecting`;
-                }
-            });
+            // Terminate frame contents resource pointer allocation
+            iframe.src = "";
 
-            db.ref('assets').on('value', (snapshot) => {
-                const data = snapshot.val();
-                memory.assets = [];
-                if (data) {
-                    Object.keys(data).forEach(id => {
-                        memory.assets.push({ id, ...data[id] });
-                    });
-                }
-                updateDashboardTopCounters();
-                populateReportPrintFilterDropdowns();
-                refreshWorkspaceView();
-            });
+            // Restore Main Framework Layout display configuration parameters
+            frameContainer.classList.add('hidden');
+            floatingBtn.classList.add('hidden');
 
-            db.ref('certificates').on('value', (snapshot) => {
-                const data = snapshot.val();
-                memory.certificates = [];
-                if (data) {
-                    Object.keys(data).forEach(id => {
-                        memory.certificates.push({ id, ...data[id] });
-                    });
-                }
-                updateDashboardTopCounters();
-                refreshWorkspaceView();
-            });
-
-            db.ref('workOrders').on('value', (snapshot) => {
-                const data = snapshot.val();
-                memory.workOrders = [];
-                if (data) {
-                    Object.keys(data).forEach(id => {
-                        memory.workOrders.push({ id, ...data[id] });
-                    });
-                }
-                updateDashboardTopCounters();
-                refreshWorkspaceView();
-            });
-
-            db.ref('maintenanceLogs').on('value', (snapshot) => {
-                const data = snapshot.val();
-                memory.maintenanceLogs = [];
-                if (data) {
-                    Object.keys(data).forEach(id => {
-                        memory.maintenanceLogs.push({ id, ...data[id] });
-                    });
-                }
-                updateDashboardTopCounters();
-                refreshWorkspaceView();
-            });
-
-            db.ref('dispatches').on('value', (snapshot) => {
-                const data = snapshot.val();
-                memory.dispatches = [];
-                if (data) {
-                    Object.keys(data).forEach(id => {
-                        memory.dispatches.push({ id, ...data[id] });
-                    });
-                }
-                updateDashboardTopCounters();
-                refreshWorkspaceView();
-            });
-
-            db.ref('technicians').on('value', (snapshot) => {
-                const data = snapshot.val();
-                memory.technicians = [];
-                if (data) {
-                    Object.keys(data).forEach(id => {
-                        memory.technicians.push({ id, ...data[id] });
-                    });
-                }
-                updateDashboardTopCounters();
-                refreshWorkspaceView();
-            });
-        }
-
-        function updateDashboardTopCounters() {
-            document.getElementById('stat-fleet-count').innerText = memory.assets.length;
-            document.getElementById('stat-wo-count').innerText = memory.workOrders.length;
-            document.getElementById('stat-log-count').innerText = memory.maintenanceLogs.length;
-            document.getElementById('stat-dispatch-count').innerText = memory.dispatches.length;
-            document.getElementById('stat-tech-count').innerText = memory.technicians.length;
-            if(document.getElementById('stat-cert-count')) {
-                document.getElementById('stat-cert-count').innerText = memory.certificates.length;
-            }
-        }
-
-        function populateReportPrintFilterDropdowns() {
-            const selectLocation = document.getElementById('print-location-select');
-            if (selectLocation) {
-                const savedValue = selectLocation.value;
-                const uniqueLocations = new Set();
-                memory.assets.forEach(a => {
-                    if (a.location) uniqueLocations.add(a.location.trim().toUpperCase());
-                });
-                
-                let optionsHtml = '<option value="ALL">All Locations</option>';
-                Array.from(uniqueLocations).sort().forEach(loc => {
-                    optionsHtml += `<option value="${loc}">${loc}</option>`;
-                });
-                selectLocation.innerHTML = optionsHtml;
-                selectLocation.value = savedValue || "ALL";
-            }
-        }
-
-        function setModule(moduleCode) {
-            currentActiveModule = moduleCode;
-            document.querySelectorAll('.pane-view').forEach(p => p.classList.add('hidden'));
-            document.querySelectorAll('.mod-tab').forEach(t => {
-                t.classList.remove('bg-slate-900', 'text-white', 'shadow-xs');
-                t.classList.add('text-slate-600', 'hover:bg-slate-50', 'hover:text-slate-900');
-            });
-
-            const targetPane = document.getElementById(`pane-${moduleCode}`);
-            if (targetPane) targetPane.classList.remove('hidden');
-
-            const targetTab = document.getElementById(`tab-${moduleCode}`);
-            if (targetTab) {
-                targetTab.classList.remove('text-slate-600', 'hover:bg-slate-50', 'hover:text-slate-900');
-                targetTab.classList.add('bg-slate-900', 'text-white', 'shadow-xs');
-            }
-            
-            const sidebar = document.getElementById('sidebar');
-            if(!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 768) {
-                toggleMobileSidebar();
-            }
-            
-            refreshWorkspaceView();
-        }
-
-        function toggleModal(modalId, displayState) {
-            const el = document.getElementById(modalId);
-            if (!el) return;
-            if (displayState) {
-                el.classList.remove('hidden');
-                el.classList.add('flex');
-            } else {
-                el.classList.remove('flex');
-                el.classList.add('hidden');
-            }
-        }
-
-        function checkCertificateStatusAlarm(expiryString) {
-            if (!expiryString) return { alarm: false, text: "No Cert Found", statusKey: "Expired", class: "bg-slate-100 text-slate-600 border border-slate-200" };
-            
-            const expiryDate = new Date(expiryString);
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            expiryDate.setHours(0,0,0,0);
-            
-            if (isNaN(expiryDate.getTime())) {
-                return { alarm: false, text: "Malformed Date", statusKey: "Expired", class: "bg-slate-100 text-slate-600 border border-slate-200" };
-            }
-
-            const timeDiff = expiryDate.getTime() - today.getTime();
-            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-            if (daysDiff < 0) {
-                return { alarm: true, text: `❌ EXPIRED`, statusKey: "Expired", class: "bg-rose-100 text-rose-800 font-bold border border-rose-300" };
-            } else if (daysDiff <= 30) {
-                return { alarm: true, text: `⚠️ Expiring (${daysDiff} Days)`, statusKey: "Near", class: "bg-amber-100 text-amber-800 font-bold border border-amber-300" };
-            } else {
-                return { alarm: false, text: `✅ Valid (${daysDiff} Days)`, statusKey: "Valid", class: "bg-emerald-50 text-emerald-700 border border-emerald-200" };
-            }
-        }
-
-        function getAssetStatusBadgeClass(status) {
-            switch (status) {
-                case "Operational": return "bg-emerald-100 text-emerald-800 border border-emerald-200";
-                case "In Maintenance": return "bg-amber-100 text-amber-800 border border-amber-200";
-                case "Down": return "bg-rose-100 text-rose-800 border border-rose-200";
-                case "Dispatched": return "bg-blue-100 text-blue-800 border border-blue-200";
-                case "Standby": return "bg-slate-200 text-slate-800 border border-slate-300";
-                default: return "bg-slate-100 text-slate-700 border border-slate-200";
-            }
-        }
-
-        function viewCertificateImage(certId) {
-            const cert = memory.certificates.find(c => c.id === certId);
-            if (!cert || !cert.certificateImage) {
-                alert("No image document attachment linked with this certificate record.");
-                return;
-            }
-            document.getElementById('view-cert-image-title').innerText = `Document File Attachment Preview [${cert.id}]`;
-            document.getElementById('img-view-cert-expanded').src = cert.certificateImage;
-            toggleModal('modal-view-cert-image', true);
-        }
-
-        function printCertificateDocument(certId) {
-            const cert = memory.certificates.find(c => c.id === certId);
-            if (!cert || !cert.certificateImage) {
-                alert("No verified document image attachment was uploaded for this certificate record.");
-                return;
-            }
-
-            const pSec = document.getElementById('print-section');
-            pSec.innerHTML = `
-                <div style="text-align:center; width:100%; height:100%; display:flex; justify-content:center; align-items:center; background:white;">
-                    <img src="${cert.certificateImage}" style="max-width:100%; max-height:98vh; object-fit:contain; border:none;" alt="Third Party Certificate Attachment Scan" />
-                </div>
-            `;
-            window.print();
-        }
-
-        function executeTablePrint(title, rowsHtml, headers) {
-            const pSec = document.getElementById('print-section');
-            let headerCells = headers.map(h => `<th style="padding:8px; border:1px solid #cbd5e1; background:#f8fafc; font-weight:bold; text-align:left;">${h}</th>`).join('');
-            
-            pSec.innerHTML = `
-                <div style="font-family:sans-serif; padding:10px; color:#0f172a;">
-                    <h2 style="text-align:center; margin-bottom:2px; font-size:16px;">Al Ghaith Trading & Industrial Services</h2>
-                    <h3 style="text-align:center; margin-top:0; font-size:12px; color:#475569; text-transform:uppercase;">${title}</h3>
-                    <hr style="border:0; border-top:1px solid #0f172a; margin-bottom:15px;"/>
-                    <table style="width:100%; border-collapse:collapse; font-size:11px;">
-                        <thead><tr>${headerCells}</tr></thead>
-                        <tbody>${rowsHtml}</tbody>
-                    </table>
-                </div>
-            `;
-            window.print();
-        }
-
-        function refreshWorkspaceView() {
-            if (currentActiveModule === "fleet") {
-                const search = document.getElementById('in-f-search').value.toLowerCase();
-                const container = document.getElementById('rows-fleet');
-                container.innerHTML = "";
-                
-                const filtered = memory.assets.filter(a => 
-                    a.id.toLowerCase().includes(search) || 
-                    a.model.toLowerCase().includes(search) || 
-                    a.description.toLowerCase().includes(search) || 
-                    a.status.toLowerCase().includes(search) || 
-                    (a.location && a.location.toLowerCase().includes(search))
-                );
-
-                filtered.forEach(a => {
-                    const cert = memory.certificates.find(c => c.assetId === a.id);
-                    const statusCheck = cert ? checkCertificateStatusAlarm(cert.expiryDate) : { text: "No Cert Assigned", class: "bg-slate-100 text-slate-500 border border-slate-200" };
-                    const badgeColorClass = getAssetStatusBadgeClass(a.status);
-
-                    container.innerHTML += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-4 font-bold font-code text-slate-900">${a.id}</td>
-                            <td class="p-4 font-code">${a.model}</td>
-                            <td class="p-4 max-w-xs truncate">${a.description}</td>
-                            <td class="p-4 font-code text-slate-500">${a.serial || 'N/A'}</td>
-                            <td class="p-4 uppercase font-semibold text-slate-600">${a.location || 'WORKSHOP'}</td>
-                            <td class="p-4"><span class="px-2 py-0.5 rounded text-[11px] font-semibold ${statusCheck.class}">${statusCheck.text}</span></td>
-                            <td class="p-4"><span class="px-2.5 py-1 rounded-sm text-[11px] font-bold ${badgeColorClass}">${a.status}</span></td>
-                        </tr>
-                    `;
-                });
-            }
-
-            if (currentActiveModule === "cert") {
-                const search = document.getElementById('in-c-search').value.toLowerCase();
-                const container = document.getElementById('rows-cert');
-                container.innerHTML = "";
-
-                const filtered = memory.certificates.filter(c => 
-                    c.assetId.toLowerCase().includes(search) || 
-                    c.id.toLowerCase().includes(search)
-                );
-
-                filtered.forEach(c => {
-                    const asset = memory.assets.find(a => a.id === c.assetId) || { model: 'N/A', description: 'N/A', serial: 'N/A' };
-                    const statusCheck = checkCertificateStatusAlarm(c.expiryDate);
-                    
-                    const attachmentButtonHtml = c.certificateImage 
-                        ? `<button onclick="viewCertificateImage('${c.id}')" class="text-emerald-600 hover:text-emerald-900 font-bold cursor-pointer inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">image</span> View</button>`
-                        : `<span class="text-slate-300 font-normal italic pointer-events-none">No File</span>`;
-
-                    container.innerHTML += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-4 font-bold font-code text-slate-900">${c.assetId}</td>
-                            <td class="p-4 font-code">${asset.model}</td>
-                            <td class="p-4 max-w-xs truncate">${asset.description}</td>
-                            <td class="p-4 font-code text-slate-500">${asset.serial || 'N/A'}</td>
-                            <td class="p-4 font-code">${c.expiryDate}</td>
-                            <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${statusCheck.class}">${statusCheck.text}</span></td>
-                            <td class="p-4 text-center space-x-2">
-                                ${attachmentButtonHtml}
-                                <button onclick="printCertificateDocument('${c.id}')" class="text-slate-900 hover:text-black font-bold cursor-pointer inline-flex items-center gap-0.5 pl-1 border border-slate-200 rounded px-1.5 py-0.5 bg-slate-50 hover:bg-slate-100"><span class="material-symbols-outlined text-xs">print</span> Print Image</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-
-            if (currentActiveModule === "wo") {
-                const container = document.getElementById('rows-wo');
-                container.innerHTML = "";
-                memory.workOrders.forEach(w => {
-                    let metricInfo = w.type === 'hours' ? `${w.currentHours} Hrs` : (w.type === 'date' ? w.currentDate : 'N/A');
-                    let targetInfo = w.type === 'hours' ? `${w.targetHours} Hrs` : (w.type === 'date' ? w.targetDate : 'N/A');
-                    let diffInfo = w.type === 'hours' ? `${w.targetHours - w.currentHours} Hours Remaining` : 'Target Schedule Bound';
-                    
-                    let woStatusClass = "bg-slate-100 text-slate-700 border border-slate-200";
-                    if (w.status === "Pending") woStatusClass = "bg-slate-100 text-slate-700 border border-slate-300";
-                    else if (w.status === "In Progress") woStatusClass = "bg-blue-100 text-blue-800 border border-blue-200";
-                    else if (w.status === "Check-up/Inspection") woStatusClass = "bg-amber-100 text-amber-800 border border-amber-200";
-                    else if (w.status === "Completed") woStatusClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
-                    else if (w.status === "Cancelled") woStatusClass = "bg-rose-100 text-rose-800 border border-rose-200";
-
-                    container.innerHTML += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-4 font-bold font-code text-slate-900">${w.id}</td>
-                            <td class="p-4 font-code font-medium">${w.assetId}</td>
-                            <td class="p-4 font-code">${metricInfo}</td>
-                            <td class="p-4 font-code">${targetInfo}</td>
-                            <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
-                            <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woStatusClass}">${w.status}</span></td>
-                        </tr>
-                    `;
-                });
-            }
-
-            if (currentActiveModule === "log") {
-                const search = document.getElementById('in-l-search').value.toLowerCase();
-                const container = document.getElementById('rows-log');
-                container.innerHTML = "";
-
-                const filtered = memory.maintenanceLogs.filter(l => 
-                    l.id.toLowerCase().includes(search) || 
-                    l.assetId.toLowerCase().includes(search) || 
-                    l.fault.toLowerCase().includes(search) || 
-                    l.action.toLowerCase().includes(search)
-                );
-
-                filtered.forEach(l => {
-                    const logBadgeColorClass = getAssetStatusBadgeClass(l.status);
-
-                    container.innerHTML += `
-                        <tr class="hover:bg-slate-50 text-xs">
-                            <td class="p-4 font-code"><div class="font-bold text-slate-900">${l.id}</div><div class="text-[10px] text-slate-400 mt-0.5">${l.date}</div></td>
-                            <td class="p-4 font-code font-bold text-slate-700">${l.assetId}</td>
-                            <td class="p-4 font-code text-slate-500">${l.currentMetric} / ${l.targetMetric}</td>
-                            <td class="p-4 font-semibold text-slate-600">${l.remainingHours}</td>
-                            <td class="p-4 max-w-xs"><div class="truncate text-rose-700 font-medium">⚠️ ${l.fault}</div><div class="whitespace-pre-line text-slate-660 mt-0.5 text-[11px]">⚙️ ${l.action}</div></td>
-                            <td class="p-4"><div class="font-medium">${l.technician}</div><div class="text-[10px] text-slate-400 mt-0.5">Parts: ${l.parts}</div></td>
-                            <td class="p-4"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${logBadgeColorClass}">${l.status}</span></td>
-                            <td class="p-4 text-center">
-                                <button onclick="printMaintenanceLog('${l.id}')" class="text-slate-900 border border-slate-300 px-3 py-1 rounded font-bold hover:bg-slate-100 flex items-center gap-1 cursor-pointer w-full text-center justify-center"><span class="material-symbols-outlined text-xs">print</span> Print Slip</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-
-            if (currentActiveModule === "dispatch") {
-                const container = document.getElementById('rows-dispatch');
-                container.innerHTML = "";
-                memory.dispatches.forEach(d => {
-                    let dispatchTypeClass = "bg-amber-50 text-amber-700 border border-amber-200";
-                    if(d.type === "Return In") dispatchTypeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200";
-
-                    container.innerHTML += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-4 font-bold font-code text-slate-900">${d.id}</td>
-                            <td class="p-4 font-code font-bold">${d.assetId}</td>
-                            <td class="p-4 font-medium"><span class="px-2 py-0.5 rounded text-[11px] font-semibold ${dispatchTypeClass}">${d.type}</span></td>
-                            <td class="p-4 uppercase text-slate-600">${d.destination}</td>
-                            <td class="p-4 font-code">${d.date}</td>
-                        </tr>
-                    `;
-                });
-            }
-
-            if (currentActiveModule === "tech") {
-                const container = document.getElementById('rows-tech');
-                container.innerHTML = "";
-                memory.technicians.forEach(t => {
-                    container.innerHTML += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-4 font-bold font-code text-slate-900">${t.id}</td>
-                            <td class="p-4 font-bold">${t.name}</td>
-                            <td class="p-4 text-slate-600 font-medium">${t.designation}</td>
-                            <td class="p-4 font-code text-slate-500">${t.contact || 'N/A'}</td>
-                        </tr>
-                    `;
-                });
-            }
-
-            if (currentActiveModule === "reports") {
-                document.getElementById('rep-stat-operational').innerText = memory.assets.filter(a => a.status === 'Operational').length;
-                document.getElementById('rep-stat-maintenance').innerText = memory.assets.filter(a => a.status === 'In Maintenance').length;
-                document.getElementById('rep-stat-down').innerText = memory.assets.filter(a => a.status === 'Down').length;
-                document.getElementById('rep-stat-dispatched').innerText = memory.assets.filter(a => a.status === 'Dispatched').length;
-                document.getElementById('rep-stat-standby').innerText = memory.assets.filter(a => a.status === 'Standby').length;
-
-                const allocContainer = document.getElementById('rep-rows-allocation');
-                allocContainer.innerHTML = memory.assets.map(a => {
-                    const allocBadgeColorClass = getAssetStatusBadgeClass(a.status);
-                    return `
-                        <tr class="border-b border-slate-100 hover:bg-slate-50">
-                            <td class="p-3 font-bold font-code text-slate-900">${a.id}</td>
-                            <td class="p-3 font-code">${a.model}</td>
-                            <td class="p-3 text-slate-600">${a.description}</td>
-                            <td class="p-3 font-semibold uppercase">${a.location || 'WORKSHOP'}</td>
-                            <td class="p-3"><span class="px-2.5 py-1 rounded-sm text-[11px] font-bold ${allocBadgeColorClass}">${a.status}</span></td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-        }
-
-        function printFilteredLocationReport() {
-            const loc = document.getElementById('print-location-select').value;
-            const filtered = memory.assets.filter(a => loc === "ALL" || (a.location && a.location.trim().toUpperCase() === loc));
-            executeTablePrint(`Asset Allocation Report - Location: ${loc}`, filtered.map(a => `
-                <tr>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${a.id}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${a.model}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${a.description}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${a.location || 'WORKSHOP'}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${a.status}</td>
-                </tr>
-            `).join(''), ['Asset ID', 'Model', 'Description', 'Current Location', 'Operational Status']);
-        }
-
-        function printFilteredStatusReport() {
-            const stat = document.getElementById('print-status-select').value;
-            const filtered = memory.assets.filter(a => stat === "ALL" || a.status === stat);
-            executeTablePrint(`Asset Allocation Report - Status: ${stat}`, filtered.map(a => `
-                <tr>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${a.id}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${a.model}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${a.description}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${a.location || 'WORKSHOP'}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${a.status}</td>
-                </tr>
-            `).join(''), ['Asset ID', 'Model', 'Description', 'Current Location', 'Operational Status']);
-        }
-
-        function printThirdPartyCertReport() {
-            const targetStatus = document.getElementById('print-cert-status-select').value;
-            const filteredCerts = memory.certificates.filter(c => {
-                const check = checkCertificateStatusAlarm(c.expiryDate);
-                return targetStatus === "ALL" || check.statusKey === targetStatus;
-            });
-
-            const rowsHtml = filteredCerts.map(c => {
-                const asset = memory.assets.find(a => a.id === c.assetId) || { model: 'N/A', description: 'N/A', serial: 'N/A' };
-                const check = checkCertificateStatusAlarm(c.expiryDate);
-                return `
-                    <tr>
-                        <td style="padding:6px; border:1px solid #cbd5e1; font-weight:bold;">${c.assetId}</td>
-                        <td style="padding:6px; border:1px solid #cbd5e1;">${asset.model}</td>
-                        <td style="padding:6px; border:1px solid #cbd5e1;">${asset.description}</td>
-                        <td style="padding:6px; border:1px solid #cbd5e1;">${asset.serial || 'N/A'}</td>
-                        <td style="padding:6px; border:1px solid #cbd5e1; font-family:monospace;">${c.expiryDate}</td>
-                        <td style="padding:6px; border:1px solid #cbd5e1; font-weight:500;">${check.text}</td>
-                    </tr>
-                `;
-            }).join('');
-
-            executeTablePrint(
-                `Third Party Certificate Compliance Ledger (${targetStatus} Status Summary)`, 
-                rowsHtml || '<tr><td colspan="6" style="padding:12px; text-align:center; color:#64748b;">No active certificates matched the specified selection context filter.</td></tr>', 
-                ['Equipment ID', 'Model Number', 'Description', 'Serial Number', 'Expiry Date', 'Alarms / Timeline Status']
-            );
-        }
-
-        function printExecutiveReport() {
-            let html = `
-                <div style="font-family:sans-serif; padding:10px; color:#0f172a;">
-                    <h2 style="text-align:center; margin-bottom:2px; font-size:18px;">Al Ghaith Trading & Industrial Services</h2>
-                    <h3 style="text-align:center; margin-top:0; font-size:12px; text-transform:uppercase; color:#475569;">Executive System Diagnostic Summary</h3>
-                    <p style="font-size:11px; text-align:right;">Report Generated: 2026-07-01</p>
-                    <hr style="border:0; border-top:2px solid #0f172a; margin-bottom:15px;"/>
-                    <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:20px;">
-                        <tr style="background:#f1f5f9;">
-                            <td style="padding:8px; border:1px solid #cbd5e1; font-weight:bold;">Total Active Machinery Roster</td>
-                            <td style="padding:8px; border:1px solid #cbd5e1; text-align:right; font-weight:bold;">${memory.assets.length} Assets</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:8px; border:1px solid #cbd5e1;">Operational / Available Status</td>
-                            <td style="padding:8px; border:1px solid #cbd5e1; text-align:right; color:#16a34a; font-weight:bold;">${memory.assets.filter(a=>a.status==='Operational').length}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:8px; border:1px solid #cbd5e1;">Active Maintenance Work Orders Blocked</td>
-                            <td style="padding:8px; border:1px solid #cbd5e1; text-align:right; color:#d97706; font-weight:bold;">${memory.assets.filter(a=>a.status==='In Maintenance').length}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:8px; border:1px solid #cbd5e1;">Downed / Out-of-Service Assets</td>
-                            <td style="padding:8px; border:1px solid #cbd5e1; text-align:right; color:#dc2626; font-weight:bold;">${memory.assets.filter(a=>a.status==='Down').length}</td>
-                        </tr>
-                    </table>
-                </div>
-            `;
-            document.getElementById('print-section').innerHTML = html;
-            window.print();
-        }
-
-        function printMaintenanceLog(logId) {
-            const log = memory.maintenanceLogs.find(l => l.id === logId);
-            if (!log) return;
-            
-            const asset = memory.assets.find(a => a.id === log.assetId) || { model: 'N/A', serial: 'N/A' };
-            
-            const pSec = document.getElementById('print-section');
-            pSec.innerHTML = `
-                <div style="font-family: Arial, sans-serif; color: #0f172a; padding: 30px; line-height: 1.5; max-width: 850px; margin: 0 auto; background: #ffffff;">
-                    <div style="text-align: center; border-bottom: 3px double #0f172a; padding-bottom: 12px; margin-bottom: 24px;">
-                        <h1 style="margin: 0; font-size: 22px; font-weight: bold; text-transform: uppercase;">Al Ghaith Trading & Industrial Services</h1>
-                        <h2 style="margin: 4px 0 0 0; font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 1.5px;">Maintenance Execution Slip</h2>
-                    </div>
-                    
-                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px;">
-                        <tr>
-                            <td style="vertical-align: top; width: 50%; padding-right: 20px;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 35%;">Log Entry ID:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; font-size: 13px;">${log.id}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Execution Date:</td><td style="padding: 5px 0;">${log.date}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Assigned Tech:</td><td style="padding: 5px 0; font-weight: 500;">${log.technician}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Resulting Status:</td><td style="padding: 5px 0;"><span style="font-weight: bold; color: #059669;">${log.status}</span></td></tr>
-                                </table>
-                            </td>
-                            <td style="vertical-align: top; width: 50%; padding-left: 20px; border-left: 1px solid #e2e8f0;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 35%;">Asset Tag ID:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; color: #1e293b;">${log.assetId}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Model Number:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; color: #0f172a;">${asset.model || 'N/A'}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Serial Number:</td><td style="padding: 5px 0; font-family: monospace; color: #334155;">${asset.serial || 'N/A'}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Metrics Log:</td><td style="padding: 5px 0; font-family: monospace;">${log.currentMetric} / ${log.targetMetric} (${log.remainingHours})</td></tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                    
-                    <div style="font-size: 12px; border-top: 1px solid #cbd5e1; padding-top: 16px;">
-                        <div style="margin-bottom: 16px;">
-                            <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Fault Discovery / Inspection Diagnostics:</strong>
-                            <div style="font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; color: #991b1b; white-space: pre-line;">⚠️ ${log.fault}</div>
-                        </div>
-                        
-                        <div style="margin-bottom: 16px;">
-                            <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Service Maintenance Performed / Corrective Action:</strong>
-                            <div style="font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; color: #1e293b; white-space: pre-line; line-height: 1.6;">⚙️ ${log.action}</div>
-                        </div>
-                        
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
-                            <tr>
-                                <td style="width: 50%; padding-right: 10px; vertical-align: top;">
-                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Components / Parts Applied:</strong>
-                                    <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.parts || '<span style="color:#94a3b8; font-style:italic">None recorded</span>'}</div>
-                                </td>
-                                <td style="width: 50%; padding-left: 10px; vertical-align: top;">
-                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Operations Constraint Remarks:</strong>
-                                    <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.remarks || '<span style="color:#94a3b8; font-style:italic">None</span>'}</div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            `;
-            window.print();
+            document.body.classList.remove('bg-white');
+            document.body.classList.add('bg-slate-900', 'text-slate-100');
+            hubView.classList.remove('hidden');
+            if (hubFooter) hubFooter.classList.remove('hidden');
         }
     </script>
 </body>
