@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Ghaith CMMS Portal</title>
+    <title>Al Ghaith CMMS Portal (Read-Only)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
@@ -25,6 +25,7 @@
     <div id="print-section" class="hidden p-8 bg-white text-slate-900"></div>
 
     <div id="app-container" class="flex flex-col min-h-screen">
+        <!-- TOP NAVIGATION BAR -->
         <nav class="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between shadow-xs z-20 gap-4">
             <div class="flex items-center justify-between w-full lg:w-auto">
                 <div class="flex items-center space-x-3.5">
@@ -32,6 +33,7 @@
                     <div>
                         <div class="flex items-center space-x-2">
                             <span class="text-sm font-bold tracking-tight text-slate-900 max-w-[220px] md:max-w-none block truncate">Al Ghaith Trading &amp; Industrial Services</span>
+                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-1.5 py-0.5 rounded tracking-wide uppercase border border-slate-200">Viewer Mode</span>
                         </div>
                         <p class="text-xs text-slate-500">Maintenance Management System</p>
                     </div>
@@ -54,6 +56,7 @@
         </nav>
 
         <div class="flex flex-1 overflow-hidden relative">
+            <!-- SIDEBAR MODULE CONTROL MATRIX -->
             <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-200 w-64 bg-white border-r border-slate-200 p-4 flex flex-col justify-between shadow-md md:shadow-xs h-full shrink-0">
                 <div class="space-y-1">
                     <div class="flex items-center justify-between px-3 mb-4 md:mb-2">
@@ -109,32 +112,29 @@
 
                 <div class="p-3 bg-slate-50 rounded border border-slate-200 mt-4">
                     <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Authorization Matrix</div>
-                    <div id="connection-badge" class="text-xs text-amber-600 font-medium flex items-center">
-                        <span class="h-2 w-2 rounded-full bg-amber-500 mr-2 animate-pulse"></span>
-                        Connecting Terminal...
+                    <div id="connection-badge" class="text-xs text-blue-600 font-medium flex items-center">
+                        <span class="h-2 w-2 rounded-full bg-blue-500 mr-2 animate-pulse"></span>
+                        Initializing Mirror System...
                     </div>
                 </div>
             </aside>
 
             <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="hidden fixed inset-0 bg-slate-900/40 z-20 md:hidden"></div>
 
+            <!-- MAIN COMPARTMENT WORKSPACE PANES -->
             <main class="flex-1 p-4 md:p-8 overflow-y-auto">
                 <div class="flex-1">
+                    
+                    <!-- MASTER FLEET -->
                     <section id="pane-fleet" class="pane-view space-y-4">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Master Fleet Registry</h2>
                                 <p class="text-xs text-slate-500">Primary technical index indexed by unique hardware Asset IDs.</p>
                             </div>
-                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                                <div class="relative flex items-center flex-1">
-                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                    <input type="text" id="in-f-search" oninput="refreshWorkspaceView()" placeholder="Search ID, model, status, location..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
-                                </div>
-                                <button onclick="openAddModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm shrink-0">
-                                    <span class="material-symbols-outlined text-sm">add</span>
-                                    <span>Register Asset Spec</span>
-                                </button>
+                            <div class="relative flex items-center">
+                                <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                <input type="text" id="in-f-search" oninput="refreshWorkspaceView()" placeholder="Search ID, model, status, location..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
                             </div>
                         </div>
 
@@ -145,13 +145,12 @@
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Primary ID</th>
                                             <th class="p-4">Model Number</th>
-                                            <th class="p-4">Make/Brand</th>
+                                            <th class="p-4">Equipment Description</th>
                                             <th class="p-4">Max Pressure</th>
                                             <th class="p-4">Serial Number</th>
                                             <th class="p-4">Location</th>
                                             <th class="p-4">Cert Status</th>
                                             <th class="p-4">Status</th>
-                                            <th class="p-4 text-center w-36">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-fleet" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -160,21 +159,16 @@
                         </div>
                     </section>
 
+                    <!-- THIRD PARTY CERTIFICATES -->
                     <section id="pane-cert" class="pane-view space-y-4 hidden">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Third Party Certificates</h2>
                                 <p class="text-xs text-slate-500">Manage external verification, compliance certifications, and alignment validations.</p>
                             </div>
-                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                                <div class="relative flex items-center flex-1">
-                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                    <input type="text" id="in-c-search" oninput="refreshWorkspaceView()" placeholder="Search asset ID..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
-                                </div>
-                                <button onclick="openAddCertModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm shrink-0">
-                                    <span class="material-symbols-outlined text-sm">badge</span>
-                                    <span>Add Certificate</span>
-                                </button>
+                            <div class="relative flex items-center">
+                                <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                <input type="text" id="in-c-search" oninput="refreshWorkspaceView()" placeholder="Search asset ID..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
                             </div>
                         </div>
 
@@ -185,11 +179,11 @@
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Assigned Equipment ID</th>
                                             <th class="p-4">Model Number</th>
-                                            <th class="p-4">Make/Brand</th>
+                                            <th class="p-4">Equipment Description</th>
                                             <th class="p-4">Serial Number</th>
                                             <th class="p-4">Expiry Date</th>
                                             <th class="p-4">Status Alarm</th>
-                                            <th class="p-4 text-center w-64">Actions</th>
+                                            <th class="p-4 text-center w-48">Verified Attachments</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-cert" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -198,16 +192,11 @@
                         </div>
                     </section>
 
+                    <!-- WORK ORDERS -->
                     <section id="pane-wo" class="pane-view space-y-4 hidden">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Work Orders</h2>
-                                <p class="text-xs text-slate-500">Operational tracking and scheduling logs.</p>
-                            </div>
-                            <button onclick="openAddWoModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
-                                <span class="material-symbols-outlined text-sm">add_task</span>
-                                <span>Create Work Order</span>
-                            </button>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Work Orders</h2>
+                            <p class="text-xs text-slate-500">Operational tracking and scheduling metrics.</p>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
@@ -221,7 +210,6 @@
                                             <th class="p-4">Target Metric</th>
                                             <th class="p-4">Remaining Hours / Info</th>
                                             <th class="p-4">Status</th>
-                                            <th class="p-4 text-center w-56">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-wo" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -230,21 +218,16 @@
                         </div>
                     </section>
 
+                    <!-- MAINTENANCE LOGS -->
                     <section id="pane-log" class="pane-view space-y-4 hidden">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Logs & Service History</h2>
                                 <p class="text-xs text-slate-500">Execution records from resolved or active maintenance sequences.</p>
                             </div>
-                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                                <div class="relative flex items-center flex-1">
-                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                    <input type="text" id="in-l-search" oninput="refreshWorkspaceView()" placeholder="Search logs..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
-                                </div>
-                                <button onclick="openAddLogModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm shrink-0">
-                                    <span class="material-symbols-outlined text-sm">history_edu</span>
-                                    <span>Log Maintenance</span>
-                                </button>
+                            <div class="relative flex items-center">
+                                <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                <input type="text" id="in-l-search" oninput="refreshWorkspaceView()" placeholder="Search logs..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
                             </div>
                         </div>
 
@@ -257,10 +240,10 @@
                                             <th class="p-4">Equipment Asset</th>
                                             <th class="p-4">Interval Bounds</th>
                                             <th class="p-4">Remaining Before Maint.</th>
-                                            <th class="p-4">Fault Report & Action</th>
+                                            <th class="p-4">Fault Report & Action Summary</th>
                                             <th class="p-4">Parts & Tech</th>
                                             <th class="p-4">Asset Status</th>
-                                            <th class="p-4 text-center w-48">Actions</th>
+                                            <th class="p-4 text-center w-36">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-log" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -269,16 +252,11 @@
                         </div>
                     </section>
 
+                    <!-- EXPENSES TRACKING -->
                     <section id="pane-expenses" class="pane-view space-y-4 hidden">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Expenses Tracking</h2>
-                                <p class="text-xs text-slate-500">Financial records and parts purchasing logs.</p>
-                            </div>
-                            <button onclick="openAddExpenseModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
-                                <span class="material-symbols-outlined text-sm">add_shopping_cart</span>
-                                <span>Log Expense</span>
-                            </button>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Expenses Tracking</h2>
+                            <p class="text-xs text-slate-500">Financial asset procurement histories and parts purchasing logs.</p>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
@@ -294,7 +272,6 @@
                                             <th class="p-4 text-right">Qty</th>
                                             <th class="p-4 text-right">Unit Price</th>
                                             <th class="p-4 text-right">Total (QAR)</th>
-                                            <th class="p-4 text-center w-24">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-expenses" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -303,16 +280,11 @@
                         </div>
                     </section>
 
+                    <!-- DISPATCH LOGS -->
                     <section id="pane-dispatch" class="pane-view space-y-4 hidden">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">In/Out Dispatch Logs</h2>
-                                <p class="text-xs text-slate-500">Mobilization tracking panel.</p>
-                            </div>
-                            <button onclick="openAddDispatchModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
-                                <span class="material-symbols-outlined text-sm">local_shipping</span>
-                                <span>Record Dispatch</span>
-                            </button>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">In/Out Dispatch Logs</h2>
+                            <p class="text-xs text-slate-500">Mobilization field tracking overview panel.</p>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
@@ -325,7 +297,6 @@
                                             <th class="p-4">Event Type</th>
                                             <th class="p-4">Destination / Project</th>
                                             <th class="p-4">Date</th>
-                                            <th class="p-4 text-center w-36">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-dispatch" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -334,16 +305,11 @@
                         </div>
                     </section>
 
+                    <!-- TECHNICIAN DIRECTORY -->
                     <section id="pane-tech" class="pane-view space-y-4 hidden">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Technician Profile Directory</h2>
-                                <p class="text-xs text-slate-500">Engineering roster and technical credentials.</p>
-                            </div>
-                            <button onclick="openAddTechModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
-                                <span class="material-symbols-outlined text-sm">person_add</span>
-                                <span>Onboard Technician</span>
-                            </button>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Technician Profile Directory</h2>
+                            <p class="text-xs text-slate-500">Engineering roster and technical operational credentials.</p>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
@@ -355,7 +321,6 @@
                                             <th class="p-4">Full Name</th>
                                             <th class="p-4">Designation</th>
                                             <th class="p-4">Contact Info</th>
-                                            <th class="p-4 text-center w-36">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-tech" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -364,8 +329,8 @@
                         </div>
                     </section>
 
+                    <!-- ANALYTICAL REPORTS (READ ONLY VIEW INSIGHTS) -->
                     <section id="pane-analytics" class="pane-view space-y-6 hidden">
-                        <!-- Analytical reports interface matching image_8d4ee6.jpg style layout with live summaries, metrics cards, and a data preview grid -->
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Analytical Reports &amp; Insights</h2>
@@ -430,7 +395,7 @@
                                             <th class="p-3">Category Type</th>
                                             <th class="p-3">Asset ID / Model</th>
                                             <th class="p-3">Date Item</th>
-                                            <th class="p-3">Summary Description / Actions</th>
+                                            <th class="p-3">Summary Description</th>
                                             <th class="p-3 text-right">Value Amount</th>
                                         </tr>
                                     </thead>
@@ -444,6 +409,7 @@
                         </div>
                     </section>
 
+                    <!-- MAINTENANCE SAFETY -->
                     <section id="pane-safety" class="pane-view space-y-6 hidden">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rose-200 pb-4">
                             <div>
@@ -496,171 +462,7 @@
         </footer>
     </div>
 
-    <!-- MODALS SECTION -->
-    <div id="modal-add-fleet" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <h3 id="modal-title" class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-slate-700">playlist_add</span> Register Asset Specifications
-                </h3>
-                <button onclick="toggleModal('modal-add-fleet', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
-            </div>
-            <form id="form-fleet" onsubmit="executeFleetSubmission(event)" class="space-y-3.5 text-xs">
-                <input type="hidden" id="in-f-mode" value="create">
-                <input type="hidden" id="in-f-old-id" value="">
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Asset ID (Primary Key Identification) *</label>
-                    <input type="text" id="in-f-id" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. WJ-001">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Model Number *</label>
-                    <input type="text" id="in-f-model" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. NLB-225-40K">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Equipment Description *</label>
-                    <input type="text" id="in-f-description" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. High Pressure Hydro-Jetting Rig System">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Max Pressure</label>
-                    <input type="text" id="in-f-pressure" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. 40,000 PSI">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Serial Number</label>
-                    <input type="text" id="in-f-serial" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. SN-987654">
-                </div>
-                <div>
-                    <label class="block text-slate-400 font-medium mb-1 font-code">Location (Controlled by Operations)</label>
-                    <input type="text" id="in-f-location" readonly class="w-full bg-slate-100 border border-slate-300 rounded p-2 text-slate-500 uppercase font-code cursor-not-allowed outline-none" placeholder="WORKSHOP">
-                </div>
-                <div>
-                    <label class="block text-slate-400 font-medium mb-1">Operational Status (Controlled by Operations)</label>
-                    <select id="in-f-status" disabled class="w-full bg-slate-100 border border-slate-300 rounded p-2 text-slate-500 cursor-not-allowed outline-none">
-                        <option value="Operational">Operational</option>
-                        <option value="In Maintenance">In Maintenance</option>
-                        <option value="Down">Down</option>
-                        <option value="Standby">Standby</option>
-                        <option value="Dispatched">Dispatched</option>
-                    </select>
-                </div>
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="toggleModal('modal-add-fleet', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" id="btn-submit-text" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Commit Asset Spec</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-add-cert" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-lg p-6 space-y-4 shadow-xl">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <h3 id="modal-cert-title" class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-slate-700">verified</span> File Third Party Certificate
-                </h3>
-                <button onclick="toggleModal('modal-add-cert', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
-            </div>
-            <form id="form-cert" onsubmit="executeCertSubmission(event)" class="space-y-3.5 text-xs">
-                <input type="hidden" id="in-c-mode" value="create">
-                <input type="hidden" id="in-c-id" value="">
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Select Equipment *</label>
-                    <div class="relative mb-1" id="wrapper-c-search-asset">
-                        <input type="text" id="in-c-search-asset" oninput="filterDropdownSearch('in-c-search-asset', 'in-c-asset')" placeholder="Type to filter equipment list below..." class="w-full bg-slate-100 border border-slate-300 rounded p-1.5 text-slate-800 text-[11px] focus:outline-none focus:border-slate-500">
-                    </div>
-                    <select id="in-c-asset" required onchange="syncCertAssetDetails()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code focus:outline-none focus:border-slate-900"></select>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-slate-50 border border-slate-200 rounded mt-2">
-                    <div>
-                        <label class="block text-slate-500 font-medium mb-1">Model Number</label>
-                        <input type="text" id="in-c-model" readonly class="w-full bg-slate-200/70 border border-slate-300 text-slate-600 font-code rounded p-2 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 font-medium mb-1">Description</label>
-                        <input type="text" id="in-c-desc" readonly class="w-full bg-slate-200/70 border border-slate-300 text-slate-600 rounded p-2 outline-none overflow-hidden text-ellipsis">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 font-medium mb-1">Serial Number</label>
-                        <input type="text" id="in-c-serial" readonly class="w-full bg-slate-200/70 border border-slate-300 text-slate-600 font-code rounded p-2 outline-none">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Expiry Date *</label>
-                    <input type="date" id="in-c-expiry" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                </div>
-
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-semibold">Upload Certificate Picture/Attachment</label>
-                    <input type="file" id="in-c-image" accept="image/*" onchange="processCertImageFile(event)" class="w-full bg-slate-50 border border-slate-300 rounded p-1.5 text-slate-900 focus:outline-none focus:border-slate-900 text-xs">
-                    <input type="hidden" id="in-c-image-base64" value="">
-                    <div id="wrapper-c-image-preview" class="mt-2 hidden">
-                        <p class="text-[10px] text-slate-400 mb-1">Image Attachment Preview:</p>
-                        <img id="img-c-preview" src="" alt="Preview" class="max-h-36 object-contain border border-slate-200 rounded p-1 bg-slate-50">
-                    </div>
-                </div>
-
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="toggleModal('modal-add-cert', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Commit Certificate</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-add-expense" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-slate-700">receipt_long</span> Log Financial Expense
-                </h3>
-                <button onclick="toggleModal('modal-add-expense', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
-            </div>
-            <form id="form-expense" onsubmit="executeExpenseSubmission(event)" class="space-y-3.5 text-xs">
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Expense ID *</label>
-                    <input type="text" id="in-e-id" required class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-slate-900 font-code outline-none font-bold" placeholder="e.g. EXP-1001">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Select Equipment *</label>
-                    <div class="relative mb-1">
-                        <input type="text" id="in-e-search-asset" oninput="filterDropdownSearch('in-e-search-asset', 'in-e-asset')" placeholder="Type to filter equipment list below..." class="w-full bg-slate-100 border border-slate-300 rounded p-1.5 text-slate-800 text-[11px] focus:outline-none focus:border-slate-500">
-                    </div>
-                    <select id="in-e-asset" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code focus:outline-none focus:border-slate-900"></select>
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Date Purchase *</label>
-                    <input type="date" id="in-e-date" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Parts Purchased *</label>
-                    <input type="text" id="in-e-parts" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. Filter Kit, Hydraulic Hoses">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Purpose / Maintenance Details *</label>
-                    <input type="text" id="in-e-purpose" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. 40k Hours Preventative Maintenance">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Quantity *</label>
-                        <input type="number" step="0.01" id="in-e-qty" required oninput="calculateExpenseTotal()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="0">
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Unit Price (QAR) *</label>
-                        <input type="number" step="0.01" id="in-e-price" required oninput="calculateExpenseTotal()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="0.00">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-bold mb-1">Total Price (QAR)</label>
-                    <input type="text" id="in-e-total" readonly class="w-full bg-slate-200/70 border border-slate-300 rounded p-2 text-slate-900 font-bold outline-none font-code" placeholder="0.00">
-                </div>
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="toggleModal('modal-add-expense', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Save Expense File</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
+    <!-- PERSISTED VIEWING ATTACHMENT MODAL -->
     <div id="modal-view-cert-image" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
         <div class="bg-white border border-slate-200 rounded-lg w-full max-w-2xl p-6 space-y-4 shadow-2xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
@@ -676,288 +478,7 @@
         </div>
     </div>
 
-    <div id="modal-add-wo" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <h3 id="modal-wo-title" class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-slate-700">playlist_add</span> Create Maintenance Work Order
-                </h3>
-                <button onclick="toggleModal('modal-add-wo', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
-            </div>
-            <form id="form-wo" onsubmit="executeWoSubmission(event)" class="space-y-3.5 text-xs">
-                <input type="hidden" id="in-w-mode" value="create">
-                <input type="hidden" id="in-w-old-id" value="">
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Order ID *</label>
-                    <input type="text" id="in-w-id" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code outline-none font-bold focus:border-slate-900 focus:outline-none" placeholder="e.g. WO-1001">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Target Equipment Asset *</label>
-                    <div class="relative mb-1">
-                        <input type="text" id="in-w-search-asset" oninput="filterDropdownSearch('in-w-search-asset', 'in-w-asset')" placeholder="Type to filter equipment list below..." class="w-full bg-slate-100 border border-slate-300 rounded p-1.5 text-slate-800 text-[11px] focus:outline-none focus:border-slate-500">
-                    </div>
-                    <select id="in-w-asset" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code focus:outline-none focus:border-slate-900"></select>
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Tracking Type *</label>
-                    <select id="in-w-type" onchange="toggleMetricInputs(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                        <option value="hours">Running Hours</option>
-                        <option value="date">Calendar Date Target</option>
-                        <option value="none">None</option>
-                    </select>
-                </div>
-                <div id="wrapper-hours-inputs" class="space-y-3">
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Current Hours Reading *</label>
-                        <input type="number" id="in-w-current-hours" min="0" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. 1250">
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Target Hours Maintenance *</label>
-                        <input type="number" id="in-w-target-hours" min="0" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. 1500">
-                    </div>
-                </div>
-                <div id="wrapper-date-inputs" class="space-y-3 hidden">
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Current Date Logging *</label>
-                        <input type="date" id="in-w-current-date" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Target Date Maintenance *</label>
-                        <input type="date" id="in-w-target-date" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Order Status *</label>
-                    <select id="in-w-status" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                        <option value="Pending">Pending</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Check-up/Inspection">Check-up/Inspection</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Cancelled">Cancelled</option>
-                    </select>
-                </div>
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="toggleModal('modal-add-wo', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" id="btn-wo-submit-text" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Commit Work Order</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-add-log" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-xl p-6 space-y-4 shadow-xl overflow-y-auto max-h-[90vh]">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <h3 id="modal-log-title" class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-slate-700">history_edu</span> Log Maintenance Execution
-                </h3>
-                <button onclick="toggleModal('modal-add-log', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
-            </div>
-            <form id="form-log" onsubmit="executeLogSubmission(event)" class="space-y-3.5 text-xs">
-                <input type="hidden" id="in-l-mode" value="create">
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1 font-code">Maintenance Log ID *</label>
-                        <input type="text" id="in-l-id" required class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-slate-900 font-code outline-none font-bold" placeholder="e.g. LOG-5001">
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Execution Date *</label>
-                        <input type="date" id="in-l-date" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Select Reference Work Order *</label>
-                    <select id="in-l-wo" required onchange="syncMetricsFromWorkOrder(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code focus:outline-none focus:border-slate-900"></select>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-slate-50 border border-slate-200 rounded">
-                    <div>
-                        <label class="block text-slate-500 font-medium mb-1">Logged / Initial Value</label>
-                        <input type="text" id="in-l-current" readonly class="w-full bg-slate-200/70 border border-slate-300 text-slate-600 font-code rounded p-2 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 font-medium mb-1">Target Threshold Limit</label>
-                        <input type="text" id="in-l-current-target" readonly class="w-full bg-slate-200/70 border border-slate-300 text-slate-600 font-code rounded p-2 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 font-medium mb-1">Remaining Hours</label>
-                        <input type="text" id="in-l-remaining" readonly class="w-full bg-slate-200/70 border border-slate-300 text-slate-700 font-bold font-code rounded p-2 outline-none" placeholder="Calculated">
-                    </div>
-                </div>
-
-                <div class="border border-slate-200 rounded bg-slate-50 p-3 space-y-2">
-                    <div class="flex items-center justify-between border-b border-slate-200 pb-1.5">
-                        <span class="font-bold text-slate-900 uppercase tracking-wide text-[11px] flex items-center gap-1"><span class="material-symbols-outlined text-sm text-slate-700">fact_check</span> Preventive Maintenance Checklist</span>
-                        <label class="inline-flex items-center space-x-1 cursor-pointer font-semibold text-slate-600 hover:text-slate-900">
-                            <input type="checkbox" id="chk-pm-all" onchange="toggleAllPmChecklistItems(this.checked)" class="rounded border-slate-300 text-slate-900 focus:ring-slate-900 h-3.5 w-3.5">
-                            <span>Check All</span>
-                        </label>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
-                        <div class="space-y-1.5">
-                            <p class="font-bold text-slate-700 uppercase tracking-wider text-[10px]">High Pressure Pump Module</p>
-                            <label class="flex items-start space-x-2 p-1 hover:bg-white rounded cursor-pointer">
-                                <input type="checkbox" name="pm-checks" value="Inspect high pressure fluid end & seals" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
-                                <span class="text-slate-600">Inspect fluid end manifold &amp; seals</span>
-                            </label>
-                            <label class="flex items-start space-x-2 p-1 hover:bg-white rounded cursor-pointer">
-                                <input type="checkbox" name="pm-checks" value="Verify plunger alignment & packings" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
-                                <span class="text-slate-600">Verify plunger alignment &amp; packings</span>
-                            </label>
-                            <label class="flex items-start space-x-2 p-1 hover:bg-white rounded cursor-pointer">
-                                <input type="checkbox" name="pm-checks" value="Check crankcase oil levels & condition" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
-                                <span class="text-slate-600">Check crankcase oil levels &amp; condition</span>
-                            </label>
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <p class="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Diesel Engine Platform</p>
-                            <label class="flex items-start space-x-2 p-1 hover:bg-white rounded cursor-pointer">
-                                <input type="checkbox" name="pm-checks" value="Replace engine lubrication oils & filter blocks" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
-                                <span class="text-slate-600">Replace lubrication oils &amp; filter blocks</span>
-                            </label>
-                            <label class="flex items-start space-x-2 p-1 hover:bg-white rounded cursor-pointer">
-                                <input type="checkbox" name="pm-checks" value="Service primary/secondary fuel filters" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
-                                <span class="text-slate-600">Service primary/secondary fuel filters</span>
-                            </label>
-                            <label class="flex items-start space-x-2 p-1 hover:bg-white rounded cursor-pointer">
-                                <input type="checkbox" name="pm-checks" value="Check intake air filters & ducting seals" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
-                                <span class="text-slate-600">Check intake air filters &amp; ducting seals</span>
-                            </label>
-                        </div>
-
-                        <div class="space-y-1.5 sm:col-span-2 border-t border-slate-100 pt-2">
-                            <p class="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Electrical &amp; Control Systems Matrix</p>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <label class="flex items-start space-x-2 p-1 hover:bg-white rounded cursor-pointer">
-                                    <input type="checkbox" name="pm-checks" value="Inspect panel wiring, safety stops & controls" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
-                                    <span class="text-slate-600">Inspect panel lines, safety stops &amp; controls</span>
-                                </label>
-                                <label class="flex items-start space-x-2 p-1 hover:bg-white rounded cursor-pointer">
-                                    <input type="checkbox" name="pm-checks" value="Verify battery terminal charging profiles" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
-                                    <span class="text-slate-600">Verify battery terminal charging profiles</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Inspection Fault Report *</label>
-                    <textarea id="in-l-fault" required rows="2" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="Describe detected failure points..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Service Performed / Maintenance Actions *</label>
-                    <textarea id="in-l-action" required rows="3" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900 font-code text-[11px]" placeholder="Detail exact actions taken or executed repairs..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Parts Replaced</label>
-                    <input type="text" id="in-l-parts" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. Element filters">
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Assigned Technician *</label>
-                        <select id="in-l-tech" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900"></select>
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Set Asset Operational Status *</label>
-                        <select id="in-l-status" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-medium focus:outline-none focus:border-slate-900">
-                            <option value="Operational">Operational (Resolves Order)</option>
-                            <option value="In Maintenance">In Maintenance</option>
-                            <option value="Down">Down</option>
-                            <option value="Standby">Standby</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Remarks</label>
-                    <input type="text" id="in-l-remarks" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="Special operation constraints...">
-                </div>
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="toggleModal('modal-add-log', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" id="btn-log-submit-text" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Save Log Entry</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-add-dispatch" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-slate-700">local_shipping</span> Record Dispatch Event
-                </h3>
-                <button onclick="toggleModal('modal-add-dispatch', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
-            </div>
-            <form id="form-dispatch" onsubmit="executeDispatchSubmission(event)" class="space-y-3.5 text-xs">
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Dispatch ID *</label>
-                    <input type="text" id="in-d-id" required class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-slate-900 font-code outline-none font-bold" placeholder="e.g. DSP-7001">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Equipment Asset *</label>
-                    <div class="relative mb-1">
-                        <input type="text" id="in-d-search-asset" oninput="filterDropdownSearch('in-d-search-asset', 'in-d-asset')" placeholder="Type to filter equipment list below..." class="w-full bg-slate-100 border border-slate-300 rounded p-1.5 text-slate-800 text-[11px] focus:outline-none focus:border-slate-500">
-                    </div>
-                    <select id="in-d-asset" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code focus:outline-none focus:border-slate-900"></select>
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Event Type Designation *</label>
-                    <select id="in-d-type" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                        <option value="Dispatch Out">Mobilize Outbound to Project Field</option>
-                        <option value="Return In">De-mobilize Return Inbound to Workshop Base</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Target Destination / Allocation Project *</label>
-                    <input type="text" id="in-d-destination" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. Aba Saleel Industrial Zone Project">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Event Date Stamp *</label>
-                    <input type="date" id="in-d-date" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                </div>
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="toggleModal('modal-add-dispatch', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Execute Dispatch Log</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-add-tech" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <h3 id="modal-tech-title" class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-slate-700">person_add</span> Onboard Technician Profile
-                </h3>
-                <button onclick="toggleModal('modal-add-tech', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
-            </div>
-            <form id="form-tech" onsubmit="executeTechSubmission(event)" class="space-y-3.5 text-xs">
-                <input type="hidden" id="in-t-mode" value="create">
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Technician ID *</label>
-                    <input type="text" id="in-t-id" required class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-slate-900 font-code outline-none font-bold focus:border-slate-900" placeholder="e.g. TECH-01">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Full Name *</label>
-                    <input type="text" id="in-t-name" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. Danilo Ramos">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Engineering Designation *</label>
-                    <input type="text" id="in-t-designation" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. Senior Plant Mechanic">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Contact Info / Radio Channel</label>
-                    <input type="text" id="in-t-contact" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code focus:outline-none focus:border-slate-900" placeholder="e.g. +974 5581 9283">
-                </div>
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="toggleModal('modal-add-tech', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Save Credentials</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- LOGIC APPLICATION CONTROL matrix -->
+    <!-- LOGIC SYSTEM PIPELINE CONTROLLER -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCS6OIQ6wFFKDRcq-SFGCLP2aVq6faq5fo",
@@ -1005,10 +526,10 @@
                 const badge = document.getElementById('connection-badge');
                 if (snap.val() === true) {
                     badge.className = "text-xs text-emerald-600 font-medium flex items-center";
-                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>Firebase Terminal Live`;
+                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>Live Feed Secured`;
                 } else {
-                    badge.className = "text-xs text-rose-600 font-medium flex items-center";
-                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-rose-500 mr-2 animate-pulse"></span>Offline / Reconnecting`;
+                    badge.className = "text-xs text-amber-600 font-medium flex items-center";
+                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-500 mr-2 animate-pulse"></span>Synchronizing Local Frame...`;
                 }
             });
 
@@ -1115,39 +636,6 @@
             }
         }
 
-        function toggleMetricInputs(type) {
-            if (type === 'hours') {
-                document.getElementById('wrapper-hours-inputs').classList.remove('hidden');
-                document.getElementById('wrapper-date-inputs').classList.add('hidden');
-            } else if (type === 'date') {
-                document.getElementById('wrapper-hours-inputs').classList.add('hidden');
-                document.getElementById('wrapper-date-inputs').classList.remove('hidden');
-            } else {
-                document.getElementById('wrapper-hours-inputs').classList.add('hidden');
-                document.getElementById('wrapper-date-inputs').classList.add('hidden');
-            }
-        }
-
-        function filterDropdownSearch(inputId, selectId) {
-            const filterVal = document.getElementById(inputId).value.toLowerCase();
-            const selectEl = document.getElementById(selectId);
-            const options = selectEl.options;
-            
-            for (let i = 0; i < options.length; i++) {
-                const txt = options[i].text.toLowerCase();
-                if (txt.includes(filterVal)) {
-                    options[i].style.display = "";
-                } else {
-                    options[i].style.display = "none";
-                }
-            }
-        }
-
-        function toggleAllPmChecklistItems(isChecked) {
-            const checkboxes = document.querySelectorAll('input[name="pm-checks"]');
-            checkboxes.forEach(cb => cb.checked = isChecked);
-        }
-
         function checkCertificateStatusAlarm(expiryString) {
             if (!expiryString) return { alarm: false, text: "No Cert Found", statusKey: "Expired", class: "bg-slate-100 text-slate-600 border border-slate-200" };
             
@@ -1183,19 +671,6 @@
             }
         }
 
-        function processCertImageFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('in-c-image-base64').value = e.target.result;
-                document.getElementById('img-c-preview').src = e.target.result;
-                document.getElementById('wrapper-c-image-preview').classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
         function viewCertificateImage(certId) {
             const cert = memory.certificates.find(c => c.id === certId);
             if (!cert || !cert.certificateImage) {
@@ -1225,12 +700,6 @@
                 </div>
             `;
             window.print();
-        }
-
-        function populateEquipmentDropdown(selectId) {
-            const el = document.getElementById(selectId);
-            if (!el) return;
-            el.innerHTML = memory.assets.map(a => `<option value="${a.id}">${a.id} - ${a.model} (${a.description})</option>`).join('');
         }
 
         function executeTablePrint(title, rowsHtml, headers) {
@@ -1302,14 +771,149 @@
                             <li style="margin-bottom: 8px;">Keep shop walkways and parts bin locations completely clear of fluid spills to prevent critical slip hazards.</li>
                         </ul>
                     </div>
-
-                    <div style="margin-top: 50px; font-size: 12px; color: #64748b; text-align: center; border-top: 1px solid #cbd5e1; padding-top: 15px;">
-                        <p style="margin: 0;"><strong>Safety is a collective responsibility.</strong> Any deviations from these protocols must be reported immediately.</p>
-                        <p style="margin: 5px 0 0 0;">Document Generated: ${new Date().toLocaleString()}</p>
-                    </div>
                 </div>
             `;
             window.print();
+        }
+
+        function printMaintenanceLog(logId) {
+            const l = memory.maintenanceLogs.find(log => log.id === logId);
+            if (!l) return;
+            const pSec = document.getElementById('print-section');
+            pSec.innerHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 25px; border: 2px solid #0f172a; max-width: 650px; margin: 0 auto; background: white; color: #0f172a;">
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <h2 style="margin: 0; text-transform: uppercase; font-size: 18px; tracking-wide;">Al Ghaith Trading &amp; Industrial Services</h2>
+                        <p style="margin: 3px 0 0 0; font-size: 12px; color: #475569;">Maintenance Clearance Slip</p>
+                    </div>
+                    <hr style="border: 0; border-top: 2px solid #0f172a; margin-bottom: 15px;" />
+                    <table style="width: 100%; font-size: 12px; text-align: left;" cellpadding="6">
+                        <tr><td><strong>Log Sequence ID:</strong> ${l.id}</td><td><strong>Execution Date:</strong> ${l.date}</td></tr>
+                        <tr><td><strong>Equipment ID Reference:</strong> ${l.assetId}</td><td><strong>Assigned Engineer:</strong> ${l.technician}</td></tr>
+                        <tr><td><strong>Interval Status Metric:</strong> ${l.currentMetric} / ${l.targetMetric}</td><td><strong>Asset Status Post-PM:</strong> ${l.status}</td></tr>
+                        <tr><td colspan="2"><hr style="border:0; border-top: 1px dashed #cbd5e1; margin: 5px 0;"/></td></tr>
+                        <tr><td colspan="2"><strong>Reported Symptoms / Fault:</strong><br><p style="background:#f8fafc; padding:8px; border:1px solid #e2e8f0; border-radius:4px; margin:4px 0;">${l.fault}</p></td></tr>
+                        <tr><td colspan="2"><strong>Action Operations Performed:</strong><br><p style="background:#f8fafc; padding:8px; border:1px solid #e2e8f0; border-radius:4px; margin:4px 0; font-family: monospace;">${l.action}</p></td></tr>
+                        <tr><td colspan="2"><strong>Installed Spares / Components:</strong> ${l.parts || 'None Listed'}</td></tr>
+                    </table>
+                </div>
+            `;
+            window.print();
+        }
+
+        function updateLiveAnalyticsSummary() {
+            const startInput = document.getElementById('print-start-date').value;
+            const endInput = document.getElementById('print-end-date').value;
+            if (!startInput || !endInput) return;
+            
+            const startDate = new Date(startInput);
+            const endDate = new Date(endInput);
+            endDate.setHours(23,59,59,999);
+
+            const filteredExpenses = memory.expenses.filter(e => {
+                const d = new Date(e.date);
+                return d >= startDate && d <= endDate;
+            });
+            const totalExp = filteredExpenses.reduce((sum, e) => sum + parseFloat(e.total || 0), 0);
+            document.getElementById('analytics-total-expenses').innerText = `QAR ${totalExp.toFixed(2)}`;
+
+            const filteredLogs = memory.maintenanceLogs.filter(l => {
+                const d = new Date(l.date);
+                return d >= startDate && d <= endDate;
+            });
+            document.getElementById('analytics-total-logs').innerText = `${filteredLogs.length} Logs`;
+
+            const activeWos = memory.workOrders.filter(w => w.status !== 'Completed' && w.status !== 'Cancelled');
+            document.getElementById('analytics-total-wo').innerText = `${activeWos.length} Active`;
+
+            const totalAssets = memory.assets.length;
+            const operationalAssets = memory.assets.filter(a => a.status === 'Operational').length;
+            const ratio = totalAssets > 0 ? Math.round((operationalAssets / totalAssets) * 100) : 0;
+            document.getElementById('analytics-fleet-ratio').innerText = `${ratio}% Operational`;
+
+            const previewContainer = document.getElementById('rows-analytics-preview');
+            previewContainer.innerHTML = "";
+            
+            let records = [];
+            filteredExpenses.forEach(e => records.push({ id: e.id, type: 'Expense', asset: e.assetId, date: e.date, desc: e.parts, val: parseFloat(e.total) }));
+            filteredLogs.forEach(l => records.push({ id: l.id, type: 'Maintenance Log', asset: l.assetId, date: l.date, desc: l.fault, val: 0 }));
+
+            records.sort((a,b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('analytics-preview-count').innerText = `${records.length} records selected`;
+
+            if (records.length === 0) {
+                previewContainer.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 italic">No matching records found for this period.</td></tr>`;
+                return;
+            }
+
+            records.forEach(r => {
+                previewContainer.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 font-code font-bold">${r.id}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.type === 'Expense' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">${r.type}</span></td>
+                        <td class="p-3 font-code">${r.asset}</td>
+                        <td class="p-3 font-code">${r.date}</td>
+                        <td class="p-3 max-w-xs truncate text-slate-600">${r.desc}</td>
+                        <td class="p-3 text-right font-code font-bold text-slate-900">${r.val > 0 ? 'QAR ' + r.val.toFixed(2) : '-'}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function printFilteredLogs() {
+            const startInput = document.getElementById('print-start-date').value;
+            const endInput = document.getElementById('print-end-date').value;
+            if (!startInput || !endInput) return alert("Please specify valid boundary dates first.");
+            
+            const startDate = new Date(startInput);
+            const endDate = new Date(endInput);
+            endDate.setHours(23,59,59,999);
+            
+            const filtered = memory.maintenanceLogs.filter(l => {
+                const d = new Date(l.date);
+                return d >= startDate && d <= endDate;
+            });
+
+            const rows = filtered.map(l => `
+                <tr style="border-bottom: 1px solid #cbd5e1;">
+                    <td style="padding:8px; font-family:monospace;">${l.date}</td>
+                    <td style="padding:8px; font-family:monospace; font-weight:bold;">${l.id}</td>
+                    <td style="padding:8px; font-family:monospace;">${l.assetId}</td>
+                    <td style="padding:8px; color:#9f1239;">${l.fault}</td>
+                    <td style="padding:8px; font-family:monospace;">${l.action}</td>
+                    <td style="padding:8px;">${l.technician}</td>
+                </tr>
+            `).join('');
+
+            executeTablePrint(`Maintenance Logging Summary Profile (${startInput} to ${endInput})`, rows, ['Date', 'Log ID', 'Asset Ref', 'Identified Fault', 'Action Taken', 'Technician']);
+        }
+
+        function printFilteredExpenses() {
+            const startInput = document.getElementById('print-start-date').value;
+            const endInput = document.getElementById('print-end-date').value;
+            if (!startInput || !endInput) return alert("Please specify valid boundary dates first.");
+            
+            const startDate = new Date(startInput);
+            const endDate = new Date(endInput);
+            endDate.setHours(23,59,59,999);
+            
+            const filtered = memory.expenses.filter(e => {
+                const d = new Date(e.date);
+                return d >= startDate && d <= endDate;
+            });
+
+            const rows = filtered.map(e => `
+                <tr style="border-bottom: 1px solid #cbd5e1;">
+                    <td style="padding:8px; font-family:monospace;">${e.date}</td>
+                    <td style="padding:8px; font-family:monospace; font-weight:bold;">${e.id}</td>
+                    <td style="padding:8px; font-family:monospace;">${e.assetId}</td>
+                    <td style="padding:8px;">${e.parts}</td>
+                    <td style="padding:8px;">${e.purpose}</td>
+                    <td style="padding:8px; text-align:right; font-family:monospace; font-weight:bold;">QAR ${parseFloat(e.total).toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            executeTablePrint(`Financial Procurement Ledger Expenses (${startInput} to ${endInput})`, rows, ['Date Purchased', 'Expense ID', 'Asset Target', 'Parts / Items Description', 'Allocation Purpose', 'Total Investment']);
         }
 
         function refreshWorkspaceView() {
@@ -1341,10 +945,6 @@
                             <td class="p-4 uppercase font-semibold text-slate-600">${a.location || 'WORKSHOP'}</td>
                             <td class="p-4"><span class="px-2 py-0.5 rounded text-[11px] font-semibold ${statusCheck.class}">${statusCheck.text}</span></td>
                             <td class="p-4"><span class="px-2.5 py-1 rounded-sm text-[11px] font-bold ${badgeColorClass}">${a.status}</span></td>
-                            <td class="p-4 text-center space-x-1">
-                                <button onclick="openEditModal('${a.id}')" class="text-slate-600 hover:text-slate-900 font-semibold cursor-pointer">Modify</button>
-                                <button onclick="dropAssetSpec('${a.id}')" class="text-rose-600 hover:text-rose-900 font-semibold cursor-pointer pl-2">Delete</button>
-                            </td>
                         </tr>
                     `;
                 });
@@ -1365,8 +965,9 @@
                     const statusCheck = checkCertificateStatusAlarm(c.expiryDate);
                     
                     const attachmentButtonHtml = c.certificateImage 
-                        ? `<button onclick="viewCertificateImage('${c.id}')" class="text-emerald-600 hover:text-emerald-900 font-bold cursor-pointer inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">image</span> View</button>`
-                        : `<span class="text-slate-300 font-normal italic pointer-events-none">No File</span>`;
+                        ? `<button onclick="viewCertificateImage('${c.id}')" class="text-emerald-600 hover:text-emerald-900 font-bold cursor-pointer inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">image</span> View</button>
+                           <button onclick="printCertificateDocument('${c.id}')" class="text-slate-700 hover:text-black font-bold cursor-pointer inline-flex items-center gap-0.5 pl-2"><span class="material-symbols-outlined text-xs">print</span> Print</button>`
+                        : `<span class="text-slate-300 font-normal italic pointer-events-none">No File Scan</span>`;
 
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50">
@@ -1376,12 +977,7 @@
                             <td class="p-4 font-code text-slate-500">${asset.serial || 'N/A'}</td>
                             <td class="p-4 font-code">${c.expiryDate}</td>
                             <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${statusCheck.class}">${statusCheck.text}</span></td>
-                            <td class="p-4 text-center space-x-2">
-                                ${attachmentButtonHtml}
-                                <button onclick="printCertificateDocument('${c.id}')" class="text-slate-900 hover:text-black font-bold cursor-pointer inline-flex items-center gap-0.5 pl-1 border border-slate-200 rounded px-1.5 py-0.5 bg-slate-50 hover:bg-slate-100"><span class="material-symbols-outlined text-xs">print</span> Print Image</button>
-                                <button onclick="openRenewCertModal('${c.id}')" class="text-slate-600 hover:text-slate-900 font-semibold cursor-pointer pl-1">Renew</button>
-                                <button onclick="dropCertificate('${c.id}')" class="text-rose-600 hover:text-rose-900 font-semibold cursor-pointer">Delete</button>
-                            </td>
+                            <td class="p-4 text-center space-x-2">${attachmentButtonHtml}</td>
                         </tr>
                     `;
                 });
@@ -1410,10 +1006,6 @@
                             <td class="p-4 font-code">${targetInfo}</td>
                             <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
                             <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woStatusClass}">${w.status}</span></td>
-                            <td class="p-4 text-center space-x-2">
-                                <button onclick="openEditWoModal('${w.id}')" class="text-slate-600 hover:text-slate-900 font-semibold cursor-pointer">Edit State</button>
-                                <button onclick="dropWorkOrder('${w.id}')" class="text-rose-600 hover:text-rose-900 font-semibold cursor-pointer">Purge</button>
-                            </td>
                         </tr>
                     `;
                 });
@@ -1443,12 +1035,8 @@
                             <td class="p-4 max-w-xs"><div class="truncate text-rose-700 font-medium">⚠️ ${l.fault}</div><div class="whitespace-pre-line text-slate-600 mt-0.5 text-[11px]">⚙️ ${l.action}</div></td>
                             <td class="p-4"><div class="font-medium">${l.technician}</div><div class="text-[10px] text-slate-400 mt-0.5">Parts: ${l.parts}</div></td>
                             <td class="p-4"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${logBadgeColorClass}">${l.status}</span></td>
-                            <td class="p-4 text-center space-x-1.5 flex flex-col items-center gap-1 justify-center min-h-[75px]">
-                                <button onclick="printMaintenanceLog('${l.id}')" class="text-slate-900 border border-slate-300 px-2 py-0.5 rounded font-bold hover:bg-slate-100 flex items-center gap-1 cursor-pointer w-full text-center justify-center"><span class="material-symbols-outlined text-xs">print</span> Print Slip</button>
-                                <div class="space-x-2 text-[11px] mt-1">
-                                    <button onclick="openEditLogModal('${l.id}')" class="text-slate-600 hover:text-slate-900 font-semibold cursor-pointer">Edit</button>
-                                    <button onclick="dropLogEntry('${l.id}')" class="text-rose-600 hover:text-rose-900 font-semibold cursor-pointer">Purge</button>
-                                </div>
+                            <td class="p-4 text-center">
+                                <button onclick="printMaintenanceLog('${l.id}')" class="text-slate-900 border border-slate-300 px-2.5 py-1 rounded font-bold bg-slate-50 hover:bg-slate-100 inline-flex items-center gap-1 cursor-pointer"><span class="material-symbols-outlined text-xs">print</span> Print Slip</button>
                             </td>
                         </tr>
                     `;
@@ -1471,9 +1059,6 @@
                             <td class="p-4 text-right font-code">${e.qty}</td>
                             <td class="p-4 text-right font-code">QAR ${parseFloat(e.price).toFixed(2)}</td>
                             <td class="p-4 text-right font-bold text-slate-900">QAR ${parseFloat(e.total).toFixed(2)}</td>
-                            <td class="p-4 text-center">
-                                <button onclick="dropExpense('${e.id}')" class="text-rose-600 hover:text-rose-900 font-semibold cursor-pointer">Delete</button>
-                            </td>
                         </tr>
                     `;
                 });
@@ -1493,9 +1078,6 @@
                             <td class="p-4 font-medium"><span class="px-2 py-0.5 rounded text-[11px] font-semibold ${dispatchTypeClass}">${d.type}</span></td>
                             <td class="p-4 uppercase text-slate-600">${d.destination}</td>
                             <td class="p-4 font-code">${d.date}</td>
-                            <td class="p-4 text-center">
-                                <button onclick="dropDispatchEvent('${d.id}')" class="text-rose-600 hover:text-rose-900 font-semibold cursor-pointer">Remove File</button>
-                            </td>
                         </tr>
                     `;
                 });
@@ -1511,10 +1093,6 @@
                             <td class="p-4 font-bold">${t.name}</td>
                             <td class="p-4 text-slate-600 font-medium">${t.designation}</td>
                             <td class="p-4 font-code text-slate-500">${t.contact || 'N/A'}</td>
-                            <td class="p-4 text-center space-x-2">
-                                <button onclick="openEditTechModal('${t.id}')" class="text-slate-600 hover:text-slate-900 font-semibold cursor-pointer">Edit</button>
-                                <button onclick="dropTechnician('${t.id}')" class="text-rose-600 hover:text-rose-900 font-semibold cursor-pointer">Purge</button>
-                            </td>
                         </tr>
                     `;
                 });
@@ -1522,633 +1100,6 @@
 
             if (currentActiveModule === "analytics") {
                 updateLiveAnalyticsSummary();
-            }
-        }
-
-        // --- MASTER ASSET MODULE ACTIONS ---
-        function openAddModal() {
-            document.getElementById('form-fleet').reset();
-            document.getElementById('modal-title').innerHTML = `<span class="material-symbols-outlined text-slate-700">playlist_add</span> Register Asset Specifications`;
-            document.getElementById('in-f-mode').value = "create";
-            document.getElementById('in-f-id').disabled = false;
-            document.getElementById('in-f-location').value = "WORKSHOP";
-            document.getElementById('in-f-status').value = "Operational";
-            toggleModal('modal-add-fleet', true);
-        }
-
-        function openEditModal(assetId) {
-            const asset = memory.assets.find(a => a.id === assetId);
-            if (!asset) return;
-            document.getElementById('modal-title').innerHTML = `<span class="material-symbols-outlined text-slate-700">edit</span> Modify Asset Specifications`;
-            document.getElementById('in-f-mode').value = "edit";
-            document.getElementById('in-f-id').value = asset.id;
-            document.getElementById('in-f-id').disabled = true;
-            document.getElementById('in-f-model').value = asset.model;
-            document.getElementById('in-f-description').value = asset.description;
-            document.getElementById('in-f-pressure').value = asset.pressure || "";
-            document.getElementById('in-f-serial').value = asset.serial || "";
-            document.getElementById('in-f-location').value = asset.location || "WORKSHOP";
-            document.getElementById('in-f-status').value = asset.status || "Operational";
-            toggleModal('modal-add-fleet', true);
-        }
-
-        function executeFleetSubmission(e) {
-            e.preventDefault();
-            const id = document.getElementById('in-f-id').value.trim().toUpperCase();
-            const payload = {
-                model: document.getElementById('in-f-model').value.trim().toUpperCase(),
-                description: document.getElementById('in-f-description').value.trim(),
-                pressure: document.getElementById('in-f-pressure').value.trim().toUpperCase(),
-                serial: document.getElementById('in-f-serial').value.trim().toUpperCase(),
-                location: document.getElementById('in-f-location').value,
-                status: document.getElementById('in-f-status').value
-            };
-            db.ref('assets/' + id).set(payload, (error) => {
-                if (!error) toggleModal('modal-add-fleet', false);
-            });
-        }
-
-        function dropAssetSpec(id) {
-            if (confirm(`Are you sure you want to delete Asset ${id}?`)) {
-                db.ref('assets/' + id).remove();
-            }
-        }
-
-        // --- THIRD PARTY CERTIFICATE FUNCTIONS ---
-        function openAddCertModal() {
-            document.getElementById('form-cert').reset();
-            document.getElementById('modal-cert-title').innerText = "File Third Party Certificate";
-            document.getElementById('in-c-mode').value = "create";
-            document.getElementById('in-c-image-base64').value = "";
-            document.getElementById('wrapper-c-image-preview').classList.add('hidden');
-            populateEquipmentDropdown('in-c-asset');
-            syncCertAssetDetails();
-            toggleModal('modal-add-cert', true);
-        }
-
-        function openRenewCertModal(certId) {
-            const cert = memory.certificates.find(c => c.id === certId);
-            if (!cert) return;
-            document.getElementById('form-cert').reset();
-            document.getElementById('modal-cert-title').innerText = "Renew Third Party Certificate";
-            document.getElementById('in-c-mode').value = "edit";
-            document.getElementById('in-c-id').value = cert.id;
-            document.getElementById('in-c-image-base64').value = cert.certificateImage || "";
-            if(cert.certificateImage) {
-                document.getElementById('img-c-preview').src = cert.certificateImage;
-                document.getElementById('wrapper-c-image-preview').classList.remove('hidden');
-            } else {
-                document.getElementById('wrapper-c-image-preview').classList.add('hidden');
-            }
-            populateEquipmentDropdown('in-c-asset');
-            document.getElementById('in-c-asset').value = cert.assetId;
-            document.getElementById('in-c-expiry').value = cert.expiryDate;
-            syncCertAssetDetails();
-            toggleModal('modal-add-cert', true);
-        }
-
-        function syncCertAssetDetails() {
-            const assetId = document.getElementById('in-c-asset').value;
-            const asset = memory.assets.find(a => a.id === assetId) || { model: 'N/A', description: 'N/A', serial: 'N/A' };
-            document.getElementById('in-c-model').value = asset.model;
-            document.getElementById('in-c-desc').value = asset.description;
-            document.getElementById('in-c-serial').value = asset.serial || "N/A";
-        }
-
-        function executeCertSubmission(e) {
-            e.preventDefault();
-            const mode = document.getElementById('in-c-mode').value;
-            const assetId = document.getElementById('in-c-asset').value;
-            const id = mode === 'create' ? "CERT-" + assetId + "-" + Date.now() : document.getElementById('in-c-id').value;
-            
-            const payload = {
-                assetId: assetId,
-                expiryDate: document.getElementById('in-c-expiry').value,
-                certificateImage: document.getElementById('in-c-image-base64').value || ""
-            };
-            db.ref('certificates/' + id).set(payload, (error) => {
-                if (!error) toggleModal('modal-add-cert', false);
-            });
-        }
-
-        function dropCertificate(id) {
-            if (confirm("Are you sure you want to delete this certificate record?")) {
-                db.ref('certificates/' + id).remove();
-            }
-        }
-
-        // --- MAINTENANCE WORK ORDER MATRIX FUNCTIONS ---
-        function openAddWoModal() {
-            document.getElementById('form-wo').reset();
-            let nextNum = 1001;
-            if (memory.workOrders && memory.workOrders.length > 0) {
-                memory.workOrders.forEach(w => {
-                    let num = parseInt(w.id.replace('WO-', ''));
-                    if (!isNaN(num) && num >= nextNum) nextNum = num + 1;
-                });
-            }
-            document.getElementById('in-w-id').value = "WO-" + nextNum;
-            document.getElementById('in-w-id').disabled = false;
-            document.getElementById('in-w-mode').value = "create";
-            populateEquipmentDropdown('in-w-asset');
-            toggleMetricInputs('hours');
-            toggleModal('modal-add-wo', true);
-        }
-
-        function openEditWoModal(id) {
-            const wo = memory.workOrders.find(w => w.id === id);
-            if (!wo) return;
-            document.getElementById('in-w-mode').value = "edit";
-            document.getElementById('in-w-id').value = wo.id;
-            document.getElementById('in-w-id').disabled = true;
-            populateEquipmentDropdown('in-w-asset');
-            document.getElementById('in-w-asset').value = wo.assetId;
-            document.getElementById('in-w-type').value = wo.type;
-            toggleMetricInputs(wo.type);
-            if(wo.type === 'hours') {
-                document.getElementById('in-w-current-hours').value = wo.currentHours || "";
-                document.getElementById('in-w-target-hours').value = wo.targetHours || "";
-            } else if(wo.type === 'date') {
-                document.getElementById('in-w-current-date').value = wo.currentDate || "";
-                document.getElementById('in-w-target-date').value = wo.targetDate || "";
-            }
-            document.getElementById('in-w-status').value = wo.status;
-            toggleModal('modal-add-wo', true);
-        }
-
-        function executeWoSubmission(e) {
-            e.preventDefault();
-            const id = document.getElementById('in-w-id').value.trim().toUpperCase();
-            const type = document.getElementById('in-w-type').value;
-            const payload = {
-                id: id,
-                assetId: document.getElementById('in-w-asset').value,
-                type: type,
-                status: document.getElementById('in-w-status').value,
-                currentHours: type === 'hours' ? parseInt(document.getElementById('in-w-current-hours').value) || 0 : "",
-                targetHours: type === 'hours' ? parseInt(document.getElementById('in-w-target-hours').value) || 0 : "",
-                currentDate: type === 'date' ? document.getElementById('in-w-current-date').value : "",
-                targetDate: type === 'date' ? document.getElementById('in-w-target-date').value : ""
-            };
-            db.ref('workOrders/' + id).set(payload, (error) => {
-                if (!error) toggleModal('modal-add-wo', false);
-            });
-        }
-
-        function dropWorkOrder(id) {
-            if (confirm(`Purge Work Order ${id}?`)) {
-                db.ref('workOrders/' + id).remove();
-            }
-        }
-
-        // --- MAINTENANCE LOG EXECUTION OPERATIONS ---
-        function openAddLogModal() {
-            document.getElementById('form-log').reset();
-            let nextNum = 5001;
-            if (memory.maintenanceLogs && memory.maintenanceLogs.length > 0) {
-                memory.maintenanceLogs.forEach(l => {
-                    let num = parseInt(l.id.replace('LOG-', ''));
-                    if (!isNaN(num) && num >= nextNum) nextNum = num + 1;
-                });
-            }
-            document.getElementById('in-l-id').value = "LOG-" + nextNum;
-            document.getElementById('in-l-mode').value = "create";
-            document.getElementById('in-l-date').value = new Date().toISOString().split('T')[0];
-            
-            const woSelect = document.getElementById('in-l-wo');
-            woSelect.innerHTML = memory.workOrders.filter(w => w.status !== 'Completed').map(w => `<option value="${w.id}">${w.id} (${w.assetId})</option>`).join('');
-            
-            const techSelect = document.getElementById('in-l-tech');
-            techSelect.innerHTML = memory.technicians.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
-            
-            if (woSelect.value) syncMetricsFromWorkOrder(woSelect.value);
-            toggleModal('modal-add-log', true);
-        }
-
-        function openEditLogModal(id) {
-            const log = memory.maintenanceLogs.find(l => l.id === id);
-            if (!log) return;
-            document.getElementById('in-l-mode').value = "edit";
-            document.getElementById('in-l-id').value = log.id;
-            document.getElementById('in-l-date').value = log.date;
-            
-            const woSelect = document.getElementById('in-l-wo');
-            woSelect.innerHTML = memory.workOrders.map(w => `<option value="${w.id}">${w.id} (${w.assetId})</option>`).join('');
-            woSelect.value = log.workOrderId || "";
-            
-            const techSelect = document.getElementById('in-l-tech');
-            techSelect.innerHTML = memory.technicians.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
-            techSelect.value = log.technician;
-            
-            document.getElementById('in-l-current').value = log.currentMetric;
-            document.getElementById('in-l-current-target').value = log.targetMetric;
-            document.getElementById('in-l-remaining').value = log.remainingHours;
-            document.getElementById('in-l-fault').value = log.fault;
-            document.getElementById('in-l-action').value = log.action;
-            document.getElementById('in-l-parts').value = log.parts;
-            document.getElementById('in-l-status').value = log.status;
-            document.getElementById('in-l-remarks').value = log.remarks || "";
-            toggleModal('modal-add-log', true);
-        }
-
-        function syncMetricsFromWorkOrder(woId) {
-            const wo = memory.workOrders.find(w => w.id === woId);
-            if (!wo) return;
-            if (wo.type === 'hours') {
-                document.getElementById('in-l-current').value = wo.currentHours + " Hrs";
-                document.getElementById('in-l-current-target').value = wo.targetHours + " Hrs";
-                document.getElementById('in-l-remaining').value = (wo.targetHours - wo.currentHours) + " Hrs";
-            } else {
-                document.getElementById('in-l-current').value = wo.currentDate || "N/A";
-                document.getElementById('in-l-current-target').value = wo.targetDate || "N/A";
-                document.getElementById('in-l-remaining').value = "Scheduled Target Bounds";
-            }
-        }
-
-        function executeLogSubmission(e) {
-            e.preventDefault();
-            const id = document.getElementById('in-l-id').value.trim().toUpperCase();
-            const woId = document.getElementById('in-l-wo').value;
-            const wo = memory.workOrders.find(w => w.id === woId) || { assetId: 'UNKNOWN' };
-            const opStatus = document.getElementById('in-l-status').value;
-            
-            const payload = {
-                id: id,
-                workOrderId: woId,
-                assetId: wo.assetId,
-                date: document.getElementById('in-l-date').value,
-                currentMetric: document.getElementById('in-l-current').value,
-                targetMetric: document.getElementById('in-l-current-target').value,
-                remainingHours: document.getElementById('in-l-remaining').value,
-                fault: document.getElementById('in-l-fault').value,
-                action: document.getElementById('in-l-action').value,
-                parts: document.getElementById('in-l-parts').value,
-                technician: document.getElementById('in-l-tech').value,
-                status: opStatus,
-                remarks: document.getElementById('in-l-remarks').value
-            };
-            
-            db.ref('maintenanceLogs/' + id).set(payload, (error) => {
-                if (!error) {
-                    if (opStatus === "Operational") {
-                        db.ref('workOrders/' + woId + '/status').set('Completed');
-                    }
-                    db.ref('assets/' + wo.assetId + '/status').set(opStatus);
-                    toggleModal('modal-add-log', false);
-                }
-            });
-        }
-
-        function dropLogEntry(id) {
-            if (confirm(`Delete Log Entry ${id}?`)) {
-                db.ref('maintenanceLogs/' + id).remove();
-            }
-        }
-
-        function printMaintenanceLog(logId) {
-            const log = memory.maintenanceLogs.find(l => l.id === logId);
-            if (!log) return;
-            const asset = memory.assets.find(a => a.id === log.assetId) || { model: 'N/A', serial: 'N/A' };
-            
-            const pSec = document.getElementById('print-section');
-            pSec.innerHTML = `
-                <div style="font-family: Arial, sans-serif; color: #0f172a; padding: 30px; line-height: 1.5; max-width: 850px; margin: 0 auto; background: #ffffff;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 24px;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" style="height: 45px; width: 45px; object-fit: contain; border-radius: 4px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
-                            <div>
-                                <h2 style="margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase;">Al Ghaith Trading &amp; Industrial Services</h2>
-                                <p style="margin: 2px 0 0 0; color: #64748b; font-size: 11px;">Maintenance Log Verification Slip</p>
-                            </div>
-                        </div>
-                        <div style="text-align: right;">
-                            <h3 style="margin: 0; font-size: 13px; font-weight: bold; text-transform: uppercase;">Maintenance Slip</h3>
-                            <p style="margin: 3px 0 0 0; font-size: 10px; color: #64748b;">Log ID: ${log.id}</p>
-                        </div>
-                    </div>
-                    
-                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px;">
-                        <tr>
-                            <td style="vertical-align: top; width: 50%; padding-right: 20px;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 35%;">Log Entry ID:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; font-size: 13px;">${log.id}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Execution Date:</td><td style="padding: 5px 0;">${log.date}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Assigned Tech:</td><td style="padding: 5px 0; font-weight: 500;">${log.technician}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Resulting Status:</td><td style="padding: 5px 0;"><span style="font-weight: bold; color: #059669;">${log.status}</span></td></tr>
-                                </table>
-                            </td>
-                            <td style="vertical-align: top; width: 50%; padding-left: 20px; border-left: 1px solid #e2e8f0;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 35%;">Asset Tag ID:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; color: #1e293b;">${log.assetId}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Model Number:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; color: #0f172a;">${asset.model || 'N/A'}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Serial Number:</td><td style="padding: 5px 0; font-family: monospace; color: #334155;">${asset.serial || 'N/A'}</td></tr>
-                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Metrics Log:</td><td style="padding: 5px 0; font-family: monospace;">${log.currentMetric} / ${log.targetMetric} (${log.remainingHours})</td></tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                    
-                    <div style="font-size: 12px; border-top: 1px solid #cbd5e1; padding-top: 16px;">
-                        <div style="margin-bottom: 16px;">
-                            <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Fault Discovery / Inspection Diagnostics:</strong>
-                            <div style="font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; color: #991b1b; white-space: pre-line;">⚠️ ${log.fault}</div>
-                        </div>
-                        
-                        <div style="margin-bottom: 16px;">
-                            <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Service Maintenance Performed / Corrective Action:</strong>
-                            <div style="font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; color: #1e293b; white-space: pre-line; line-height: 1.6;">⚙️ ${log.action}</div>
-                        </div>
-                        
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
-                            <tr>
-                                <td style="width: 50%; padding-right: 10px; vertical-align: top;">
-                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Components / Parts Applied:</strong>
-                                    <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.parts || '<span style="color:#94a3b8; font-style:italic">None recorded</span>'}</div>
-                                </td>
-                                <td style="width: 50%; padding-left: 10px; vertical-align: top;">
-                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Operations Constraint Remarks:</strong>
-                                    <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.remarks || '<span style="color:#94a3b8; font-style:italic">None</span>'}</div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    
-                    <div style="margin-top: 70px; display: flex; justify-content: space-between; font-size: 11px; color: #475569;">
-                        <div style="text-align: center; width: 220px; border-top: 1px dashed #64748b; padding-top: 8px; font-weight: 500;">Technician Signature</div>
-                        <div style="text-align: center; width: 220px; border-top: 1px dashed #64748b; padding-top: 8px; font-weight: 500;">Workshop Supervisor Approval</div>
-                    </div>
-                </div>
-            `;
-            window.print();
-        }
-
-        // --- ANALYTICAL INTERACTION RESTRUCTURING FOR COMPLIANCE VIA image_8d4ee6.jpg ---
-        function updateLiveAnalyticsSummary() {
-            let start = document.getElementById('print-start-date').value;
-            let end = document.getElementById('print-end-date').value;
-            
-            if(!start || !end) {
-                start = "1970-01-01";
-                end = "2099-12-31";
-            }
-            
-            let filteredExpenses = memory.expenses.filter(e => e.date >= start && e.date <= end);
-            let totalExpenseSum = filteredExpenses.reduce((sum, e) => sum + parseFloat(e.total || 0), 0);
-            document.getElementById('analytics-total-expenses').innerText = "QAR " + totalExpenseSum.toFixed(2);
-            
-            let filteredLogs = memory.maintenanceLogs.filter(l => l.date >= start && l.date <= end);
-            document.getElementById('analytics-total-logs').innerText = filteredLogs.length + " Logs";
-            
-            let activeWoCount = memory.workOrders.filter(w => w.status !== 'Completed' && w.status !== 'Cancelled').length;
-            document.getElementById('analytics-total-wo').innerText = activeWoCount + " Active";
-            
-            let totalAssets = memory.assets.length;
-            let operationalAssets = memory.assets.filter(a => a.status === 'Operational').length;
-            let fleetRatio = totalAssets > 0 ? Math.round((operationalAssets / totalAssets) * 100) : 0;
-            document.getElementById('analytics-fleet-ratio').innerText = fleetRatio + "% Operational";
-            
-            const previewContainer = document.getElementById('rows-analytics-preview');
-            if (!previewContainer) return;
-            previewContainer.innerHTML = "";
-            
-            let combinedItems = [];
-            
-            filteredExpenses.forEach(e => {
-                combinedItems.push({
-                    id: e.id,
-                    type: "Financial Expense",
-                    assetId: e.assetId,
-                    date: e.date,
-                    desc: `${e.parts} - ${e.purpose}`,
-                    val: `QAR ${parseFloat(e.total).toFixed(2)}`,
-                    rawDate: new Date(e.date)
-                });
-            });
-            
-            filteredLogs.forEach(l => {
-                combinedItems.push({
-                    id: l.id,
-                    type: "Maintenance Log",
-                    assetId: l.assetId,
-                    date: l.date,
-                    desc: l.action,
-                    val: l.status,
-                    rawDate: new Date(l.date)
-                });
-            });
-            
-            combinedItems.sort((a, b) => b.rawDate - a.rawDate);
-            document.getElementById('analytics-preview-count').innerText = combinedItems.length + " records selected";
-            
-            if (combinedItems.length === 0) {
-                previewContainer.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 italic">No historical entries found for this specific timeframe range configuration parameters.</td></tr>`;
-                return;
-            }
-            
-            combinedItems.forEach(item => {
-                let assetObj = memory.assets.find(a => a.id === item.assetId) || { model: 'N/A' };
-                previewContainer.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition text-xs font-medium">
-                        <td class="p-3 font-bold font-code text-slate-900">${item.id}</td>
-                        <td class="p-3 text-[11px]"><span class="px-1.5 py-0.5 rounded ${item.type === 'Financial Expense' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}">${item.type}</span></td>
-                        <td class="p-3 font-code font-bold text-slate-700">${item.assetId} <span class="text-[10px] font-normal text-slate-400 font-sans block">${assetObj.model}</span></td>
-                        <td class="p-3 text-slate-500 font-code">${item.date}</td>
-                        <td class="p-3 max-w-sm truncate text-slate-600">${item.desc}</td>
-                        <td class="p-3 text-right font-bold ${item.type === 'Financial Expense' ? 'text-slate-900 font-code' : 'text-emerald-700'}">${item.val}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function printFilteredLogs() {
-            let start = document.getElementById('print-start-date').value;
-            let end = document.getElementById('print-end-date').value;
-            if(!start || !end) { alert("Please input start and end parameters before trying validation export."); return; }
-            
-            let filtered = memory.maintenanceLogs.filter(l => l.date >= start && l.date <= end);
-            let rowsHtml = filtered.sort((a,b) => new Date(a.date) - new Date(b.date)).map(l => {
-                const asset = memory.assets.find(a => a.id === l.assetId) || { model: 'N/A' };
-                return `
-                <tr>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.date}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1; font-weight:bold;">${l.id}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.assetId} - ${asset.model}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.technician}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.action}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1; font-weight:600;">${l.status}</td>
-                </tr>`;
-            }).join('');
-
-            if(filtered.length === 0) { rowsHtml = '<tr><td colspan="6" style="padding:12px; text-align:center; color:#64748b;">No maintenance records match.</td></tr>'; }
-            executeTablePrint(`Maintenance Analytical Record (${start} to ${end})`, rowsHtml, ['Date Executed', 'Log Reference', 'Equipment Target', 'Technician Assignee', 'Executed Actions Summary', 'Status State']);
-        }
-
-        function printFilteredExpenses() {
-            let start = document.getElementById('print-start-date').value;
-            let end = document.getElementById('print-end-date').value;
-            if(!start || !end) { alert("Please select date criteria elements."); return; }
-            
-            let filtered = memory.expenses.filter(e => e.date >= start && e.date <= end);
-            let rowsHtml = filtered.sort((a,b) => new Date(a.date) - new Date(b.date)).map(e => {
-                const asset = memory.assets.find(a => a.id === e.assetId) || { model: 'N/A' };
-                return `
-                <tr>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${e.date}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1; font-weight:bold;">${e.id}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${e.assetId} - ${asset.model}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${e.parts}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1;">${e.purpose}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1; text-align:right;">${e.qty}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1; text-align:right;">QAR ${parseFloat(e.price).toFixed(2)}</td>
-                    <td style="padding:6px; border:1px solid #cbd5e1; text-align:right; font-weight:bold;">QAR ${parseFloat(e.total).toFixed(2)}</td>
-                </tr>`;
-            }).join('');
-            
-            if(filtered.length > 0) {
-                let totalSum = filtered.reduce((sum, e) => sum + parseFloat(e.total || 0), 0).toFixed(2);
-                rowsHtml += `
-                    <tr style="background:#f1f5f9;">
-                        <td colspan="7" style="padding:8px; border:1px solid #cbd5e1; text-align:right; font-weight:bold;">Grand Total Aggregated Expenses:</td>
-                        <td style="padding:8px; border:1px solid #cbd5e1; text-align:right; font-weight:bold; color:#0f172a;">QAR ${totalSum}</td>
-                    </tr>`;
-            } else { rowsHtml = '<tr><td colspan="8" style="padding:12px; text-align:center; color:#64748b;">No monetary actions recorded inside range boundaries.</td></tr>'; }
-            executeTablePrint(`Financial Expense Statement (${start} to ${end})`, rowsHtml, ['Date', 'Expense ID', 'Asset Target', 'Parts Secured', 'Justification Purpose', 'Qty', 'Unit Price', 'Total Cost']);
-        }
-
-        // --- EXPENSES MANAGEMENT LOGIC ---
-        function calculateExpenseTotal() {
-            let qty = parseFloat(document.getElementById('in-e-qty').value) || 0;
-            let price = parseFloat(document.getElementById('in-e-price').value) || 0;
-            document.getElementById('in-e-total').value = (qty * price).toFixed(2);
-        }
-
-        function openAddExpenseModal() {
-            document.getElementById('form-expense').reset();
-            let nextNum = 1001;
-            if (memory.expenses && memory.expenses.length > 0) {
-                memory.expenses.forEach(e => {
-                    let num = parseInt(e.id.replace('EXP-', ''));
-                    if (!isNaN(num) && num >= nextNum) { nextNum = num + 1; }
-                });
-            }
-            document.getElementById('in-e-id').value = "EXP-" + nextNum;
-            document.getElementById('in-e-id').disabled = true;
-            document.getElementById('in-e-date').value = new Date().toISOString().split('T')[0];
-            populateEquipmentDropdown('in-e-asset');
-            toggleModal('modal-add-expense', true);
-        }
-
-        function executeExpenseSubmission(e) {
-            e.preventDefault();
-            const id = document.getElementById('in-e-id').value.trim().toUpperCase();
-            const payload = {
-                id: id,
-                assetId: document.getElementById('in-e-asset').value,
-                date: document.getElementById('in-e-date').value,
-                parts: document.getElementById('in-e-parts').value,
-                purpose: document.getElementById('in-e-purpose').value,
-                qty: parseFloat(document.getElementById('in-e-qty').value) || 0,
-                price: parseFloat(document.getElementById('in-e-price').value) || 0,
-                total: parseFloat(document.getElementById('in-e-total').value) || 0
-            };
-            db.ref('expenses/' + id).set(payload, (error) => {
-                if (!error) toggleModal('modal-add-expense', false);
-            });
-        }
-
-        function dropExpense(id) {
-            if (confirm(`Delete financial receipt log item ${id}?`)) {
-                db.ref('expenses/' + id).remove();
-            }
-        }
-
-        // --- MOBILIZATION DISPATCH TRACKING MODULE ---
-        function openAddDispatchModal() {
-            document.getElementById('form-dispatch').reset();
-            let nextNum = 7001;
-            if (memory.dispatches && memory.dispatches.length > 0) {
-                memory.dispatches.forEach(d => {
-                    let num = parseInt(d.id.replace('DSP-', ''));
-                    if (!isNaN(num) && num >= nextNum) nextNum = num + 1;
-                });
-            }
-            document.getElementById('in-d-id').value = "DSP-" + nextNum;
-            document.getElementById('in-d-date').value = new Date().toISOString().split('T')[0];
-            populateEquipmentDropdown('in-d-asset');
-            toggleModal('modal-add-dispatch', true);
-        }
-
-        function executeDispatchSubmission(e) {
-            e.preventDefault();
-            const id = document.getElementById('in-d-id').value.trim().toUpperCase();
-            const assetId = document.getElementById('in-d-asset').value;
-            const type = document.getElementById('in-d-type').value;
-            const destination = document.getElementById('in-d-destination').value.trim();
-            
-            const payload = {
-                id: id,
-                assetId: assetId,
-                type: type,
-                destination: destination,
-                date: document.getElementById('in-d-date').value
-            };
-            
-            db.ref('dispatches/' + id).set(payload, (error) => {
-                if (!error) {
-                    let assetStatus = type === "Dispatch Out" ? "Dispatched" : "Operational";
-                    let assetLoc = type === "Dispatch Out" ? destination.toUpperCase() : "WORKSHOP";
-                    db.ref('assets/' + assetId + '/status').set(assetStatus);
-                    db.ref('assets/' + assetId + '/location').set(assetLoc);
-                    toggleModal('modal-add-dispatch', false);
-                }
-            });
-        }
-
-        function dropDispatchEvent(id) {
-            if (confirm(`Purge mobilization tracking configuration file index ${id}?`)) {
-                db.ref('dispatches/' + id).remove();
-            }
-        }
-
-        // --- ENGINEERING TECHNICIANmatrix CONTROLS ---
-        function openAddTechModal() {
-            document.getElementById('form-tech').reset();
-            let nextNum = memory.technicians.length + 1;
-            document.getElementById('in-t-id').value = "TECH-" + (nextNum < 10 ? "0" + nextNum : nextNum);
-            document.getElementById('in-t-id').disabled = false;
-            document.getElementById('in-t-mode').value = "create";
-            toggleModal('modal-add-tech', true);
-        }
-
-        function openEditTechModal(id) {
-            const tech = memory.technicians.find(t => t.id === id);
-            if (!tech) return;
-            document.getElementById('in-t-mode').value = "edit";
-            document.getElementById('in-t-id').value = tech.id;
-            document.getElementById('in-t-id').disabled = true;
-            document.getElementById('in-t-name').value = tech.name;
-            document.getElementById('in-t-designation').value = tech.designation;
-            document.getElementById('in-t-contact').value = tech.contact || "";
-            toggleModal('modal-add-tech', true);
-        }
-
-        function executeTechSubmission(e) {
-            e.preventDefault();
-            const id = document.getElementById('in-t-id').value.trim().toUpperCase();
-            const payload = {
-                id: id,
-                name: document.getElementById('in-t-name').value.trim(),
-                designation: document.getElementById('in-t-designation').value.trim(),
-                contact: document.getElementById('in-t-contact').value.trim()
-            };
-            db.ref('technicians/' + id).set(payload, (error) => {
-                if (!error) toggleModal('modal-add-tech', false);
-            });
-        }
-
-        function dropTechnician(id) {
-            if (confirm(`Purge engineer credential record mapping file matching ${id}?`)) {
-                db.ref('technicians/' + id).remove();
             }
         }
     </script>
