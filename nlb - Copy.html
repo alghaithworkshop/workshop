@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Ghaith CMMS Portal (Read-Only)</title>
+    <title>Al Ghaith CMMS Portal - Viewer Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
@@ -25,7 +25,6 @@
     <div id="print-section" class="hidden p-8 bg-white text-slate-900"></div>
 
     <div id="app-container" class="flex flex-col min-h-screen">
-        <!-- TOP NAVIGATION BAR -->
         <nav class="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between shadow-xs z-20 gap-4">
             <div class="flex items-center justify-between w-full lg:w-auto">
                 <div class="flex items-center space-x-3.5">
@@ -33,7 +32,7 @@
                     <div>
                         <div class="flex items-center space-x-2">
                             <span class="text-sm font-bold tracking-tight text-slate-900 max-w-[220px] md:max-w-none block truncate">Al Ghaith Trading &amp; Industrial Services</span>
-                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-1.5 py-0.5 rounded tracking-wide uppercase border border-slate-200">Viewer Mode</span>
+                            <span class="px-2 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-bold rounded-full uppercase tracking-wider">Viewer Mode</span>
                         </div>
                         <p class="text-xs text-slate-500">Maintenance Management System</p>
                     </div>
@@ -56,7 +55,6 @@
         </nav>
 
         <div class="flex flex-1 overflow-hidden relative">
-            <!-- SIDEBAR MODULE CONTROL MATRIX -->
             <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-200 w-64 bg-white border-r border-slate-200 p-4 flex flex-col justify-between shadow-md md:shadow-xs h-full shrink-0">
                 <div class="space-y-1">
                     <div class="flex items-center justify-between px-3 mb-4 md:mb-2">
@@ -112,40 +110,39 @@
 
                 <div class="p-3 bg-slate-50 rounded border border-slate-200 mt-4">
                     <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Authorization Matrix</div>
-                    <div id="connection-badge" class="text-xs text-blue-600 font-medium flex items-center">
-                        <span class="h-2 w-2 rounded-full bg-blue-500 mr-2 animate-pulse"></span>
-                        Initializing Mirror System...
+                    <div id="connection-badge" class="text-xs text-amber-600 font-medium flex items-center">
+                        <span class="h-2 w-2 rounded-full bg-amber-500 mr-2 animate-pulse"></span>
+                        Connecting Terminal...
                     </div>
                 </div>
             </aside>
 
             <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="hidden fixed inset-0 bg-slate-900/40 z-20 md:hidden"></div>
 
-            <!-- MAIN COMPARTMENT WORKSPACE PANES -->
             <main class="flex-1 p-4 md:p-8 overflow-y-auto">
                 <div class="flex-1">
-                    
-                    <!-- MASTER FLEET -->
                     <section id="pane-fleet" class="pane-view space-y-4">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Master Fleet Registry</h2>
                                 <p class="text-xs text-slate-500">Primary technical index indexed by unique hardware Asset IDs.</p>
                             </div>
-                            <div class="relative flex items-center">
-                                <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                <input type="text" id="in-f-search" oninput="refreshWorkspaceView()" placeholder="Search ID, model, status, location..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-f-search" oninput="refreshWorkspaceView()" placeholder="Search ID, model, status, location..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
                             </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
                             <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[950px]">
+                                <table class="w-full text-left border-collapse text-xs min-w-[800px]">
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Primary ID</th>
                                             <th class="p-4">Model Number</th>
-                                            <th class="p-4">Equipment Description</th>
+                                            <th class="p-4">Make/Brand</th>
                                             <th class="p-4">Max Pressure</th>
                                             <th class="p-4">Serial Number</th>
                                             <th class="p-4">Location</th>
@@ -159,31 +156,32 @@
                         </div>
                     </section>
 
-                    <!-- THIRD PARTY CERTIFICATES -->
                     <section id="pane-cert" class="pane-view space-y-4 hidden">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Third Party Certificates</h2>
                                 <p class="text-xs text-slate-500">Manage external verification, compliance certifications, and alignment validations.</p>
                             </div>
-                            <div class="relative flex items-center">
-                                <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                <input type="text" id="in-c-search" oninput="refreshWorkspaceView()" placeholder="Search asset ID..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-c-search" oninput="refreshWorkspaceView()" placeholder="Search asset ID..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
                             </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
                             <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[1050px]">
+                                <table class="w-full text-left border-collapse text-xs min-w-[900px]">
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Assigned Equipment ID</th>
                                             <th class="p-4">Model Number</th>
-                                            <th class="p-4">Equipment Description</th>
+                                            <th class="p-4">Make/Brand</th>
                                             <th class="p-4">Serial Number</th>
                                             <th class="p-4">Expiry Date</th>
                                             <th class="p-4">Status Alarm</th>
-                                            <th class="p-4 text-center w-48">Verified Attachments</th>
+                                            <th class="p-4 text-center w-48">Documents</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-cert" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -192,16 +190,17 @@
                         </div>
                     </section>
 
-                    <!-- WORK ORDERS -->
                     <section id="pane-wo" class="pane-view space-y-4 hidden">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Work Orders</h2>
-                            <p class="text-xs text-slate-500">Operational tracking and scheduling metrics.</p>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Work Orders</h2>
+                                <p class="text-xs text-slate-500">Operational tracking and scheduling logs.</p>
+                            </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
                             <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[700px]">
+                                <table class="w-full text-left border-collapse text-xs min-w-[650px]">
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Order ID</th>
@@ -218,32 +217,33 @@
                         </div>
                     </section>
 
-                    <!-- MAINTENANCE LOGS -->
                     <section id="pane-log" class="pane-view space-y-4 hidden">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Logs & Service History</h2>
                                 <p class="text-xs text-slate-500">Execution records from resolved or active maintenance sequences.</p>
                             </div>
-                            <div class="relative flex items-center">
-                                <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
-                                <input type="text" id="in-l-search" oninput="refreshWorkspaceView()" placeholder="Search logs..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-l-search" oninput="refreshWorkspaceView()" placeholder="Search logs..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
                             </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
                             <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[900px]">
+                                <table class="w-full text-left border-collapse text-xs min-w-[850px]">
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Log ID / Date</th>
                                             <th class="p-4">Equipment Asset</th>
                                             <th class="p-4">Interval Bounds</th>
                                             <th class="p-4">Remaining Before Maint.</th>
-                                            <th class="p-4">Fault Report & Action Summary</th>
+                                            <th class="p-4">Fault Report & Action</th>
                                             <th class="p-4">Parts & Tech</th>
                                             <th class="p-4">Asset Status</th>
-                                            <th class="p-4 text-center w-36">Actions</th>
+                                            <th class="p-4 text-center w-36">Documents</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-log" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -252,16 +252,17 @@
                         </div>
                     </section>
 
-                    <!-- EXPENSES TRACKING -->
                     <section id="pane-expenses" class="pane-view space-y-4 hidden">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Expenses Tracking</h2>
-                            <p class="text-xs text-slate-500">Financial asset procurement histories and parts purchasing logs.</p>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Expenses Tracking</h2>
+                                <p class="text-xs text-slate-500">Financial records and parts purchasing logs.</p>
+                            </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
                             <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[900px]">
+                                <table class="w-full text-left border-collapse text-xs min-w-[850px]">
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Date</th>
@@ -280,16 +281,17 @@
                         </div>
                     </section>
 
-                    <!-- DISPATCH LOGS -->
                     <section id="pane-dispatch" class="pane-view space-y-4 hidden">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">In/Out Dispatch Logs</h2>
-                            <p class="text-xs text-slate-500">Mobilization field tracking overview panel.</p>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">In/Out Dispatch Logs</h2>
+                                <p class="text-xs text-slate-500">Mobilization tracking panel.</p>
+                            </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
                             <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[650px]">
+                                <table class="w-full text-left border-collapse text-xs min-w-[600px]">
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Dispatch ID</th>
@@ -305,16 +307,17 @@
                         </div>
                     </section>
 
-                    <!-- TECHNICIAN DIRECTORY -->
                     <section id="pane-tech" class="pane-view space-y-4 hidden">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Technician Profile Directory</h2>
-                            <p class="text-xs text-slate-500">Engineering roster and technical operational credentials.</p>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Technician Profile Directory</h2>
+                                <p class="text-xs text-slate-500">Engineering roster and technical credentials.</p>
+                            </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
                             <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[600px]">
+                                <table class="w-full text-left border-collapse text-xs min-w-[500px]">
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Tech ID</th>
@@ -329,7 +332,6 @@
                         </div>
                     </section>
 
-                    <!-- ANALYTICAL REPORTS (READ ONLY VIEW INSIGHTS) -->
                     <section id="pane-analytics" class="pane-view space-y-6 hidden">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
                             <div>
@@ -395,7 +397,7 @@
                                             <th class="p-3">Category Type</th>
                                             <th class="p-3">Asset ID / Model</th>
                                             <th class="p-3">Date Item</th>
-                                            <th class="p-3">Summary Description</th>
+                                            <th class="p-3">Summary Description / Actions</th>
                                             <th class="p-3 text-right">Value Amount</th>
                                         </tr>
                                     </thead>
@@ -409,7 +411,6 @@
                         </div>
                     </section>
 
-                    <!-- MAINTENANCE SAFETY -->
                     <section id="pane-safety" class="pane-view space-y-6 hidden">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rose-200 pb-4">
                             <div>
@@ -462,7 +463,6 @@
         </footer>
     </div>
 
-    <!-- PERSISTED VIEWING ATTACHMENT MODAL -->
     <div id="modal-view-cert-image" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
         <div class="bg-white border border-slate-200 rounded-lg w-full max-w-2xl p-6 space-y-4 shadow-2xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
@@ -478,7 +478,6 @@
         </div>
     </div>
 
-    <!-- LOGIC SYSTEM PIPELINE CONTROLLER -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCS6OIQ6wFFKDRcq-SFGCLP2aVq6faq5fo",
@@ -526,10 +525,10 @@
                 const badge = document.getElementById('connection-badge');
                 if (snap.val() === true) {
                     badge.className = "text-xs text-emerald-600 font-medium flex items-center";
-                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>Live Feed Secured`;
+                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>Firebase Terminal Live (Read-Only)`;
                 } else {
-                    badge.className = "text-xs text-amber-600 font-medium flex items-center";
-                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-amber-500 mr-2 animate-pulse"></span>Synchronizing Local Frame...`;
+                    badge.className = "text-xs text-rose-600 font-medium flex items-center";
+                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-rose-500 mr-2 animate-pulse"></span>Offline / Reconnecting`;
                 }
             });
 
@@ -771,149 +770,14 @@
                             <li style="margin-bottom: 8px;">Keep shop walkways and parts bin locations completely clear of fluid spills to prevent critical slip hazards.</li>
                         </ul>
                     </div>
-                </div>
-            `;
-            window.print();
-        }
 
-        function printMaintenanceLog(logId) {
-            const l = memory.maintenanceLogs.find(log => log.id === logId);
-            if (!l) return;
-            const pSec = document.getElementById('print-section');
-            pSec.innerHTML = `
-                <div style="font-family: Arial, sans-serif; padding: 25px; border: 2px solid #0f172a; max-width: 650px; margin: 0 auto; background: white; color: #0f172a;">
-                    <div style="text-align: center; margin-bottom: 15px;">
-                        <h2 style="margin: 0; text-transform: uppercase; font-size: 18px; tracking-wide;">Al Ghaith Trading &amp; Industrial Services</h2>
-                        <p style="margin: 3px 0 0 0; font-size: 12px; color: #475569;">Maintenance Clearance Slip</p>
+                    <div style="margin-top: 50px; font-size: 12px; color: #64748b; text-align: center; border-top: 1px solid #cbd5e1; padding-top: 15px;">
+                        <p style="margin: 0;"><strong>Safety is a collective responsibility.</strong> Any deviations from these protocols must be reported immediately.</p>
+                        <p style="margin: 5px 0 0 0;">Document Generated: ${new Date().toLocaleString()}</p>
                     </div>
-                    <hr style="border: 0; border-top: 2px solid #0f172a; margin-bottom: 15px;" />
-                    <table style="width: 100%; font-size: 12px; text-align: left;" cellpadding="6">
-                        <tr><td><strong>Log Sequence ID:</strong> ${l.id}</td><td><strong>Execution Date:</strong> ${l.date}</td></tr>
-                        <tr><td><strong>Equipment ID Reference:</strong> ${l.assetId}</td><td><strong>Assigned Engineer:</strong> ${l.technician}</td></tr>
-                        <tr><td><strong>Interval Status Metric:</strong> ${l.currentMetric} / ${l.targetMetric}</td><td><strong>Asset Status Post-PM:</strong> ${l.status}</td></tr>
-                        <tr><td colspan="2"><hr style="border:0; border-top: 1px dashed #cbd5e1; margin: 5px 0;"/></td></tr>
-                        <tr><td colspan="2"><strong>Reported Symptoms / Fault:</strong><br><p style="background:#f8fafc; padding:8px; border:1px solid #e2e8f0; border-radius:4px; margin:4px 0;">${l.fault}</p></td></tr>
-                        <tr><td colspan="2"><strong>Action Operations Performed:</strong><br><p style="background:#f8fafc; padding:8px; border:1px solid #e2e8f0; border-radius:4px; margin:4px 0; font-family: monospace;">${l.action}</p></td></tr>
-                        <tr><td colspan="2"><strong>Installed Spares / Components:</strong> ${l.parts || 'None Listed'}</td></tr>
-                    </table>
                 </div>
             `;
             window.print();
-        }
-
-        function updateLiveAnalyticsSummary() {
-            const startInput = document.getElementById('print-start-date').value;
-            const endInput = document.getElementById('print-end-date').value;
-            if (!startInput || !endInput) return;
-            
-            const startDate = new Date(startInput);
-            const endDate = new Date(endInput);
-            endDate.setHours(23,59,59,999);
-
-            const filteredExpenses = memory.expenses.filter(e => {
-                const d = new Date(e.date);
-                return d >= startDate && d <= endDate;
-            });
-            const totalExp = filteredExpenses.reduce((sum, e) => sum + parseFloat(e.total || 0), 0);
-            document.getElementById('analytics-total-expenses').innerText = `QAR ${totalExp.toFixed(2)}`;
-
-            const filteredLogs = memory.maintenanceLogs.filter(l => {
-                const d = new Date(l.date);
-                return d >= startDate && d <= endDate;
-            });
-            document.getElementById('analytics-total-logs').innerText = `${filteredLogs.length} Logs`;
-
-            const activeWos = memory.workOrders.filter(w => w.status !== 'Completed' && w.status !== 'Cancelled');
-            document.getElementById('analytics-total-wo').innerText = `${activeWos.length} Active`;
-
-            const totalAssets = memory.assets.length;
-            const operationalAssets = memory.assets.filter(a => a.status === 'Operational').length;
-            const ratio = totalAssets > 0 ? Math.round((operationalAssets / totalAssets) * 100) : 0;
-            document.getElementById('analytics-fleet-ratio').innerText = `${ratio}% Operational`;
-
-            const previewContainer = document.getElementById('rows-analytics-preview');
-            previewContainer.innerHTML = "";
-            
-            let records = [];
-            filteredExpenses.forEach(e => records.push({ id: e.id, type: 'Expense', asset: e.assetId, date: e.date, desc: e.parts, val: parseFloat(e.total) }));
-            filteredLogs.forEach(l => records.push({ id: l.id, type: 'Maintenance Log', asset: l.assetId, date: l.date, desc: l.fault, val: 0 }));
-
-            records.sort((a,b) => new Date(b.date) - new Date(a.date));
-            document.getElementById('analytics-preview-count').innerText = `${records.length} records selected`;
-
-            if (records.length === 0) {
-                previewContainer.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 italic">No matching records found for this period.</td></tr>`;
-                return;
-            }
-
-            records.forEach(r => {
-                previewContainer.innerHTML += `
-                    <tr class="hover:bg-slate-50">
-                        <td class="p-3 font-code font-bold">${r.id}</td>
-                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.type === 'Expense' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">${r.type}</span></td>
-                        <td class="p-3 font-code">${r.asset}</td>
-                        <td class="p-3 font-code">${r.date}</td>
-                        <td class="p-3 max-w-xs truncate text-slate-600">${r.desc}</td>
-                        <td class="p-3 text-right font-code font-bold text-slate-900">${r.val > 0 ? 'QAR ' + r.val.toFixed(2) : '-'}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function printFilteredLogs() {
-            const startInput = document.getElementById('print-start-date').value;
-            const endInput = document.getElementById('print-end-date').value;
-            if (!startInput || !endInput) return alert("Please specify valid boundary dates first.");
-            
-            const startDate = new Date(startInput);
-            const endDate = new Date(endInput);
-            endDate.setHours(23,59,59,999);
-            
-            const filtered = memory.maintenanceLogs.filter(l => {
-                const d = new Date(l.date);
-                return d >= startDate && d <= endDate;
-            });
-
-            const rows = filtered.map(l => `
-                <tr style="border-bottom: 1px solid #cbd5e1;">
-                    <td style="padding:8px; font-family:monospace;">${l.date}</td>
-                    <td style="padding:8px; font-family:monospace; font-weight:bold;">${l.id}</td>
-                    <td style="padding:8px; font-family:monospace;">${l.assetId}</td>
-                    <td style="padding:8px; color:#9f1239;">${l.fault}</td>
-                    <td style="padding:8px; font-family:monospace;">${l.action}</td>
-                    <td style="padding:8px;">${l.technician}</td>
-                </tr>
-            `).join('');
-
-            executeTablePrint(`Maintenance Logging Summary Profile (${startInput} to ${endInput})`, rows, ['Date', 'Log ID', 'Asset Ref', 'Identified Fault', 'Action Taken', 'Technician']);
-        }
-
-        function printFilteredExpenses() {
-            const startInput = document.getElementById('print-start-date').value;
-            const endInput = document.getElementById('print-end-date').value;
-            if (!startInput || !endInput) return alert("Please specify valid boundary dates first.");
-            
-            const startDate = new Date(startInput);
-            const endDate = new Date(endInput);
-            endDate.setHours(23,59,59,999);
-            
-            const filtered = memory.expenses.filter(e => {
-                const d = new Date(e.date);
-                return d >= startDate && d <= endDate;
-            });
-
-            const rows = filtered.map(e => `
-                <tr style="border-bottom: 1px solid #cbd5e1;">
-                    <td style="padding:8px; font-family:monospace;">${e.date}</td>
-                    <td style="padding:8px; font-family:monospace; font-weight:bold;">${e.id}</td>
-                    <td style="padding:8px; font-family:monospace;">${e.assetId}</td>
-                    <td style="padding:8px;">${e.parts}</td>
-                    <td style="padding:8px;">${e.purpose}</td>
-                    <td style="padding:8px; text-align:right; font-family:monospace; font-weight:bold;">QAR ${parseFloat(e.total).toFixed(2)}</td>
-                </tr>
-            `).join('');
-
-            executeTablePrint(`Financial Procurement Ledger Expenses (${startInput} to ${endInput})`, rows, ['Date Purchased', 'Expense ID', 'Asset Target', 'Parts / Items Description', 'Allocation Purpose', 'Total Investment']);
         }
 
         function refreshWorkspaceView() {
@@ -965,9 +829,8 @@
                     const statusCheck = checkCertificateStatusAlarm(c.expiryDate);
                     
                     const attachmentButtonHtml = c.certificateImage 
-                        ? `<button onclick="viewCertificateImage('${c.id}')" class="text-emerald-600 hover:text-emerald-900 font-bold cursor-pointer inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">image</span> View</button>
-                           <button onclick="printCertificateDocument('${c.id}')" class="text-slate-700 hover:text-black font-bold cursor-pointer inline-flex items-center gap-0.5 pl-2"><span class="material-symbols-outlined text-xs">print</span> Print</button>`
-                        : `<span class="text-slate-300 font-normal italic pointer-events-none">No File Scan</span>`;
+                        ? `<button onclick="viewCertificateImage('${c.id}')" class="text-emerald-600 hover:text-emerald-900 font-bold cursor-pointer inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">image</span> View</button>`
+                        : `<span class="text-slate-300 font-normal italic pointer-events-none">No File</span>`;
 
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50">
@@ -977,7 +840,10 @@
                             <td class="p-4 font-code text-slate-500">${asset.serial || 'N/A'}</td>
                             <td class="p-4 font-code">${c.expiryDate}</td>
                             <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${statusCheck.class}">${statusCheck.text}</span></td>
-                            <td class="p-4 text-center space-x-2">${attachmentButtonHtml}</td>
+                            <td class="p-4 text-center space-x-2">
+                                ${attachmentButtonHtml}
+                                <button onclick="printCertificateDocument('${c.id}')" class="text-slate-900 hover:text-black font-bold cursor-pointer inline-flex items-center gap-0.5 pl-1 border border-slate-200 rounded px-1.5 py-0.5 bg-slate-50 hover:bg-slate-100"><span class="material-symbols-outlined text-xs">print</span> Print</button>
+                            </td>
                         </tr>
                     `;
                 });
@@ -1036,7 +902,7 @@
                             <td class="p-4"><div class="font-medium">${l.technician}</div><div class="text-[10px] text-slate-400 mt-0.5">Parts: ${l.parts}</div></td>
                             <td class="p-4"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${logBadgeColorClass}">${l.status}</span></td>
                             <td class="p-4 text-center">
-                                <button onclick="printMaintenanceLog('${l.id}')" class="text-slate-900 border border-slate-300 px-2.5 py-1 rounded font-bold bg-slate-50 hover:bg-slate-100 inline-flex items-center gap-1 cursor-pointer"><span class="material-symbols-outlined text-xs">print</span> Print Slip</button>
+                                <button onclick="printMaintenanceLog('${l.id}')" class="text-slate-900 border border-slate-300 px-2 py-0.5 rounded font-bold hover:bg-slate-100 flex items-center gap-1 cursor-pointer w-full text-center justify-center"><span class="material-symbols-outlined text-xs">print</span> Print Slip</button>
                             </td>
                         </tr>
                     `;
@@ -1101,6 +967,215 @@
             if (currentActiveModule === "analytics") {
                 updateLiveAnalyticsSummary();
             }
+        }
+
+        function printMaintenanceLog(logId) {
+            const log = memory.maintenanceLogs.find(l => l.id === logId);
+            if (!log) return;
+            const asset = memory.assets.find(a => a.id === log.assetId) || { model: 'N/A', serial: 'N/A' };
+            
+            const pSec = document.getElementById('print-section');
+            pSec.innerHTML = `
+                <div style="font-family: Arial, sans-serif; color: #0f172a; padding: 30px; line-height: 1.5; max-width: 850px; margin: 0 auto; background: #ffffff;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 24px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" style="height: 45px; width: 45px; object-fit: contain; border-radius: 4px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
+                            <div>
+                                <h2 style="margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase;">Al Ghaith Trading &amp; Industrial Services</h2>
+                                <p style="margin: 2px 0 0 0; color: #64748b; font-size: 11px;">Maintenance Log Verification Slip</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <h3 style="margin: 0; font-size: 13px; font-weight: bold; text-transform: uppercase;">Maintenance Slip</h3>
+                            <p style="margin: 3px 0 0 0; font-size: 10px; color: #64748b;">Log ID: ${log.id}</p>
+                        </div>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px;">
+                        <tr>
+                            <td style="vertical-align: top; width: 50%; padding-right: 20px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 35%;">Log Entry ID:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; font-size: 13px;">${log.id}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Execution Date:</td><td style="padding: 5px 0;">${log.date}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Assigned Tech:</td><td style="padding: 5px 0; font-weight: 500;">${log.technician}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Resulting Status:</td><td style="padding: 5px 0;"><span style="font-weight: bold; color: #059669;">${log.status}</span></td></tr>
+                                </table>
+                            </td>
+                            <td style="vertical-align: top; width: 50%; padding-left: 20px; border-left: 1px solid #e2e8f0;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 35%;">Asset Tag ID:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; color: #1e293b;">${log.assetId}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Model Number:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; color: #0f172a;">${asset.model || 'N/A'}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Serial Number:</td><td style="padding: 5px 0; font-family: monospace; color: #334155;">${asset.serial || 'N/A'}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Metrics Log:</td><td style="padding: 5px 0; font-family: monospace;">${log.currentMetric} / ${log.targetMetric} (${log.remainingHours})</td></tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <div style="font-size: 12px; border-top: 1px solid #cbd5e1; padding-top: 16px;">
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Fault Discovery / Inspection Diagnostics:</strong>
+                            <div style="font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; color: #991b1b; white-space: pre-line;">⚠️ ${log.fault}</div>
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Service Maintenance Performed / Corrective Action:</strong>
+                            <div style="font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; color: #1e293b; white-space: pre-line; line-height: 1.6;">⚙️ ${log.action}</div>
+                        </div>
+                        
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
+                            <tr>
+                                <td style="width: 50%; padding-right: 10px; vertical-align: top;">
+                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Components / Parts Applied:</strong>
+                                    <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.parts || '<span style="color:#94a3b8; font-style:italic">None recorded</span>'}</div>
+                                </td>
+                                <td style="width: 50%; padding-left: 10px; vertical-align: top;">
+                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Operations Constraint Remarks:</strong>
+                                    <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.remarks || '<span style="color:#94a3b8; font-style:italic">None</span>'}</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div style="margin-top: 70px; display: flex; justify-content: space-between; font-size: 11px; color: #475569;">
+                        <div style="text-align: center; width: 220px; border-top: 1px dashed #64748b; padding-top: 8px; font-weight: 500;">Technician Signature</div>
+                        <div style="text-align: center; width: 220px; border-top: 1px dashed #64748b; padding-top: 8px; font-weight: 500;">Workshop Supervisor Approval</div>
+                    </div>
+                </div>
+            `;
+            window.print();
+        }
+
+        function updateLiveAnalyticsSummary() {
+            let start = document.getElementById('print-start-date').value;
+            let end = document.getElementById('print-end-date').value;
+            
+            if(!start || !end) {
+                start = "1970-01-01";
+                end = "2099-12-31";
+            }
+            
+            let filteredExpenses = memory.expenses.filter(e => e.date >= start && e.date <= end);
+            let totalExpenseSum = filteredExpenses.reduce((sum, e) => sum + parseFloat(e.total || 0), 0);
+            document.getElementById('analytics-total-expenses').innerText = "QAR " + totalExpenseSum.toFixed(2);
+            
+            let filteredLogs = memory.maintenanceLogs.filter(l => l.date >= start && l.date <= end);
+            document.getElementById('analytics-total-logs').innerText = filteredLogs.length + " Logs";
+            
+            let activeWoCount = memory.workOrders.filter(w => w.status !== 'Completed' && w.status !== 'Cancelled').length;
+            document.getElementById('analytics-total-wo').innerText = activeWoCount + " Active";
+            
+            let totalAssets = memory.assets.length;
+            let operationalAssets = memory.assets.filter(a => a.status === 'Operational').length;
+            let fleetRatio = totalAssets > 0 ? Math.round((operationalAssets / totalAssets) * 100) : 0;
+            document.getElementById('analytics-fleet-ratio').innerText = fleetRatio + "% Operational";
+            
+            const previewContainer = document.getElementById('rows-analytics-preview');
+            if (!previewContainer) return;
+            previewContainer.innerHTML = "";
+            
+            let combinedItems = [];
+            
+            filteredExpenses.forEach(e => {
+                combinedItems.push({
+                    id: e.id,
+                    type: "Financial Expense",
+                    assetId: e.assetId,
+                    date: e.date,
+                    desc: `${e.parts} - ${e.purpose}`,
+                    val: `QAR ${parseFloat(e.total).toFixed(2)}`,
+                    rawDate: new Date(e.date)
+                });
+            });
+            
+            filteredLogs.forEach(l => {
+                combinedItems.push({
+                    id: l.id,
+                    type: "Maintenance Log",
+                    assetId: l.assetId,
+                    date: l.date,
+                    desc: l.action,
+                    val: l.status,
+                    rawDate: new Date(l.date)
+                });
+            });
+            
+            combinedItems.sort((a, b) => b.rawDate - a.rawDate);
+            document.getElementById('analytics-preview-count').innerText = combinedItems.length + " records selected";
+            
+            if (combinedItems.length === 0) {
+                previewContainer.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 italic">No historical entries found for this specific timeframe range configuration parameters.</td></tr>`;
+                return;
+            }
+            
+            combinedItems.forEach(item => {
+                let assetObj = memory.assets.find(a => a.id === item.assetId) || { model: 'N/A' };
+                previewContainer.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition text-xs font-medium">
+                        <td class="p-3 font-bold font-code text-slate-900">${item.id}</td>
+                        <td class="p-3 text-[11px]"><span class="px-1.5 py-0.5 rounded ${item.type === 'Financial Expense' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}">${item.type}</span></td>
+                        <td class="p-3 font-code font-bold text-slate-700">${item.assetId} <span class="text-[10px] font-normal text-slate-400 font-sans block">${assetObj.model}</span></td>
+                        <td class="p-3 text-slate-500 font-code">${item.date}</td>
+                        <td class="p-3 max-w-sm truncate text-slate-600">${item.desc}</td>
+                        <td class="p-3 text-right font-bold ${item.type === 'Financial Expense' ? 'text-slate-900 font-code' : 'text-emerald-700'}">${item.val}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function printFilteredLogs() {
+            let start = document.getElementById('print-start-date').value;
+            let end = document.getElementById('print-end-date').value;
+            if(!start || !end) { alert("Please input start and end parameters before trying validation export."); return; }
+            
+            let filtered = memory.maintenanceLogs.filter(l => l.date >= start && l.date <= end);
+            let rowsHtml = filtered.sort((a,b) => new Date(a.date) - new Date(b.date)).map(l => {
+                const asset = memory.assets.find(a => a.id === l.assetId) || { model: 'N/A' };
+                return `
+                <tr>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.date}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1; font-weight:bold;">${l.id}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.assetId} - ${asset.model}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.technician}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.action}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1; font-weight:600;">${l.status}</td>
+                </tr>`;
+            }).join('');
+
+            if(filtered.length === 0) { rowsHtml = '<tr><td colspan="6" style="padding:12px; text-align:center; color:#64748b;">No maintenance records match.</td></tr>'; }
+            executeTablePrint(`Maintenance Analytical Record (${start} to ${end})`, rowsHtml, ['Date Executed', 'Log Reference', 'Equipment Target', 'Technician Assignee', 'Executed Actions Summary', 'Status State']);
+        }
+
+        function printFilteredExpenses() {
+            let start = document.getElementById('print-start-date').value;
+            let end = document.getElementById('print-end-date').value;
+            if(!start || !end) { alert("Please select date criteria elements."); return; }
+            
+            let filtered = memory.expenses.filter(e => e.date >= start && e.date <= end);
+            let rowsHtml = filtered.sort((a,b) => new Date(a.date) - new Date(b.date)).map(e => {
+                const asset = memory.assets.find(a => a.id === e.assetId) || { model: 'N/A' };
+                return `
+                <tr>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${e.date}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1; font-weight:bold;">${e.id}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${e.assetId} - ${asset.model}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${e.parts}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${e.purpose}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1; text-align:right;">${e.qty}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1; text-align:right;">QAR ${parseFloat(e.price).toFixed(2)}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1; text-align:right; font-weight:bold;">QAR ${parseFloat(e.total).toFixed(2)}</td>
+                </tr>`;
+            }).join('');
+            
+            if(filtered.length > 0) {
+                let totalSum = filtered.reduce((sum, e) => sum + parseFloat(e.total || 0), 0).toFixed(2);
+                rowsHtml += `
+                    <tr style="background:#f1f5f9;">
+                        <td colspan="7" style="padding:8px; border:1px solid #cbd5e1; text-align:right; font-weight:bold;">Grand Total Aggregated Expenses:</td>
+                        <td style="padding:8px; border:1px solid #cbd5e1; text-align:right; font-weight:bold; color:#0f172a;">QAR ${totalSum}</td>
+                    </tr>`;
+            } else { rowsHtml = '<tr><td colspan="8" style="padding:12px; text-align:center; color:#64748b;">No monetary actions recorded inside range boundaries.</td></tr>'; }
+            executeTablePrint(`Financial Expense Statement (${start} to ${end})`, rowsHtml, ['Date', 'Expense ID', 'Asset Target', 'Parts Secured', 'Justification Purpose', 'Qty', 'Unit Price', 'Total Cost']);
         }
     </script>
 </body>
