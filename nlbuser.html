@@ -190,6 +190,7 @@
                                             <th class="p-4">Current Metric</th>
                                             <th class="p-4">Target Metric</th>
                                             <th class="p-4">Remaining Hours / Info</th>
+                                            <th class="p-4">Reason</th>
                                             <th class="p-4">Status</th>
                                         </tr>
                                     </thead>
@@ -734,6 +735,7 @@
                             <td class="p-4 font-code">${metricInfo}</td>
                             <td class="p-4 font-code">${targetInfo}</td>
                             <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
+                            <td class="p-4 text-xs">${w.reason || 'N/A'}</td>
                             <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woStatusClass}">${w.status}</span></td>
                         </tr>
                     `;
