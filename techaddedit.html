@@ -253,6 +253,7 @@
                                             <th class="p-4">Current Metric</th>
                                             <th class="p-4">Target Metric</th>
                                             <th class="p-4">Remaining Hours / Info</th>
+                                            <th class="p-4">Reason</th>
                                             <th class="p-4">Status</th>
                                             <th class="p-4 text-center w-56">Actions</th>
                                         </tr>
@@ -763,6 +764,10 @@
                     </div>
                 </div>
                 <div>
+                    <label class="block text-slate-600 font-medium mb-1">Reason for Work Order *</label>
+                    <input type="text" id="in-w-reason" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. Scheduled 500h Service or Unexpected Leak Repair">
+                </div>
+                <div>
                     <label class="block text-slate-600 font-medium mb-1">Order Status *</label>
                     <select id="in-w-status" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
                         <option value="Pending">Pending</option>
@@ -848,12 +853,12 @@
                         <div class="space-y-1.5">
                             <p class="font-bold text-slate-700 uppercase tracking-wider text-[10px]">Diesel Engine Platform</p>
                             <label class="flex items-start space-x-2 p-1 hover:bg-white rounded cursor-pointer">
-                                <input type="checkbox" name="pm-checks" value="Inspect for general fluid leaks (oil, fuel, coolant)" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
+                                <input type="checkbox" name="pm-checks" value="Replace engine lubrication oils & filter blocks" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
                                 <span class="text-slate-600">Inspect for general fluid leaks (oil, fuel, coolant)</span>
                             </label>
                             <label class="flex items-start space-x-2 p-1 hover:bg-white rounded cursor-pointer">
-                                <input type="checkbox" name="pm-checks" value="Check engine fluid level (oil, coolant, fuel)" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
-                                <span class="text-slate-600">Check engine fluid level (oil, coolant, fuel)</span>
+                                <input type="checkbox" name="pm-checks" value="Service primary/secondary fuel filters" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
+                                <span class="text-slate-600">Service primary/secondary fuel filters</span>
                             </label>
                             <label class="flex items-start space-x-2 p-1 hover:bg-white rounded cursor-pointer">
                                 <input type="checkbox" name="pm-checks" value="Check intake air filters & ducting seals" class="rounded border-slate-300 text-slate-900 mt-0.5 h-3.5 w-3.5">
@@ -1517,6 +1522,7 @@
                             <td class="p-4 font-code">${metricInfo}</td>
                             <td class="p-4 font-code">${targetInfo}</td>
                             <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
+                            <td class="p-4 text-xs">${w.reason || 'N/A'}</td>
                             <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woStatusClass}">${w.status}</span></td>
                             <td class="p-4 text-center">
                                 <button onclick="openEditWoModal('${w.id}')" class="text-slate-600 hover:text-slate-900 font-semibold cursor-pointer">Edit State</button>
@@ -1778,6 +1784,7 @@
                 document.getElementById('in-w-current-date').value = wo.currentDate || "";
                 document.getElementById('in-w-target-date').value = wo.targetDate || "";
             }
+            document.getElementById('in-w-reason').value = wo.reason;
             document.getElementById('in-w-status').value = wo.status;
             toggleModal('modal-add-wo', true);
         }
@@ -1786,24 +1793,67 @@
             e.preventDefault();
             const id = document.getElementById('in-w-id').value.trim().toUpperCase();
             const type = document.getElementById('in-w-type').value;
+            const assetId = document.getElementById('in-w-asset').value; 
+
             const payload = {
                 id: id,
-                assetId: document.getElementById('in-w-asset').value,
+                assetId: assetId,
                 type: type,
+                reason: document.getElementById('in-w-reason').value,
                 status: document.getElementById('in-w-status').value,
                 currentHours: type === 'hours' ? parseInt(document.getElementById('in-w-current-hours').value) || 0 : "",
                 targetHours: type === 'hours' ? parseInt(document.getElementById('in-w-target-hours').value) || 0 : "",
                 currentDate: type === 'date' ? document.getElementById('in-w-current-date').value : "",
                 targetDate: type === 'date' ? document.getElementById('in-w-target-date').value : ""
             };
+
+            // 1. Save the Work Order
             db.ref('workOrders/' + id).set(payload, (error) => {
-                if (!error) toggleModal('modal-add-wo', false);
+                if (!error) {
+                    // 2. Update Asset: Status "In Maintenance" + Warning/Red Color
+                    db.ref('assets/' + assetId).update({ 
+                        status: "In Maintenance",
+                        statusColor: "#FF9800" // Adjust to your specific Hex Code or CSS class (e.g., 'text-warning')
+                    }, (assetError) => {
+                        if (!assetError) {
+                            toggleModal('modal-add-wo', false);
+                        } else {
+                            console.error("Failed to update asset status: ", assetError);
+                        }
+                    });
+                } else {
+                    console.error("Failed to save work order: ", error);
+                }
             });
         }
 
         function dropWorkOrder(id) {
             if (confirm(`Purge Work Order ${id}?`)) {
-                db.ref('workOrders/' + id).remove();
+                const woRef = db.ref('workOrders/' + id);
+
+                // 1. Fetch the work order to find the associated assetId
+                woRef.once('value').then((snapshot) => {
+                    const woData = snapshot.val();
+                    
+                    if (woData && woData.assetId) {
+                        const assetId = woData.assetId;
+
+                        // 2. Revert the asset status back to "Operational" + Success/Green Color
+                        db.ref('assets/' + assetId).update({ 
+                            status: "Operational",
+                            statusColor: "#4CAF50" // Adjust to your specific Hex Code or CSS class (e.g., 'text-success')
+                        }).then(() => {
+                            // 3. Remove the work order safely
+                            return woRef.remove();
+                        }).catch((error) => {
+                            console.error("Failed to update asset status during purge:", error);
+                        });
+                    } else {
+                        woRef.remove();
+                    }
+                }).catch((error) => {
+                    console.error("Failed to fetch work order data:", error);
+                });
             }
         }
 
