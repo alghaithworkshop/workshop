@@ -5,125 +5,264 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Al Ghaith Asset Management Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+        }
+        .font-mono-tech {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Professional Technical Blueprint & Ambient Glow Background */
+        .bg-executive {
+            background-color: #030712;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(225, 29, 72, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.07) 0%, transparent 40%),
+                radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+            background-attachment: fixed;
+        }
+
         .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-rose-500 selection:text-white">
+<body class="bg-executive text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-rose-500 selection:text-white relative">
 
+    <!-- Subtle Background Ambient Light Orbs -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute -top-32 -left-32 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/3 -right-32 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Floating Navigation Return Button -->
     <div id="floating-back-btn" class="hidden fixed bottom-6 right-6 z-50 animate-fade-in">
-        <button onclick="returnToHub()" class="flex items-center space-x-2 bg-slate-900/90 text-white hover:bg-rose-600 border border-slate-700 hover:border-rose-500 font-semibold text-xs px-4 py-3 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 backdrop-blur-sm cursor-pointer">
-            <span class="material-symbols-outlined text-sm">hub</span>
-            <span>Switch Portal Menu</span>
+        <button onclick="returnToHub()" class="group flex items-center space-x-2.5 bg-slate-900/90 text-slate-100 hover:bg-rose-600 border border-slate-700/80 hover:border-rose-500 font-semibold text-xs px-5 py-3 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 backdrop-blur-md cursor-pointer">
+            <span class="material-symbols-outlined text-base group-hover:rotate-180 transition-transform duration-500">grid_view</span>
+            <span class="tracking-wide">Switch Portal Menu</span>
         </button>
     </div>
 
-    <div id="hub-view" class="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 relative z-10 max-w-6xl mx-auto w-full animate-fade-in">
+    <!-- Main Hub View -->
+    <div id="hub-view" class="flex-1 flex flex-col justify-between max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 lg:px-8 animate-fade-in z-10 relative">
         
-        <div class="text-center mb-12">
-            <div class="inline-flex items-center justify-center bg-white p-3 rounded-xl shadow-lg mb-4 transform hover:rotate-3 transition-transform duration-300">
-                <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-14 w-auto object-contain" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
+        <!-- Executive Glass Header -->
+        <header class="mb-8 pt-2">
+            <div class="bg-slate-900/70 border border-slate-800/80 backdrop-blur-2xl rounded-2xl p-6 sm:p-7 shadow-2xl relative overflow-hidden">
+                <!-- Executive Accent Line -->
+                <div class="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-rose-500/60 to-transparent"></div>
+
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    
+                    <!-- Brand & Title Block -->
+                    <div class="flex items-center gap-5">
+                        
+                        <!-- Executive Premium Logo Container -->
+                        <div class="relative group shrink-0">
+                            <!-- Soft Ambient Backlight Glow -->
+                            <div class="absolute -inset-1 bg-gradient-to-r from-rose-500/30 to-slate-500/20 rounded-2xl blur-md opacity-70 group-hover:opacity-100 transition duration-500"></div>
+                            
+                            <!-- Crisp Glassmorphic Logo Pod -->
+                            <div class="relative p-3.5 bg-white rounded-2xl shadow-2xl border border-slate-200/50 ring-1 ring-white/20 flex items-center justify-center">
+                                <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-11 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
+                            </div>
+                        </div>
+                        
+                        <!-- Title Typography -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-mono-tech text-[10px] uppercase font-semibold text-rose-400 tracking-wider bg-rose-500/10 px-2.5 py-0.5 rounded border border-rose-500/20">
+                                    RLC Workshop Division
+                                </span>
+                                <span class="text-slate-600"></span>
+                                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-widest"></span>
+                            </div>
+                            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white uppercase">
+                                Al Ghaith Trading & Industrial Services
+                            </h1>
+                            <p class="text-xs sm:text-sm text-slate-400 font-medium tracking-wide mt-0.5">
+                                Enterprise Operations & Asset Management Command Center
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry & Status Panel -->
+                    <div class="flex flex-wrap items-center gap-3 self-start lg:self-auto pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-800/80">
+                        <div class="flex items-center gap-2 bg-slate-950/80 border border-slate-800 px-3.5 py-2 rounded-xl text-xs font-mono-tech">
+                            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-slate-300 font-semibold tracking-wide">SYSTEM:</span>
+                            <span class="text-emerald-400 font-bold">ONLINE</span>
+                        </div>
+
+                        <div class="hidden sm:flex items-center gap-2 bg-slate-950/80 border border-slate-800 px-3.5 py-2 rounded-xl text-xs font-mono-tech text-slate-400">
+                            <span class="material-symbols-outlined text-sm text-slate-500">verified_user</span>
+                            <span>SECURE GATEWAY</span>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-            <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
-                Al Ghaith Trading & Industrial Services
-            </h1>
-            <p class="text-slate-400 font-medium text-sm sm:text-base max-w-xl mx-auto">
-                Centralized Enterprise Resource & Asset Management Control Center
-            </p>
-        </div>
+        </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full mx-auto">
+        <!-- Visual Image Card Grid -->
+        <main class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 my-auto py-2">
             
-            <button onclick="openPortal('pump')" class="group relative flex flex-col justify-between text-left bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-2xl p-6 sm:p-8 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 cursor-pointer overflow-hidden min-h-[220px]">
-                <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity duration-300 text-rose-500">
-                    <span class="material-symbols-outlined !text-8xl select-none">precision_manufacturing</span>
+            <!-- Card 1: High Pressure Pump Portal -->
+            <button onclick="openPortal('pump')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-rose-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-rose-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
+                <div class="absolute inset-0 z-0">
+                    <img src="hppump.jpg" alt="High Pressure Pump" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
                 </div>
-                <div>
-                    <div class="h-12 w-12 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center mb-5 group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
-                        <span class="material-symbols-outlined text-2xl font-medium">precision_manufacturing</span>
+
+                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="h-10 w-10 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-400 flex items-center justify-center backdrop-blur-md group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
+                                <span class="material-symbols-outlined text-2xl">precision_manufacturing</span>
+                            </div>
+                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-rose-400 px-2.5 py-1 rounded-full">High Pressure Pump</span>
+                        </div>
+                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-rose-300 transition-colors">
+                            High Pressure Pump Portal
+                        </h2>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Monitor and audit high pressure pump registries, maintenance work orders, Maintenance logs, dispatch histories, and credential records.
+                        </p>
                     </div>
-                    <h2 class="text-xl font-bold text-white tracking-tight mb-2 flex items-center gap-2">
-                        <span>High Pressure Pump Portal</span>
-                    </h2>
-                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-[280px] sm:max-w-none">
-                        Manage master fleet registries, maintenance work orders, logs, dispatch histories, and technician credentials.
-                    </p>
-                </div>
-                <div class="mt-6 flex items-center text-xs font-semibold text-rose-400 group-hover:text-rose-300 transition-colors">
-                    <span>Launch Portal Panel</span>
-                    <span class="material-symbols-outlined text-sm ml-1.5 transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+
+                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-rose-400 group-hover:text-rose-300">
+                        <span>Launch Fleet Portal</span>
+                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+                    </div>
                 </div>
             </button>
 
-            <button onclick="openPortal('vehicle')" class="group relative flex flex-col justify-between text-left bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-2xl p-6 sm:p-8 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 cursor-pointer overflow-hidden min-h-[220px]">
-                <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity duration-300 text-sky-500">
-                    <span class="material-symbols-outlined !text-8xl select-none">directions_car</span>
+            <!-- Card 2: Vehicle Management Portal -->
+            <button onclick="openPortal('vehicle')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-sky-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
+                <div class="absolute inset-0 z-0">
+                    <img src="vehicle.jpg" alt="Fleet Vehicle" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
                 </div>
-                <div>
-                    <div class="h-12 w-12 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center mb-5 group-hover:bg-sky-50 group-hover:text-white transition-all duration-300">
-                        <span class="material-symbols-outlined text-2xl font-medium">directions_car</span>
+
+                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="h-10 w-10 rounded-xl bg-sky-500/20 border border-sky-500/30 text-sky-400 flex items-center justify-center backdrop-blur-md group-hover:bg-sky-500 group-hover:text-white transition-all duration-300">
+                                <span class="material-symbols-outlined text-2xl">directions_car</span>
+                            </div>
+                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-sky-400 px-2.5 py-1 rounded-full">Vehicle</span>
+                        </div>
+                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-sky-300 transition-colors">
+                            Vehicle Management
+                        </h2>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Track vehicles, Istimara validity dates, registration renewals, service logs, and operating costs.
+                        </p>
                     </div>
-                    <h2 class="text-xl font-bold text-white tracking-tight mb-2 flex items-center gap-2">
-                        <span>Vehicle Management Portal</span>
-                    </h2>
-                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-[280px] sm:max-w-none">
-                        Track company vehicles, manage Istimara validities, registration renewals, service maintenance metrics, and operational expenses.
-                    </p>
-                </div>
-                <div class="mt-6 flex items-center text-xs font-semibold text-sky-400 group-hover:text-sky-300 transition-colors">
-                    <span>Launch Portal Panel</span>
-                    <span class="material-symbols-outlined text-sm ml-1.5 transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+
+                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-sky-400 group-hover:text-sky-300">
+                        <span>Launch Vehicle Portal</span>
+                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+                    </div>
                 </div>
             </button>
 
-            <button onclick="openPortal('tech')" class="group relative flex flex-col justify-between text-left bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-2xl p-6 sm:p-8 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 cursor-pointer overflow-hidden min-h-[220px]">
-                <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity duration-300 text-amber-500">
-                    <span class="material-symbols-outlined !text-8xl select-none">engineering</span>
+            <!-- Card 3: NLB Technician Login -->
+            <button onclick="openPortal('tech')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-amber-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
+                <div class="absolute inset-0 z-0">
+                    <img src="technician.jpg" alt="Technician" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
                 </div>
-                <div>
-                    <div class="h-12 w-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-5 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
-                        <span class="material-symbols-outlined text-2xl font-medium">engineering</span>
+
+                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="h-10 w-10 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center backdrop-blur-md group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
+                                <span class="material-symbols-outlined text-2xl">engineering</span>
+                            </div>
+                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-amber-400 px-2.5 py-1 rounded-full">Technician</span>
+                        </div>
+                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-amber-300 transition-colors">
+                            NLB Technician Login
+                        </h2>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Secure terminal for Technician teams to update active work orders and complete field logs.
+                        </p>
                     </div>
-                    <h2 class="text-xl font-bold text-white tracking-tight mb-2 flex items-center gap-2">
-                        <span>NLB Technician Login</span>
-                    </h2>
-                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-[280px] sm:max-w-none">
-                        Secure login terminal for engineering teams to update active work orders, register completed logs, and verify field safety.
-                    </p>
-                </div>
-                <div class="mt-6 flex items-center text-xs font-semibold text-amber-400 group-hover:text-amber-300 transition-colors">
-                    <span>Authenticate Terminal</span>
-                    <span class="material-symbols-outlined text-sm ml-1.5 transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+
+                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-amber-400 group-hover:text-amber-300">
+                        <span>Authenticate Terminal</span>
+                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+                    </div>
                 </div>
             </button>
 
-        </div>
+            <!-- Card 4: Inventory Control Portal -->
+            <button onclick="openPortal('inventory')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-emerald-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
+                <div class="absolute inset-0 z-0">
+                    <img src="inventory.png" alt="Inventory Racks" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
+                </div>
+
+                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="h-10 w-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center backdrop-blur-md group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
+                                <span class="material-symbols-outlined text-2xl">inventory_2</span>
+                            </div>
+                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-emerald-400 px-2.5 py-1 rounded-full">Warehouse</span>
+                        </div>
+                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-emerald-300 transition-colors">
+                            Inventory Control Portal
+                        </h2>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Track workshop spare parts, monitor warehouse stock thresholds, and coordinate asset distribution.
+                        </p>
+                    </div>
+
+                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">
+                        <span>Access Stock Inventory</span>
+                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+                    </div>
+                </div>
+            </button>
+
+        </main>
+
+        <div class="mt-6"></div>
     </div>
 
-    <div id="portal-frame-container" class="hidden fixed inset-0 w-full h-full bg-slate-50 z-40">
+    <!-- Embedded Portal Container -->
+    <div id="portal-frame-container" class="hidden fixed inset-0 w-full h-full bg-slate-950 z-40">
         <iframe id="portal-iframe" src="" class="w-full h-full border-0 m-0 p-0 overflow-hidden" allow="autoplay; clipboard-write"></iframe>
     </div>
 
-    <footer id="hub-footer" class="py-6 border-t border-slate-800 text-center text-xs text-slate-500 relative z-10 bg-slate-950/40 w-full">
-        <div>&copy; 2026 Al Ghaith Trading & Industrial Services. All Rights Reserved.</div>
-        <div class="mt-1 text-[10px] font-mono text-slate-600">Enterprise Unified Application Environment v2.0.0</div>
+    <!-- Global Footer -->
+    <footer id="hub-footer" class="py-5 border-t border-slate-800/80 text-center text-xs text-slate-500 relative z-10 bg-slate-950/90 backdrop-blur-md w-full mt-auto">
+        <div class="flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto px-6 gap-2">
+            <div>&copy; 2026 Al Ghaith Trading & Industrial Services W.L.L. All Rights Reserved.</div>
+            
+        </div>
     </footer>
 
+    <!-- App Router Logic -->
     <script>
-        // Updated configuration routing
         const config = {
             pump: "nlbuser.html",
             vehicle: "Vehicleuser.html",
-            tech: "techaddedit.html" 
+            tech: "techaddedit.html",
+            inventory: "inventory.html"
         };
 
         function openPortal(type) {
@@ -136,14 +275,10 @@
             const iframe = document.getElementById('portal-iframe');
             const floatingBtn = document.getElementById('floating-back-btn');
 
-            // Set destination document resource target path 
             iframe.src = fileTarget;
 
-            // Manipulate CSS Display parameters smoothly
             hubView.classList.add('hidden');
             if (hubFooter) hubFooter.classList.add('hidden');
-            document.body.classList.remove('bg-slate-900', 'text-slate-100');
-            document.body.classList.add('bg-white');
 
             frameContainer.classList.remove('hidden');
             floatingBtn.classList.remove('hidden');
@@ -156,15 +291,11 @@
             const iframe = document.getElementById('portal-iframe');
             const floatingBtn = document.getElementById('floating-back-btn');
 
-            // Terminate frame contents resource pointer allocation
             iframe.src = "";
 
-            // Restore Main Framework Layout display configuration parameters
             frameContainer.classList.add('hidden');
             floatingBtn.classList.add('hidden');
 
-            document.body.classList.remove('bg-white');
-            document.body.classList.add('bg-slate-900', 'text-slate-100');
             hubView.classList.remove('hidden');
             if (hubFooter) hubFooter.classList.remove('hidden');
         }
