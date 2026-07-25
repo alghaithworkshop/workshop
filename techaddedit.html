@@ -16,7 +16,7 @@
             #print-section { display: block !important; width: 100%; position: absolute; left: 0; top: 0; background: white; color: black; }
         }
 
-        /* Add this rule to globally hide all delete action buttons */
+         /* Add this rule to globally hide all delete action buttons */
         button[onclick*="drop"],
         button[onclick*="delete"] {
             display: none !important;
@@ -261,7 +261,9 @@
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Order ID</th>
+                                            <th class="p-4">Date</th> <!-- New Date Column Added Here -->
                                             <th class="p-4">Equipment Asset</th>
+                                            <th class="p-4">Serial Number</th> 
                                             <th class="p-4">Current Metric</th>
                                             <th class="p-4">Target Metric</th>
                                             <th class="p-4">Remaining Hours / Info</th>
@@ -768,12 +770,22 @@
             <form id="form-wo" onsubmit="executeWoSubmission(event)" class="space-y-3.5 text-xs">
                 <input type="hidden" id="in-w-mode" value="create">
                 <input type="hidden" id="in-w-old-id" value="">
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Order ID *</label>
-                    <input type="text" id="in-w-id" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code outline-none font-bold focus:border-slate-900 focus:outline-none" placeholder="e.g. WO-1001">
+                
+                <!-- Grouped Order ID and Date in a Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-600 font-medium mb-1 font-code">Order ID *</label>
+                        <input type="text" id="in-w-id" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code outline-none font-bold focus:border-slate-900 focus:outline-none" placeholder="e.g. WO-1001">
+                    </div>
+                    <div>
+                        <label class="block text-slate-600 font-medium mb-1">Creation Date *</label>
+                        <input type="date" id="in-w-date" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
+                    </div>
                 </div>
+                
                 <div>
                     <label class="block text-slate-600 font-medium mb-1">Target Equipment Asset *</label>
+                    <!-- ... (Rest of your existing form code continues here) ... -->
                     <div class="relative mb-1">
                         <input type="text" id="in-w-search-asset" oninput="filterDropdownSearch('in-w-search-asset', 'in-w-asset')" placeholder="Type to filter equipment list below..." class="w-full bg-slate-100 border border-slate-300 rounded p-1.5 text-slate-800 text-[11px] focus:outline-none focus:border-slate-500">
                     </div>
@@ -1255,7 +1267,12 @@
             db.ref('maintenanceLogs').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.maintenanceLogs = [];
-                if (data) { Object.keys(data).forEach(id => { memory.maintenanceLogs.push({ id, ...data[id] }); }); }
+                if (data) { 
+                    Object.keys(data).forEach(id => { memory.maintenanceLogs.push({ id, ...data[id] }); }); 
+                    
+                    // Add this line to sort the logs so the newest date appears at the top
+                    memory.maintenanceLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+                }
                 updateDashboardTopCounters();
                 refreshWorkspaceView();
             });
@@ -1544,6 +1561,32 @@
             });
         }
 
+        function populateWorkOrderDropdown() {
+            const woSelect = document.getElementById('in-l-wo');
+            if (!woSelect) return;
+
+            // Clear existing options
+            woSelect.innerHTML = '<option value="" disabled selected>Select a Work Order...</option>';
+
+            // Loop through the work orders stored in memory
+            memory.workOrders.forEach(wo => {
+                // Find the corresponding asset in the master fleet registry
+                const asset = memory.assets.find(a => a.id === wo.assetId);
+                
+                // Extract the serial number, defaulting to 'N/A' if missing
+                const serialNumber = (asset && asset.serial) ? asset.serial : 'N/A';
+
+                // Create the dropdown option
+                const option = document.createElement('option');
+                option.value = wo.id;
+                
+                // Format the display text to include the Order ID, Asset ID, and Serial Number
+                option.text = `${wo.id} - ${wo.assetId} (SN: ${serialNumber})`;
+                
+                woSelect.appendChild(option);
+            });
+        }
+
         function executeTablePrint(title, rowsHtml, headers) {
             const pSec = document.getElementById('print-section');
             const headersHtml = headers.map(h => `<th style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; text-align:left; font-weight:600; font-size:11px; text-transform:uppercase;">${h}</th>`).join('');
@@ -1702,6 +1745,14 @@
                 const container = document.getElementById('rows-wo');
                 container.innerHTML = "";
                 memory.workOrders.forEach(w => {
+                    
+                    // --- ADDED LOGIC FOR SERIAL NUMBER ---
+                    // Find the matching asset in your memory/database
+                    const asset = memory.assets.find(a => a.id === w.assetId);
+                    // Safely grab the serial number, defaulting to 'N/A' if it doesn't exist
+                    const serialNumber = asset && asset.serial ? asset.serial : 'N/A';
+                    // -------------------------------------
+
                     let metricInfo = w.type === 'hours' ? `${w.currentHours} Hrs` : (w.type === 'date' ? w.currentDate : 'N/A');
                     let targetInfo = w.type === 'hours' ? `${w.targetHours} Hrs` : (w.type === 'date' ? w.targetDate : 'N/A');
                     let diffInfo = w.type === 'hours' ? `${w.targetHours - w.currentHours} Hours Remaining` : 'Target Schedule Bound';
@@ -1717,6 +1768,8 @@
                         <tr class="hover:bg-slate-50">
                             <td class="p-4 font-bold font-code text-slate-900">${w.id}</td>
                             <td class="p-4 font-code font-medium">${w.assetId}</td>
+                            <td class="p-4 font-code font-medium">${formatDisplayDate(w.date)}</td>
+                            <td class="p-4 font-code">${serialNumber}</td>
                             <td class="p-4 font-code">${metricInfo}</td>
                             <td class="p-4 font-code">${targetInfo}</td>
                             <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
@@ -1992,13 +2045,38 @@
 
         // --- THIRD PARTY CERTIFICATE FUNCTIONS ---
         function openAddCertModal() {
+            // 1. Reset the form and image preview
             document.getElementById('form-cert').reset();
-            document.getElementById('modal-cert-title').innerText = "File Third Party Certificate";
-            document.getElementById('in-c-mode').value = "create";
-            document.getElementById('in-c-image-base64').value = "";
+            document.getElementById('in-c-mode').value = 'create';
+            document.getElementById('in-c-id').value = '';
+            document.getElementById('in-c-image-base64').value = '';
+            document.getElementById('img-c-preview').src = '';
             document.getElementById('wrapper-c-image-preview').classList.add('hidden');
-            populateEquipmentDropdown('in-c-asset');
-            syncCertAssetDetails();
+            
+            // Clear the auto-filled detail fields
+            document.getElementById('in-c-model').value = '';
+            document.getElementById('in-c-desc').value = '';
+            document.getElementById('in-c-serial').value = '';
+
+            // 2. Filter assets: Find assets that DO NOT exist in the memory.certificates array
+            const uncertifiedAssets = memory.assets.filter(asset => {
+                return !memory.certificates.some(cert => cert.assetId === asset.id);
+            });
+
+            // 3. Populate the dropdown menu (in-c-asset) AND SHOW SERIAL NUMBER
+            const selectEl = document.getElementById('in-c-asset');
+            
+            if (uncertifiedAssets.length === 0) {
+                selectEl.innerHTML = '<option value="" disabled selected>No uncertified equipment available</option>';
+            } else {
+                // Added ${a.serial} to the option text below
+                selectEl.innerHTML = '<option value="" disabled selected>Select equipment to certify...</option>' + 
+                    uncertifiedAssets.map(a => 
+                        `<option value="${a.id}">${a.id} - ${a.model} (SN: ${a.serial || 'N/A'})</option>`
+                    ).join('');
+            }
+
+            // 4. Show the modal
             toggleModal('modal-add-cert', true);
         }
 
@@ -2056,6 +2134,7 @@
         // --- MAINTENANCE WORK ORDER MATRIX FUNCTIONS ---
         function openAddWoModal() {
             document.getElementById('form-wo').reset();
+            document.getElementById('in-w-date').valueAsDate = new Date();
             document.getElementById('in-w-mode').value = 'create';
             document.getElementById('modal-wo-title').innerHTML = `
                 <span class="material-symbols-outlined text-slate-700">playlist_add</span> Create Maintenance Work Order
@@ -2106,6 +2185,7 @@
             const payload = {
                 id: id,
                 assetId: assetId,
+                date: document.getElementById('in-w-date').value,
                 type: type,
                 reason: document.getElementById('in-w-reason').value,
                 status: document.getElementById('in-w-status').value,
@@ -2179,8 +2259,16 @@
             document.getElementById('in-l-mode').value = "create";
             document.getElementById('in-l-date').value = new Date().toISOString().split('T')[0];
             
+            // Updated Logic: Find the asset and extract the serial number
             const woSelect = document.getElementById('in-l-wo');
-            woSelect.innerHTML = memory.workOrders.filter(w => w.status !== 'Completed').map(w => `<option value="${w.id}">${w.id} (${w.assetId})</option>`).join('');
+            woSelect.innerHTML = memory.workOrders
+                .filter(w => w.status !== 'Completed')
+                .map(w => {
+                    const asset = memory.assets.find(a => a.id === w.assetId);
+                    const serialNumber = (asset && asset.serial) ? asset.serial : 'N/A';
+                    return `<option value="${w.id}">${w.id} (${w.assetId} - SN: ${serialNumber})</option>`;
+                })
+                .join('');
             
             const techSelect = document.getElementById('in-l-tech');
             techSelect.innerHTML = memory.technicians.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
@@ -2348,7 +2436,7 @@
                                     <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.parts || '<span style="color:#94a3b8; font-style:italic">None recorded</span>'}</div>
                                 </td>
                                 <td style="width: 50%; padding-left: 10px; vertical-align: top;">
-                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Operations Constraint Remarks:</strong>
+                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Remarks:</strong>
                                     <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.remarks || '<span style="color:#94a3b8; font-style:italic">None</span>'}</div>
                                 </td>
                             </tr>
@@ -2634,6 +2722,14 @@
                     </tr>
                 `;
             });
+        }
+
+        function formatDisplayDate(dateString) {
+            if (!dateString) return 'N/A';
+            const parts = dateString.split('-');
+            if (parts.length !== 3) return dateString; // Fallback if format is unexpected
+            const [year, month, day] = parts;
+            return `${day}-${month}-${year}`;
         }
 
         function printFilteredLogs() {
