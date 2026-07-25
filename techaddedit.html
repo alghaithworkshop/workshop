@@ -1521,11 +1521,28 @@
             executeTablePrint('Third Party Certificates Registry', rowsHtml, ['Assigned Equipment ID', 'Model Number', 'Description', 'Serial Number', 'Expiry Date', 'Status Alarm']);
         }
 
-        function populateEquipmentDropdown(selectId) {
-            const el = document.getElementById(selectId);
-            if (!el) return;
-            el.innerHTML = memory.assets.map(a => `<option value="${a.id}">${a.id} - ${a.model} (${a.description})</option>`).join('');
-        }
+        function populateEquipmentDropdown(selectElementId) {
+		    const selectEl = document.getElementById(selectElementId);
+		    if (!selectEl) return;
+		
+		    // Clear existing options and add a default placeholder
+		    selectEl.innerHTML = '<option value="" disabled selected>Select Equipment Asset...</option>';
+		
+		    // Loop through the assets in memory
+		    memory.assets.forEach(asset => {
+		        // Check if a serial number exists, otherwise leave it blank
+		        const serialText = asset.serial ? ` (SN: ${asset.serial})` : '';
+		        
+		        // Format the display text: ID - Model (SN: Serial)
+		        const optionText = `${asset.id} - ${asset.model}${serialText}`;
+		        
+		        // Create and append the option
+		        const option = document.createElement('option');
+		        option.value = asset.id;
+		        option.textContent = optionText;
+		        selectEl.appendChild(option);
+		    });
+		}
 
         function executeTablePrint(title, rowsHtml, headers) {
             const pSec = document.getElementById('print-section');
