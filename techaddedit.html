@@ -260,7 +260,7 @@
                                 <table class="w-full text-left border-collapse text-xs min-w-[700px]">
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Order ID</th>
+                                            <th class="p-4">Order ID</th>                                    
                                             <th class="p-4">Date</th> <!-- New Date Column Added Here -->
                                             <th class="p-4">Equipment Asset</th>
                                             <th class="p-4">Serial Number</th> 
@@ -1767,8 +1767,8 @@
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50">
                             <td class="p-4 font-bold font-code text-slate-900">${w.id}</td>
-                            <td class="p-4 font-code font-medium">${w.assetId}</td>
                             <td class="p-4 font-code font-medium">${formatDisplayDate(w.date)}</td>
+                            <td class="p-4 font-code font-medium">${w.assetId}</td>
                             <td class="p-4 font-code">${serialNumber}</td>
                             <td class="p-4 font-code">${metricInfo}</td>
                             <td class="p-4 font-code">${targetInfo}</td>
@@ -2141,9 +2141,34 @@
             `;
             document.getElementById('btn-wo-submit-text').innerText = 'Commit Work Order';
 
-            // Auto-generate next WO ID
-            const nextId = 'WO-' + (1000 + memory.workOrders.length + 1);
-            document.getElementById('in-w-id').value = nextId;
+            // 1. SAFE AUTO-GENERATE: Prevents errors if memory.workOrders doesn't exist yet
+            const woArray = memory?.workOrders || []; 
+            
+            // 2. BETTER MATH: Find the highest existing ID to prevent duplicates if a previous WO was deleted
+            let nextNumber = 1001; 
+            if (woArray.length > 0) {
+                // Extracts the number from "WO-1005" and finds the max
+                const highestNumber = Math.max(...woArray.map(wo => {
+                    // Assuming your ID property is named 'id' or 'woId'. Adjust if necessary.
+                    const num = parseInt((wo.id || '').replace('WO-', ''), 10);
+                    return isNaN(num) ? 1000 : num;
+                }));
+                nextNumber = highestNumber + 1;
+            }
+            
+            const nextId = 'WO-' + nextNumber;
+
+            // 3. ELEMENT CHECK: Ensure we use .value for inputs, or .innerText for spans/divs
+            const idElement = document.getElementById('in-w-id');
+            if (idElement) {
+                if (idElement.tagName === 'INPUT') {
+                    idElement.value = nextId;
+                } else {
+                    idElement.innerText = nextId;
+                }
+            } else {
+                console.error("Could not find element 'in-w-id'");
+            }
 
             populateEquipmentDropdown('in-w-asset');
             toggleMetricInputs(document.getElementById('in-w-type').value);
