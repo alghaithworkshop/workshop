@@ -15,13 +15,6 @@
             #app-container { display: none !important; }
             #print-section { display: block !important; width: 100%; position: absolute; left: 0; top: 0; background: white; color: black; }
         }
-
-         /* Add this rule to globally hide all delete action buttons */
-        button[onclick*="drop"],
-        button[onclick*="delete"] {
-            display: none !important;
-        }
-
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -260,7 +253,7 @@
                                 <table class="w-full text-left border-collapse text-xs min-w-[700px]">
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Order ID</th>                                    
+                                            <th class="p-4">Order ID</th>
                                             <th class="p-4">Date</th> <!-- New Date Column Added Here -->
                                             <th class="p-4">Equipment Asset</th>
                                             <th class="p-4">Serial Number</th> 
@@ -619,6 +612,7 @@
                         <option value="Down">Down</option>
                         <option value="Standby">Standby</option>
                         <option value="Dispatched">Dispatched</option>
+                        <option value="Request Dispatch">Request Dispatch</option>
                     </select>
                 </div>
                 <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
@@ -1461,6 +1455,7 @@
                 case "Down": return "bg-rose-100 text-rose-800 border border-rose-200";
                 case "Dispatched": return "bg-blue-100 text-blue-800 border border-blue-200";
                 case "Standby": return "bg-slate-200 text-slate-800 border border-slate-300";
+                case "Request Dispatch": return "bg-purple-100 text-purple-800 border border-purple-200"; // New status color
                 default: return "bg-slate-100 text-slate-700 border border-slate-200";
             }
         }
@@ -1686,7 +1681,7 @@
                     const badgeColorClass = getAssetStatusBadgeClass(a.status);
 
                     container.innerHTML += `
-                        <tr class="hover:bg-slate-50">
+                        <tr class="hover:bg-slate-50 transition-colors">
                             <td class="p-4 font-bold font-code text-slate-900">${a.id}</td>
                             <td class="p-4 font-code">${a.model}</td>
                             <td class="p-4 max-w-xs truncate">${a.description}</td>
@@ -1695,9 +1690,21 @@
                             <td class="p-4 uppercase font-semibold text-slate-600">${a.location || 'WORKSHOP'}</td>
                             <td class="p-4"><span class="px-2 py-0.5 rounded text-[11px] font-semibold ${statusCheck.class}">${statusCheck.text}</span></td>
                             <td class="p-4"><span class="px-2.5 py-1 rounded-sm text-[11px] font-bold ${badgeColorClass}">${a.status}</span></td>
-                            <td class="p-4 text-center space-x-1">
-                                <button onclick="openEditModal('${a.id}')" class="text-slate-600 hover:text-slate-900 font-semibold cursor-pointer">Modify</button>
-                                <button onclick="dropAssetSpec('${a.id}')" class="text-rose-600 hover:text-rose-900 font-semibold cursor-pointer pl-2">Delete</button>
+                            <td class="p-4 text-center space-x-2">
+                                <!-- Upgraded Request Dispatch Button (Primary Action) -->
+                                <button onclick="requestDispatch('${a.id}')" class="w-32 text-center px-3 py-1.5 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-md shadow-sm transition-all cursor-pointer">
+                                    Request Dispatch
+                                </button>
+                                
+                                <!-- Upgraded Modify Button (Secondary Action) -->
+                                <button onclick="openEditModal('${a.id}')" class="w-32 text-center px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition-all cursor-pointer">
+                                    Modify
+                                </button>
+
+                                <!-- Upgraded Delete Button (Danger Action) -->
+                                <button onclick="dropAssetSpec('${a.id}')" class="w-32 text-center px-3 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-md transition-all cursor-pointer">
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     `;
@@ -2203,41 +2210,50 @@
 
         function executeWoSubmission(e) {
             e.preventDefault();
+            
             const id = document.getElementById('in-w-id').value.trim().toUpperCase();
             const type = document.getElementById('in-w-type').value;
             const assetId = document.getElementById('in-w-asset').value; 
 
+            // 1. Guard check: Ensure IDs exist before attempting a database write
+            if (!id || !assetId) {
+                alert("Submission Blocked: Order ID and Equipment Asset are required.");
+                return;
+            }
+
+            // 2. Build the payload, ensuring NO undefined values are passed (Firebase strictly rejects undefined)
             const payload = {
                 id: id,
                 assetId: assetId,
-                date: document.getElementById('in-w-date').value,
-                type: type,
-                reason: document.getElementById('in-w-reason').value,
-                status: document.getElementById('in-w-status').value,
-                currentHours: type === 'hours' ? parseInt(document.getElementById('in-w-current-hours').value) || 0 : "",
-                targetHours: type === 'hours' ? parseInt(document.getElementById('in-w-target-hours').value) || 0 : "",
-                currentDate: type === 'date' ? document.getElementById('in-w-current-date').value : "",
-                targetDate: type === 'date' ? document.getElementById('in-w-target-date').value : ""
+                date: document.getElementById('in-w-date').value || "",
+                type: type || "",
+                reason: document.getElementById('in-w-reason').value || "",
+                status: document.getElementById('in-w-status').value || "",
+                currentHours: type === 'hours' ? (parseInt(document.getElementById('in-w-current-hours').value) || 0) : "",
+                targetHours: type === 'hours' ? (parseInt(document.getElementById('in-w-target-hours').value) || 0) : "",
+                currentDate: type === 'date' ? (document.getElementById('in-w-current-date').value || "") : "",
+                targetDate: type === 'date' ? (document.getElementById('in-w-target-date').value || "") : ""
             };
 
-            // 1. Save the Work Order
-            db.ref('workOrders/' + id).set(payload, (error) => {
-                if (!error) {
-                    // 2. Update Asset: Status "In Maintenance" + Warning/Red Color
-                    db.ref('assets/' + assetId).update({ 
+            // 3. Use Promises instead of callbacks for better error catching
+            db.ref('workOrders/' + id).set(payload)
+                .then(() => {
+                    // If the first write succeeds, update the asset status
+                    return db.ref('assets/' + assetId).update({ 
                         status: "In Maintenance",
-                        statusColor: "#FF9800" // Adjust to your specific Hex Code or CSS class (e.g., 'text-warning')
-                    }, (assetError) => {
-                        if (!assetError) {
-                            toggleModal('modal-add-wo', false);
-                        } else {
-                            console.error("Failed to update asset status: ", assetError);
-                        }
+                        statusColor: "#FF9800" 
                     });
-                } else {
-                    console.error("Failed to save work order: ", error);
-                }
-            });
+                })
+                .then(() => {
+                    // Both database writes succeeded
+                    toggleModal('modal-add-wo', false);
+                    document.getElementById('form-wo').reset(); // Reset the form for next time
+                })
+                .catch((error) => {
+                    // Catch and expose any Firebase validation or permission errors
+                    console.error("Database Execution Failed: ", error);
+                    alert("Failed to save work order: " + error.message);
+                });
         }
 
         function dropWorkOrder(id) {
@@ -2747,6 +2763,39 @@
                     </tr>
                 `;
             });
+        }
+
+        function requestDispatch(assetId) {
+            if (confirm(`Are you sure you want to request dispatch for Asset ${assetId}?`)) {
+                
+                // 1. Generate automatic variables for the new Work Order
+                const uniqueTimestamp = Date.now();
+                const autoWoId = `WO-DSP-${uniqueTimestamp}`; // Creates a unique ID like WO-DSP-170634...
+                const today = new Date().toISOString().split('T')[0]; // Gets current date in YYYY-MM-DD format
+
+                // 2. Define the Work Order payload based on your database structure
+                const workOrderPayload = {
+                    id: autoWoId,
+                    date: today,
+                    assetId: assetId,
+                    type: "none", // Defaulting to "none" as it's an operational request rather than hours/date tracking
+                    reason: "Automatic: Dispatch Requested",
+                    status: "In Progress" // Sets it to Pending so a technician can review it
+                };
+
+                // 3. Update the asset status, THEN create the work order
+                db.ref('assets/' + assetId).update({
+                    status: "Request Dispatch"
+                }).then(() => {
+                    // After the asset updates successfully, write the new work order
+                    return db.ref('workOrders/' + autoWoId).set(workOrderPayload);
+                }).then(() => {
+                    console.log(`Asset ${assetId} status updated. Auto-Work Order ${autoWoId} created.`);
+                    alert(`Dispatch requested successfully! Work Order ${autoWoId} has been automatically generated.`);
+                }).catch(err => {
+                    alert("Error processing dispatch request: " + err.message);
+                });
+            }
         }
 
         function formatDisplayDate(dateString) {
