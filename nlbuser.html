@@ -84,6 +84,11 @@
                         <span>Analytical Reports</span>
                     </button>
 
+                    <button onclick="setModule('parts')" id="tab-parts" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="material-symbols-outlined">build_circle</span>
+                        <span>Parts Reference</span>
+                    </button>
+
                     <button onclick="setModule('safety')" id="tab-safety" class="mod-tab group flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition hover:bg-slate-50">
                         <span class="material-symbols-outlined text-red-600 group-hover:text-red-600">health_and_safety</span>
                         <span class="text-red-600 group-hover:text-red-800">Maintenance Safety</span>
@@ -190,11 +195,47 @@
                                             <th class="p-4">Current Metric</th>
                                             <th class="p-4">Target Metric</th>
                                             <th class="p-4">Remaining Hours / Info</th>
-                                            <th class="p-4">Reason</th>
                                             <th class="p-4">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-wo" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!--//////////////////PARTS REFERENCE////////////////////////// -->
+                    <section id="pane-parts" class="pane-view space-y-4 hidden">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Parts Reference</h2>
+                                <p class="text-xs text-slate-500">Master repository for machine parts, components, and equipment references.</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-p-search" oninput="renderParts()" placeholder="Search parts..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+                            <div class="overflow-x-auto w-full">
+                                <table class="w-full text-left border-collapse text-xs min-w-[950px]">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
+                                            <th class="p-4">Item No.</th>
+                                            <th class="p-4">Parts Number</th>
+                                            <th class="p-4">Description</th>
+                                            <th class="p-4">Machine/Equipment Parts</th>
+                                            <th class="p-4">Category</th>
+                                            <th class="p-4">Pressure Rating</th>
+                                            <th class="p-4">Equipment Type</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rows-parts" class="divide-y divide-slate-100 text-slate-700"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -390,7 +431,8 @@
             assets: [],
             workOrders: [],
             maintenanceLogs: [],
-            certificates: []
+            certificates: [],
+            parts: []
         };
 
         let currentActiveModule = "fleet";
@@ -442,7 +484,23 @@
             db.ref('workOrders').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.workOrders = [];
-                if (data) { Object.keys(data).forEach(id => { memory.workOrders.push({ id, ...data[id] }); }); }
+                if (data) { 
+                    Object.keys(data).forEach(id => { 
+                        memory.workOrders.push({ id, ...data[id] }); 
+                    }); 
+                    
+                    // Sort work orders to push 'Completed' status to the bottom
+                    memory.workOrders.sort((a, b) => {
+                        const statusA = a.status || "";
+                        const statusB = b.status || "";
+                        
+                        if (statusA === 'Completed' && statusB !== 'Completed') return 1;
+                        if (statusA !== 'Completed' && statusB === 'Completed') return -1;
+                        
+                        // Optional: Secondary sort by date (newest first) for non-completed items
+                        return new Date(b.date || 0) - new Date(a.date || 0);
+                    });
+                }
                 updateDashboardTopCounters();
                 refreshWorkspaceView();
             });
@@ -453,6 +511,17 @@
                 if (data) { Object.keys(data).forEach(id => { memory.maintenanceLogs.push({ id, ...data[id] }); }); }
                 updateDashboardTopCounters();
                 refreshWorkspaceView();
+            });
+
+            db.ref('parts').on('value', snapshot => {
+                const data = snapshot.val() || {};
+                memory.parts = Object.entries(data).map(([key, val]) => ({
+                    id: key,
+                    itemNumber: val.itemNumber || key,
+                    partNumber: val.partNumber || key, // Ensures exact Part Number is read from Firebase
+                    ...val
+                }));
+                renderParts();
             });
         }
 
@@ -564,6 +633,38 @@
             `;
             window.print();
         }
+
+        function renderParts() {
+                const tbody = document.getElementById('rows-parts');
+                if (!tbody) return;
+                
+                const searchInput = document.getElementById('in-p-search');
+                const search = searchInput ? searchInput.value.toLowerCase() : '';
+                
+                const filtered = (memory.parts || []).filter(p => 
+                    (p.itemNumber && String(p.itemNumber).toLowerCase().includes(search)) ||
+                    (p.partNumber && String(p.partNumber).toLowerCase().includes(search)) ||
+                    (p.id && String(p.id).toLowerCase().includes(search)) || 
+                    (p.description && p.description.toLowerCase().includes(search)) ||
+                    (p.equipmentType && p.equipmentType.toLowerCase().includes(search)) ||
+                    (p.category && p.category.toLowerCase().includes(search))
+                );
+                
+                const html = filtered.map((p, index) => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-4 font-code text-slate-500 font-medium">${p.itemNumber || p.id || (index + 1)}</td>
+                        <td class="p-4 font-code font-bold text-slate-900">${p.partNumber || p.id}</td>
+                        <td class="p-4">${p.description || '-'}</td>
+                        <td class="p-4">${p.machineParts || '-'}</td>
+                        <td class="p-4 font-semibold">${p.category || '-'}</td>
+                        <td class="p-4 font-code">${p.pressureRating || '-'}</td>
+                        <td class="p-4">${p.equipmentType || '-'}</td>
+                        
+                    </tr>
+                `).join('');
+                
+                tbody.innerHTML = html || '<tr><td colspan="8" class="p-6 text-center text-slate-500 italic">No parts found matching your criteria.</td></tr>';
+            }
 
         function executeTablePrint(title, rowsHtml, headers) {
             const pSec = document.getElementById('print-section');
@@ -735,7 +836,6 @@
                             <td class="p-4 font-code">${metricInfo}</td>
                             <td class="p-4 font-code">${targetInfo}</td>
                             <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
-                            <td class="p-4 text-xs">${w.reason || 'N/A'}</td>
                             <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woStatusClass}">${w.status}</span></td>
                         </tr>
                     `;
@@ -777,6 +877,11 @@
             if (currentActiveModule === "analytics") {
                 updateLiveAnalyticsSummary();
             }
+
+            if (currentActiveModule === "parts") {
+                renderParts();
+            }
+            
         }
 
         function printMaintenanceLog(logId) {
