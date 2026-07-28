@@ -20,6 +20,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <!-- SheetJS Library for Excel Upload -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
@@ -129,6 +131,11 @@
                         <span>Analytical Reports</span>
                     </button>
 
+                    <button onclick="setModule('parts')" id="tab-parts" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="material-symbols-outlined">build_circle</span>
+                        <span>Parts Reference</span>
+                    </button>
+
                     <button onclick="setModule('safety')" id="tab-safety" class="mod-tab group flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition hover:bg-slate-50">
                         <span class="material-symbols-outlined text-red-600 group-hover:text-red-600">health_and_safety</span>
                         <span class="text-red-600 group-hover:text-red-800">Maintenance Safety</span>
@@ -189,6 +196,55 @@
                                         </tr>
                                     </thead>
                                     <tbody id="rows-fleet" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="pane-parts" class="pane-view space-y-4 hidden">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Parts Reference</h2>
+                                <p class="text-xs text-slate-500">Master repository for machine parts, components, and equipment references.</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-p-search" oninput="renderParts()" placeholder="Search parts..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
+
+                                <!-- Hidden Excel File Input -->
+                                <input type="file" id="in-p-excel-file" accept=".xlsx, .xls, .csv" class="hidden" onchange="handlePartsExcelUpload(event)">
+                                
+                                <!-- Upload Excel Button -->
+                                <button onclick="document.getElementById('in-p-excel-file').click()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm shrink-0">
+                                    <span class="material-symbols-outlined text-sm">upload_file</span>
+                                    <span>Upload Excel</span>
+                                </button>
+
+                                <button onclick="openAddPartModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm shrink-0">
+                                    <span class="material-symbols-outlined text-sm">add</span>
+                                    <span>Add New Part</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+                            <div class="overflow-x-auto w-full">
+                                <table class="w-full text-left border-collapse text-xs min-w-[950px]">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
+                                            <th class="p-4">Item No.</th>
+                                            <th class="p-4">Parts Number</th>
+                                            <th class="p-4">Description</th>
+                                            <th class="p-4">Machine/Equipment Parts</th>
+                                            <th class="p-4">Category</th>
+                                            <th class="p-4">Pressure Rating</th>
+                                            <th class="p-4">Equipment Type</th>
+                                            <th class="p-4 text-center w-36">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rows-parts" class="divide-y divide-slate-100 text-slate-700"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -680,6 +736,53 @@
         </div>
     </div>
 
+    <div id="modal-add-part" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-slate-700">build_circle</span> Register Part Reference
+                </h3>
+                <button onclick="toggleModal('modal-add-part', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
+            </div>
+            <form id="form-part" onsubmit="executePartSubmission(event)" class="space-y-3.5 text-xs">
+                
+                <div>
+                    <label class="block text-slate-400 font-medium mb-1 font-code">Item Number (Auto-Generated)</label>
+                    <input type="text" id="in-pr-itemno" readonly class="w-full bg-slate-100 border border-slate-300 rounded p-2 text-slate-500 font-code cursor-not-allowed outline-none" placeholder="Auto-assigned on save">
+                </div>
+                
+                <div>
+                    <label class="block text-slate-600 font-medium mb-1 font-code">Parts Number *</label>
+                    <input type="text" id="in-pr-number" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code focus:outline-none focus:border-slate-900" placeholder="e.g. PN-9901">
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-medium mb-1">Description *</label>
+                    <input type="text" id="in-pr-desc" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. Plunger Packing Set">
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-medium mb-1">Machine/Equipment Parts *</label>
+                    <input type="text" id="in-pr-machine" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. Fluid End Manifold">
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-medium mb-1">Category *</label>
+                    <input type="text" id="in-pr-category" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. Consumables / Spares">
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-medium mb-1">Pressure Rating</label>
+                    <input type="text" id="in-pr-pressure" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. 40,000 PSI">
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-medium mb-1">Equipment Type *</label>
+                    <input type="text" id="in-pr-type" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. NLB 225">
+                </div>
+                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="toggleModal('modal-add-part', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
+                    <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Save Part</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="modal-add-expense" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
         <div class="bg-white border border-slate-200 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl">
             <div class="flex justify-between items-center pb-3 border-b border-slate-100">
@@ -1156,7 +1259,8 @@
             technicians: [],
             certificates: [],
             expenses: [],
-            preops: []
+            preops: [],
+            parts: []
         };
 
         let currentActiveModule = "fleet";
@@ -1253,7 +1357,23 @@
             db.ref('workOrders').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.workOrders = [];
-                if (data) { Object.keys(data).forEach(id => { memory.workOrders.push({ id, ...data[id] }); }); }
+                if (data) { 
+                    Object.keys(data).forEach(id => { 
+                        memory.workOrders.push({ id, ...data[id] }); 
+                    }); 
+                    
+                    // Sort work orders to push 'Completed' status to the bottom
+                    memory.workOrders.sort((a, b) => {
+                        const statusA = a.status || "";
+                        const statusB = b.status || "";
+                        
+                        if (statusA === 'Completed' && statusB !== 'Completed') return 1;
+                        if (statusA !== 'Completed' && statusB === 'Completed') return -1;
+                        
+                        // Optional: Secondary sort by date (newest first) for non-completed items
+                        return new Date(b.date || 0) - new Date(a.date || 0);
+                    });
+                }
                 updateDashboardTopCounters();
                 refreshWorkspaceView();
             });
@@ -1300,7 +1420,124 @@
                 if (data) { Object.keys(data).forEach(id => { memory.preops.push({ id, ...data[id] }); }); }
                 refreshWorkspaceView();
             });
+            db.ref('parts').on('value', snapshot => {
+                const data = snapshot.val() || {};
+                memory.parts = Object.entries(data).map(([key, val]) => ({
+                    id: key,
+                    itemNumber: val.itemNumber || key,
+                    partNumber: val.partNumber || key, // Ensures exact Part Number is read from Firebase
+                    ...val
+                }));
+                renderParts();
+            });
         }
+
+        function openAddPartModal() {
+            document.getElementById('form-part').reset();
+            
+            // Extract only the numeric part from existing ITEMxxxx strings
+            const existingNumbers = (memory.parts || [])
+                .map(p => {
+                    const idStr = String(p.itemNumber || p.id || "");
+                    const match = idStr.match(/\d+/); // Finds the first sequence of digits
+                    return match ? parseInt(match[0], 10) : 0;
+                })
+                .filter(num => !isNaN(num));
+            
+            const nextNumericValue = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+            
+            // Format as ITEM0001, ITEM0002, etc.
+            const formattedItemNumber = "ITEM" + String(nextNumericValue).padStart(4, '0');
+            
+            // Pre-fill the read-only input
+            document.getElementById('in-pr-itemno').value = formattedItemNumber;
+            
+            toggleModal('modal-add-part', true);
+        }
+
+            function executePartSubmission(e) {
+                e.preventDefault();
+                const rawPartNo = document.getElementById('in-pr-number').value.trim();
+                if (!rawPartNo) {
+                    alert("Please enter a valid Parts Number.");
+                    return;
+                }
+
+                // Extract only the numeric part from existing ITEMxxxx strings in memory
+                const existingNumbers = (memory.parts || [])
+                    .map(p => {
+                        const idStr = String(p.itemNumber || p.id || "");
+                        const match = idStr.match(/\d+/); // Finds the first sequence of digits
+                        return match ? parseInt(match[0], 10) : 0;
+                    })
+                    .filter(num => !isNaN(num));
+                
+                // Calculate next number and format it
+                const nextNumericValue = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+                const finalItemNumberStr = "ITEM" + String(nextNumericValue).padStart(4, '0');
+
+                const payload = {
+                    itemNumber: finalItemNumberStr,
+                    partNumber: rawPartNo,
+                    description: document.getElementById('in-pr-desc').value.trim(),
+                    machineParts: document.getElementById('in-pr-machine').value.trim(),
+                    category: document.getElementById('in-pr-category').value.trim(),
+                    pressureRating: document.getElementById('in-pr-pressure').value.trim() || 'N/A',
+                    equipmentType: document.getElementById('in-pr-type').value.trim()
+                };
+
+                // Save directly under parts/ITEMxxxx
+                db.ref('parts/' + finalItemNumberStr).set(payload)
+                    .then(() => {
+                        const form = document.getElementById('form-part');
+                        if (form) form.reset();
+                        toggleModal('modal-add-part', false);
+                    })
+                    .catch(err => alert("Error saving part: " + err.message));
+            }
+
+            function deletePart(itemNumber) {
+                if (confirm(`Are you sure you want to delete Item #${itemNumber}?`)) {
+                    db.ref('parts/' + itemNumber).remove()
+                        .catch(err => alert("Error deleting part: " + err.message));
+                }
+            }
+
+            function renderParts() {
+                const tbody = document.getElementById('rows-parts');
+                if (!tbody) return;
+                
+                const searchInput = document.getElementById('in-p-search');
+                const search = searchInput ? searchInput.value.toLowerCase() : '';
+                
+                const filtered = (memory.parts || []).filter(p => 
+                    (p.itemNumber && String(p.itemNumber).toLowerCase().includes(search)) ||
+                    (p.partNumber && String(p.partNumber).toLowerCase().includes(search)) ||
+                    (p.id && String(p.id).toLowerCase().includes(search)) || 
+                    (p.description && p.description.toLowerCase().includes(search)) ||
+                    (p.equipmentType && p.equipmentType.toLowerCase().includes(search)) ||
+                    (p.category && p.category.toLowerCase().includes(search))
+                );
+                
+                const html = filtered.map((p, index) => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-4 font-code text-slate-500 font-medium">${p.itemNumber || p.id || (index + 1)}</td>
+                        <td class="p-4 font-code font-bold text-slate-900">${p.partNumber || p.id}</td>
+                        <td class="p-4">${p.description || '-'}</td>
+                        <td class="p-4">${p.machineParts || '-'}</td>
+                        <td class="p-4 font-semibold">${p.category || '-'}</td>
+                        <td class="p-4 font-code">${p.pressureRating || '-'}</td>
+                        <td class="p-4">${p.equipmentType || '-'}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="deletePart('${p.id || p.itemNumber}')" class="text-rose-600 hover:text-rose-800 text-xs font-semibold px-2 py-1 bg-rose-50 hover:bg-rose-100 rounded border border-rose-100 transition cursor-pointer">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                tbody.innerHTML = html || '<tr><td colspan="8" class="p-6 text-center text-slate-500 italic">No parts found matching your criteria.</td></tr>';
+            }
 
         function openAddPreopModal() {
             document.getElementById('form-preop').reset();
@@ -1932,6 +2169,15 @@
             if (currentActiveModule === "analytics") {
                 updateLiveAnalyticsSummary();
             }
+
+            if (typeof renderDispatches === 'function') {
+                renderDispatches();
+            }
+
+            // 2. Render your Master Asset Registry table (if you have one)
+            if (typeof renderAssets === 'function') {
+                renderAssets();
+            }
         }
 
         // --- MASTER ASSET MODULE ACTIONS ---
@@ -2138,6 +2384,72 @@
             }
         }
 
+        ////////////////////PARTS REFERENCE////////////////////////////
+        function handlePartsExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+                    if (!json || json.length === 0) {
+                        alert("The uploaded Excel file appears to be empty.");
+                        return;
+                    }
+
+                    let updates = {};
+                    let importedCount = 0;
+
+                    json.forEach((row, index) => {
+                        const rawPartNo = row['Parts Number'] || row['Part Number'] || row['Part No'] || row['PN'] || row['Part #'] || row['ID'];
+                        if (!rawPartNo) return; // Skip rows without a Part Number
+
+                        const exactPartNo = String(rawPartNo).trim();
+                        const itemNumber = String(row['Item No.'] || row['Item No'] || row['Item Number'] || row['Item'] || (index + 1)).trim();
+
+                        const description = row['Description'] || row['Part Description'] || row['Desc'] || '';
+                        const machineParts = row['Machine/Equipment Parts'] || row['Machine Parts'] || row['Equipment Parts'] || row['Machine/Equipment'] || '';
+                        const category = row['Category'] || 'General';
+                        const pressureRating = row['Pressure Rating'] || row['Pressure'] || row['Rating'] || 'N/A';
+                        const equipmentType = row['Equipment Type'] || row['Equipment'] || row['Type'] || '';
+
+                        // Uses itemNumber as the Firebase DB Key
+                        updates[`parts/${itemNumber}`] = {
+                        itemNumber: String(itemNumber).trim(),
+                        partNumber: exactPartNo, // Preserves untouched Part Number (e.g., BM20948-6.0)
+                        description: String(description).trim(),
+                        machineParts: String(machineParts).trim(),
+                        category: String(category).trim(),
+                        pressureRating: String(pressureRating).trim(),
+                        equipmentType: String(equipmentType).trim()
+                    };
+                        importedCount++;
+                    });
+
+                    if (importedCount > 0) {
+                        db.ref().update(updates)
+                            .then(() => {
+                                alert(`Successfully uploaded and synced ${importedCount} parts into Parts Reference.`);
+                                event.target.value = ''; // Reset input
+                            })
+                            .catch(err => alert("Firebase upload error: " + err.message));
+                    } else {
+                        alert("No valid rows found. Please ensure your Excel file includes a 'Parts Number' column.");
+                    }
+                } catch (err) {
+                    alert("Error parsing Excel file: " + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
         // --- MAINTENANCE WORK ORDER MATRIX FUNCTIONS ---
         function openAddWoModal() {
             document.getElementById('form-wo').reset();
@@ -2260,24 +2572,34 @@
             if (confirm(`Purge Work Order ${id}?`)) {
                 const woRef = db.ref('workOrders/' + id);
 
-                // 1. Fetch the work order to find the associated assetId
+                // 1. Fetch the work order to find the associated assetId and status
                 woRef.once('value').then((snapshot) => {
                     const woData = snapshot.val();
                     
                     if (woData && woData.assetId) {
                         const assetId = woData.assetId;
+                        
+                        // Check if the work order status is 'complete'
+                        // (using toLowerCase() to catch 'Complete', 'COMPLETE', or 'complete')
+                        const isComplete = woData.status && woData.status.toLowerCase() === 'complete';
 
-                        // 2. Revert the asset status back to "Operational" + Success/Green Color
-                        db.ref('assets/' + assetId).update({ 
-                            status: "Operational",
-                            statusColor: "#4CAF50" // Adjust to your specific Hex Code or CSS class (e.g., 'text-success')
-                        }).then(() => {
-                            // 3. Remove the work order safely
-                            return woRef.remove();
-                        }).catch((error) => {
-                            console.error("Failed to update asset status during purge:", error);
-                        });
+                        if (isComplete) {
+                            // If the work order is complete, just remove it without modifying the asset
+                            woRef.remove();
+                        } else {
+                            // 2. Revert the asset status back to "Operational" + Success/Green Color
+                            db.ref('assets/' + assetId).update({ 
+                                status: "Operational",
+                                statusColor: "#4CAF50" // Adjust to your specific Hex Code or CSS class (e.g., 'text-success')
+                            }).then(() => {
+                                // 3. Remove the work order safely
+                                return woRef.remove();
+                            }).catch((error) => {
+                                console.error("Failed to update asset status during purge:", error);
+                            });
+                        }
                     } else {
+                        // If there's no assetId, just remove the work order
                         woRef.remove();
                     }
                 }).catch((error) => {
@@ -2766,24 +3088,34 @@
         }
 
         function requestDispatch(assetId) {
+            // 1. Find the asset in the local memory array
+            const asset = memory.assets.find(a => a.id === assetId);
+
+            // 2. Validate the asset's status
+            if (!asset || asset.status !== "Operational") {
+                alert(`Dispatch request denied. Equipment ${assetId} must be in 'Operational' status to request dispatch.`);
+                return; // Exit the function early
+            }
+
+            // 3. Proceed with the dispatch request if operational
             if (confirm(`Are you sure you want to request dispatch for Asset ${assetId}?`)) {
                 
-                // 1. Generate automatic variables for the new Work Order
+                // Generate automatic variables for the new Work Order
                 const uniqueTimestamp = Date.now();
                 const autoWoId = `WO-DSP-${uniqueTimestamp}`; // Creates a unique ID like WO-DSP-170634...
                 const today = new Date().toISOString().split('T')[0]; // Gets current date in YYYY-MM-DD format
 
-                // 2. Define the Work Order payload based on your database structure
+                // Define the Work Order payload based on your database structure
                 const workOrderPayload = {
                     id: autoWoId,
                     date: today,
                     assetId: assetId,
                     type: "none", // Defaulting to "none" as it's an operational request rather than hours/date tracking
-                    reason: "Automatic: Dispatch Requested",
+                    reason: "Checking the condition for site operation",
                     status: "In Progress" // Sets it to Pending so a technician can review it
                 };
 
-                // 3. Update the asset status, THEN create the work order
+                // Update the asset status, THEN create the work order
                 db.ref('assets/' + assetId).update({
                     status: "Request Dispatch"
                 }).then(() => {
@@ -2925,29 +3257,177 @@
             toggleModal('modal-add-dispatch', true);
         }
 
+        // 1. Dispatch Submission & Firebase Update Logic
         function executeDispatchSubmission(e) {
             e.preventDefault();
-            const id = document.getElementById('in-d-id').value.trim().toUpperCase();
+            
+            const id = document.getElementById('in-d-id').value.trim();
             const assetId = document.getElementById('in-d-asset').value;
-            const type = document.getElementById('in-d-type').value;
+            const type = document.getElementById('in-d-type').value; // Reads "Dispatch Out" or "Return In"
             const destination = document.getElementById('in-d-destination').value.trim();
+            const date = document.getElementById('in-d-date').value;
+
+            if (!id || !assetId || !type || !destination || !date) {
+                alert("Please fill all required dispatch fields.");
+                return;
+            }
+
+            // --- NEW VALIDATION LOGIC ---
+            // Look up the selected asset in the local memory cache
+            const selectedAsset = memory.assets.find(asset => asset.id === assetId);
             
-            const payload = {
-                id: id,
-                assetId: assetId,
-                type: type,
-                destination: destination,
-                date: document.getElementById('in-d-date').value
+            // Check if it's an outbound dispatch and the equipment is not operational
+            if (type === 'Dispatch Out' && selectedAsset && selectedAsset.status !== 'Operational') {
+                alert("Cannot dispatch: The selected equipment is not in 'Operational' status.");
+                return; 
+            }
+            // ----------------------------
+
+            const dispatchLog = {
+                assetId,
+                type,
+                destination,
+                date,
+                timestamp: Date.now()
             };
-            
-            db.ref('dispatches/' + id).set(payload, (error) => {
-                if (!error) {
-                    let assetStatus = type === "Dispatch Out" ? "Dispatched" : "Operational";
-                    let assetLoc = type === "Dispatch Out" ? destination.toUpperCase() : "WORKSHOP";
-                    db.ref('assets/' + assetId + '/status').set(assetStatus);
-                    db.ref('assets/' + assetId + '/location').set(assetLoc);
-                    toggleModal('modal-add-dispatch', false);
+
+            // Save the dispatch log event
+            db.ref('dispatches/' + id).set(dispatchLog).then(() => {
+                
+                if (type === 'Dispatch Out') {
+                    let assetUpdates = {
+                        status: 'Dispatched',
+                        location: destination.toUpperCase()
+                    };
+                    return db.ref('assets/' + assetId).update(assetUpdates); // Updates the asset status in Firebase
+                    
+                } else if (type === 'Return In') {
+                    let assetUpdates = {
+                        status: 'Maintenance', // Puts the machine in maintenance status upon return
+                        location: 'WORKSHOP'  // Default base return location[cite: 1]
+                    };
+                    
+                    // Automatically generate a Work Order for Checkup/Inspection[cite: 1]
+                    const autoWoId = 'WO-RET-' + Date.now(); // Unique ID based on timestamp[cite: 1]
+                    const autoWorkOrder = {
+                        id: autoWoId,
+                        assetId: assetId,
+                        date: date,
+                        trackingType: 'none', 
+                        reason: `For inspection of equipment returned to the ${destination}`,
+                        status: 'Pending',
+                        timestamp: Date.now()
+                    };
+
+                    // Use Promise.all to execute both updates to Firebase simultaneously[cite: 1]
+                    return Promise.all([
+                        db.ref('assets/' + assetId).update(assetUpdates),
+                        db.ref('workOrders/' + autoWoId).set(autoWorkOrder)
+                    ]);
                 }
+            }).then(() => {
+                toggleModal('modal-add-dispatch', false);
+                document.getElementById('form-dispatch').reset();
+            }).catch(error => {
+                alert("Error saving dispatch event: " + error.message);
+            });
+        }
+
+        // 2. Quick-Action Helper for Returning Dispatched Assets
+        function openReturnDispatch(assetId) {
+            document.getElementById('form-dispatch').reset();
+            
+            // CRITICAL FIX: Populate the dropdown options BEFORE trying to select one
+            if (typeof populateEquipmentDropdown === 'function') {
+                populateEquipmentDropdown('in-d-asset');
+            }
+            
+            // Clear the search filter box so it doesn't hide our selection
+            const searchBox = document.getElementById('in-d-search-asset');
+            if (searchBox) searchBox.value = '';
+
+            // Auto-generate a new Dispatch ID
+            document.getElementById('in-d-id').value = 'DSP-' + Math.floor(1000 + Math.random() * 9000);
+            
+            // Set Asset ID now that the options actually exist in the dropdown
+            document.getElementById('in-d-asset').value = assetId;
+            
+            // Lock type to "Return In"
+            document.getElementById('in-d-type').value = 'Return In';
+            
+            // Lookup the asset's current location from memory
+            const asset = memory.assets.find(a => a.id === assetId);
+            const currentLocation = asset && asset.location ? asset.location : 'Unknown Site';
+            
+            // Set the destination input
+            document.getElementById('in-d-destination').value = `WORKSHOP (Coming from ${currentLocation})`;
+            
+            // Default to today's date
+            document.getElementById('in-d-date').value = new Date().toISOString().split('T')[0];
+            
+            // Ensure the dynamic label updates correctly
+            if (typeof updateDispatchDestinationLabel === 'function') {
+                updateDispatchDestinationLabel();
+            }
+            
+            toggleModal('modal-add-dispatch', true);
+        }
+
+        // 3. Render Dispatch Table with the "Return" Button AND Warnings
+        // Note: Ensure you call renderDispatches() inside your refreshWorkspaceView() function.
+        function renderDispatches() {
+            const tbody = document.getElementById('rows-dispatch');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            // Sort logs so the newest events appear at the top
+            const sortedLogs = [...memory.dispatches].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            sortedLogs.forEach(d => {
+                const tr = document.createElement('tr');
+                
+                // Validate if this specific log is a 'Dispatch Out' AND the asset hasn't been returned yet
+                const asset = memory.assets.find(a => a.id === d.assetId);
+                const isCurrentlyDispatched = asset && asset.status === 'Dispatched' && d.type === 'Dispatch Out';
+
+                // Base delete action WITH Protection Warning Popup
+                let actionButtons = `
+                    <button onclick="if(confirm('⚠️ WARNING: Are you sure you want to delete this dispatch log?')) db.ref('dispatches/${d.id}').remove()" class="text-rose-500 hover:text-rose-700 p-1 bg-rose-50 rounded border border-rose-100 transition" title="Delete Log">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                `;
+
+                // Inject the "Return" quick-action button if the equipment is still on the project field
+                if (isCurrentlyDispatched) {
+                    actionButtons = `
+                        <button onclick="openReturnDispatch('${d.assetId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1.5 rounded text-[10px] uppercase tracking-wider font-bold mr-2 transition shadow-sm" title="Process Return">
+                            <span class="material-symbols-outlined text-[12px] align-middle mr-1">keyboard_return</span>Return
+                        </button>
+                    ` + actionButtons;
+                }
+
+                // Visual Warning Status Badge Logic
+                const badgeClass = d.type === 'Dispatch Out' 
+                    ? 'bg-amber-100 text-amber-800 border-amber-300' 
+                    : 'bg-emerald-100 text-emerald-700 border-emerald-200';
+                    
+                const warningIcon = d.type === 'Dispatch Out' 
+                    ? '<span class="material-symbols-outlined text-[12px] align-middle mr-1 text-amber-600">warning</span>' 
+                    : '';
+
+                tr.innerHTML = `
+                    <td class="p-4 font-code font-bold text-slate-800">${d.id}</td>
+                    <td class="p-4 font-medium text-slate-700">${d.assetId}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded text-[11px] font-bold border flex items-center w-max ${badgeClass}">
+                            ${warningIcon} ${d.type}
+                        </span>
+                    </td>
+                    <td class="p-4 uppercase text-[11px] text-slate-600 font-medium">${d.destination}</td>
+                    <td class="p-4 text-slate-500">${d.date}</td>
+                    <td class="p-4 text-center whitespace-nowrap flex items-center justify-center">${actionButtons}</td>
+                `;
+                tbody.appendChild(tr);
             });
         }
 
@@ -2998,6 +3478,7 @@
                 db.ref('technicians/' + id).remove();
             }
         }
+        
     </script>
 </body>
 </html>
