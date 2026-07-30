@@ -191,10 +191,13 @@
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Order ID</th>
+                                            <th class="p-4">Date</th> <!-- New Date Column Added Here -->
                                             <th class="p-4">Equipment Asset</th>
+                                            <th class="p-4">Serial Number</th> 
                                             <th class="p-4">Current Metric</th>
                                             <th class="p-4">Target Metric</th>
                                             <th class="p-4">Remaining Hours / Info</th>
+                                            <th class="p-4">Reason</th>
                                             <th class="p-4">Status</th>
                                         </tr>
                                     </thead>
@@ -505,10 +508,15 @@
                 refreshWorkspaceView();
             });
 
-            db.ref('maintenanceLogs').on('value', (snapshot) => {
+             db.ref('maintenanceLogs').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.maintenanceLogs = [];
-                if (data) { Object.keys(data).forEach(id => { memory.maintenanceLogs.push({ id, ...data[id] }); }); }
+                if (data) { 
+                    Object.keys(data).forEach(id => { memory.maintenanceLogs.push({ id, ...data[id] }); }); 
+                    
+                    // Add this line to sort the logs so the newest date appears at the top
+                    memory.maintenanceLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+                }
                 updateDashboardTopCounters();
                 refreshWorkspaceView();
             });
@@ -814,10 +822,18 @@
                 });
             }
 
-            if (currentActiveModule === "wo") {
+             if (currentActiveModule === "wo") {
                 const container = document.getElementById('rows-wo');
                 container.innerHTML = "";
                 memory.workOrders.forEach(w => {
+                    
+                    // --- ADDED LOGIC FOR SERIAL NUMBER ---
+                    // Find the matching asset in your memory/database
+                    const asset = memory.assets.find(a => a.id === w.assetId);
+                    // Safely grab the serial number, defaulting to 'N/A' if it doesn't exist
+                    const serialNumber = asset && asset.serial ? asset.serial : 'N/A';
+                    // -------------------------------------
+
                     let metricInfo = w.type === 'hours' ? `${w.currentHours} Hrs` : (w.type === 'date' ? w.currentDate : 'N/A');
                     let targetInfo = w.type === 'hours' ? `${w.targetHours} Hrs` : (w.type === 'date' ? w.targetDate : 'N/A');
                     let diffInfo = w.type === 'hours' ? `${w.targetHours - w.currentHours} Hours Remaining` : 'Target Schedule Bound';
@@ -832,11 +848,15 @@
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50">
                             <td class="p-4 font-bold font-code text-slate-900">${w.id}</td>
+                            <td class="p-4 font-code font-medium">${formatDisplayDate(w.date)}</td>
                             <td class="p-4 font-code font-medium">${w.assetId}</td>
+                            <td class="p-4 font-code">${serialNumber}</td>
                             <td class="p-4 font-code">${metricInfo}</td>
                             <td class="p-4 font-code">${targetInfo}</td>
                             <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
+                            <td class="p-4 text-xs">${w.reason || 'N/A'}</td>
                             <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woStatusClass}">${w.status}</span></td>
+                            
                         </tr>
                     `;
                 });
@@ -959,6 +979,14 @@
                 </div>
             `;
             window.print();
+        }
+
+        function formatDisplayDate(dateString) {
+            if (!dateString) return 'N/A';
+            const parts = dateString.split('-');
+            if (parts.length !== 3) return dateString; // Fallback if format is unexpected
+            const [year, month, day] = parts;
+            return `${day}-${month}-${year}`;
         }
 
         function updateLiveAnalyticsSummary() {
