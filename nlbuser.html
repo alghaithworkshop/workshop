@@ -17,8 +17,11 @@
         }
     </style>
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
@@ -32,7 +35,7 @@
                     <div>
                         <div class="flex items-center space-x-2">
                             <span class="text-sm font-bold tracking-tight text-slate-900 max-w-[220px] md:max-w-none block truncate">Al Ghaith Trading &amp; Industrial Services</span>
-                            <span class="px-2 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-bold rounded-full uppercase tracking-wider">Viewer Mode</span>
+                            
                         </div>
                         <p class="text-xs text-slate-500">Maintenance Management System</p>
                     </div>
@@ -82,6 +85,11 @@
                     <button onclick="setModule('analytics')" id="tab-analytics" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
                         <span class="material-symbols-outlined">query_stats</span>
                         <span>Analytical Reports</span>
+                    </button>
+
+                    <button onclick="setModule('parts-needed')" id="tab-parts-needed" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        <span>Materials / Parts Needed</span>
                     </button>
 
                     <button onclick="setModule('parts')" id="tab-parts" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
@@ -177,6 +185,54 @@
                         </div>
                     </section>
 
+                    <section id="pane-parts-needed" class="pane-view space-y-4 hidden">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Materials / Parts Needed</h2>
+                                <p class="text-xs text-slate-500">Material requests and pending parts inventory requirements.</p>
+                            </div>
+                        </div>
+
+                        <!-- Your Material Requests Management Snippet -->
+                        <div id="view-requests-pane" class="w-full space-y-6">
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                                        <i data-lucide="clipboard-list" class="text-blue-500 w-4 h-4"></i> Material Requests Management
+                                    </h3>
+                                    <div class="flex gap-2">
+                                   </div>
+                                </div>
+                                
+                                <div id="requests-list-container" class="overflow-x-auto text-[11px] hidden">
+                                    <table class="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr class="bg-slate-50 text-slate-400 font-bold uppercase text-[9px] border-b border-slate-100 tracking-wider">
+                                                <th class="p-3 pl-4 whitespace-nowrap">Req ID</th>
+                                                <th class="p-3 whitespace-nowrap">Part Number</th>
+                                                <th class="p-3 min-w-[150px]">Description</th>
+                                                <th class="p-3 whitespace-nowrap">Unit Price</th>
+                                                <th class="p-3 whitespace-nowrap">Qty / Unit</th>
+                                                <th class="p-3 whitespace-nowrap">Functional Category</th>
+                                                <th class="p-3 min-w-[120px]">Category Desc</th>
+                                                <th class="p-3 whitespace-nowrap">Date</th>
+                                                <th class="p-3 whitespace-nowrap">Requester</th>
+                                                <th class="p-3 text-center whitespace-nowrap">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="requests-table-body" class="divide-y divide-slate-100 text-slate-600 font-medium">
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div id="requests-empty-state" class="p-8 text-center text-slate-400 text-xs">
+                                    <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-3 text-slate-300"></i>
+                                    <p>No material requests currently logged in the system.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     <section id="pane-wo" class="pane-view space-y-4 hidden">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
@@ -243,6 +299,7 @@
                             </div>
                         </div>
                     </section>
+                    
 
                     <section id="pane-log" class="pane-view space-y-4 hidden">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -417,7 +474,8 @@
     </div>
 
     <script>
-        const firebaseConfig = {
+        
+        const cmmsConfig = {
             apiKey: "AIzaSyCS6OIQ6wFFKDRcq-SFGCLP2aVq6faq5fo",
             authDomain: "cmms-e5cce.firebaseapp.com",
             databaseURL: "https://cmms-e5cce-default-rtdb.firebaseio.com",
@@ -427,8 +485,22 @@
             appId: "1:143521296047:web:3f6b2b46d025ec32f36e5a"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        // 2. Initialize your Inventory database configuration with a custom app name ("InventoryApp")
+        const inventoryConfig = {
+            apiKey: "AIzaSyALduwl7WSzyPkLA4kODFbXaI3vnHRLDMg",
+            authDomain: "inventory-fbd3c.firebaseapp.com",
+            databaseURL: "https://inventory-fbd3c-default-rtdb.firebaseio.com",
+            projectId: "inventory-fbd3c",
+            storageBucket: "inventory-fbd3c.firebasestorage.app",
+            messagingSenderId: "907986014952",
+            appId: "1:907986014952:web:bb3b12350335a4264faf5d",
+            measurementId: "G-3VF8F56DFE"
+        };
+
+        const cmmsApp = firebase.initializeApp(cmmsConfig, "CMMSApp");
+        const inventoryApp = firebase.initializeApp(inventoryConfig, "InventoryApp");
+        const cmmsDb = cmmsApp.database();
+        const inventoryDb = inventoryApp.database();
 
         let memory = {
             assets: [],
@@ -437,8 +509,106 @@
             certificates: [],
             parts: []
         };
+        let activeRequests = []; 
 
         let currentActiveModule = "fleet";
+
+        async function loadFirebaseData() {
+            try {
+                const dbStatusElement = document.getElementById('db-status');
+                // 1. Added a check to prevent a crash if 'db-status' doesn't exist in the HTML
+                if (dbStatusElement) {
+                    dbStatusElement.innerHTML = `<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Syncing Data...`;
+                }
+                
+                // 2. Changed 'db.ref()' to 'inventoryDb.ref()'
+                const dbRef = inventoryDb.ref(); 
+                
+                const invSnapshot = await dbRef.child("inventory").get();
+                // Note: Ensure localHubInventory is declared with 'let' at the top of your script if it isn't already
+                localHubInventory = invSnapshot.exists() ? Object.values(invSnapshot.val()) : [];
+
+                const inSnapshot = await dbRef.child("stock_in_logs").get();
+                stockInHistory = inSnapshot.exists() ? Object.values(inSnapshot.val()) : [];
+                stockInHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+                const outSnapshot = await dbRef.child("stock_out_logs").get();
+                stockOutHistory = outSnapshot.exists() ? Object.values(outSnapshot.val()) : [];
+                stockOutHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+                const reqSnapshot = await dbRef.child("requests").get();
+                activeRequests = reqSnapshot.exists() ? Object.values(reqSnapshot.val()) : [];
+                activeRequests.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()); 
+
+                // Make sure these functions exist in your broader codebase, otherwise comment them out:
+                // refreshHubTensors();
+                // populateTransactionDropdowns();
+                // renderTransactionLogs();
+                // calculateReports();
+                // compileDynamicInventory();
+                
+                renderRequests(); // This will now successfully populate your table
+
+                if (dbStatusElement) {
+                    dbStatusElement.innerHTML = `<i data-lucide="database" class="w-3.5 h-3.5"></i> Live Connected`;
+                }
+                
+                // Only run this if the lucide library is loaded
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error("Firebase connection error: ", error);
+                const dbStatusElement = document.getElementById('db-status');
+                if (dbStatusElement) {
+                    dbStatusElement.innerHTML = `<i data-lucide="alert-circle" class="w-3.5 h-3.5 text-rose-500"></i> Sync Failed`;
+                }
+            }
+        }
+
+        function renderRequests() {
+            const tbody = document.getElementById('requests-table-body');
+            const emptyState = document.getElementById('requests-empty-state');
+            const tableContainer = document.getElementById('requests-list-container');
+
+            if(!tbody || !emptyState || !tableContainer) return;
+
+            if (activeRequests.length === 0) {
+                emptyState.classList.remove('hidden');
+                tableContainer.classList.add('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+                tableContainer.classList.remove('hidden');
+            }
+
+            let htmlStr = '';
+            activeRequests.forEach(req => {
+                
+                let statusBadge = '';
+                if (req.status === 'Pending') statusBadge = '<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Pending</span>';
+                else if (req.status === 'Approved') statusBadge = '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Approved</span>';
+                else statusBadge = `<span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">${req.status}</span>`;
+
+                htmlStr += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-3 pl-4 font-mono font-bold text-slate-700 whitespace-nowrap">${req.reqId || 'N/A'}</td>
+                        <td class="p-3 font-mono text-slate-800 whitespace-nowrap">${req.partNumber || ''}</td>
+                        <td class="p-3 font-semibold text-slate-800 min-w-[150px]">${req.description || ''}</td>
+                        <td class="p-3 font-mono text-slate-800 whitespace-nowrap">${req.price ? parseFloat(req.price).toFixed(2) + ' QAR' : '-'}</td>
+                        <td class="p-3 text-slate-900 font-mono font-bold whitespace-nowrap">${req.qty} <span class="text-[9px] font-sans font-normal text-slate-500">${req.unit || ''}</span></td>
+                        <td class="p-3 whitespace-nowrap"><span class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">${req.category || ''}</span></td>
+                        <td class="p-3 text-slate-500 text-[10px] min-w-[120px] italic">${req.categoryDesc || ''}</td>
+                        <td class="p-3 font-mono text-slate-700 whitespace-nowrap">${req.date || req.dateNeeded || ''}</td>
+                        <td class="p-3 text-slate-600 font-medium whitespace-nowrap">${req.requester || ''}</td>
+                        <td class="p-3 text-center">${statusBadge}</td>
+                        
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = htmlStr;
+            lucide.createIcons();
+        }
 
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -454,10 +624,11 @@
 
         window.onload = function() {
             initDataPipeline();
+            loadFirebaseData();
         };
 
         function initDataPipeline() {
-            db.ref('.info/connected').on('value', (snap) => {
+            cmmsDb.ref('.info/connected').on('value', (snap) => {
                 const badge = document.getElementById('connection-badge');
                 if (snap.val() === true) {
                     badge.className = "text-xs text-emerald-600 font-medium flex items-center";
@@ -468,7 +639,7 @@
                 }
             });
 
-            db.ref('assets').on('value', (snapshot) => {
+            cmmsDb.ref('assets').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.assets = [];
                 if (data) { Object.keys(data).forEach(id => { memory.assets.push({ id, ...data[id] }); }); }
@@ -476,7 +647,7 @@
                 refreshWorkspaceView();
             });
 
-            db.ref('certificates').on('value', (snapshot) => {
+            cmmsDb.ref('certificates').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.certificates = [];
                 if (data) { Object.keys(data).forEach(id => { memory.certificates.push({ id, ...data[id] }); }); }
@@ -484,7 +655,7 @@
                 refreshWorkspaceView();
             });
 
-            db.ref('workOrders').on('value', (snapshot) => {
+            cmmsDb.ref('workOrders').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.workOrders = [];
                 if (data) { 
@@ -508,7 +679,7 @@
                 refreshWorkspaceView();
             });
 
-             db.ref('maintenanceLogs').on('value', (snapshot) => {
+             cmmsDb.ref('maintenanceLogs').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.maintenanceLogs = [];
                 if (data) { 
@@ -521,7 +692,7 @@
                 refreshWorkspaceView();
             });
 
-            db.ref('parts').on('value', snapshot => {
+            cmmsDb.ref('parts').on('value', snapshot => {
                 const data = snapshot.val() || {};
                 memory.parts = Object.entries(data).map(([key, val]) => ({
                     id: key,
@@ -531,6 +702,16 @@
                 }));
                 renderParts();
             });
+
+            inventoryDb.ref('requests').on('value', (snapshot) => {
+                activeRequests = snapshot.exists() ? Object.values(snapshot.val()) : [];
+                // Sort by date (newest first)
+                activeRequests.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+                
+                // Automatically re-render the requests table whenever data changes
+                renderRequests();
+            });
+
         }
 
         function updateDashboardTopCounters() {
