@@ -3,301 +3,1255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Ghaith Asset Management Hub</title>
+    <title>Al Ghaith CMMS Portal - Viewer Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-        }
-        .font-mono-tech {
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        /* Professional Technical Blueprint & Ambient Glow Background */
-        .bg-executive {
-            background-color: #030712;
-            background-image: 
-                radial-gradient(circle at 15% 20%, rgba(225, 29, 72, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.07) 0%, transparent 40%),
-                radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
-                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
-            background-attachment: fixed;
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
+        body { font-family: 'Inter', sans-serif; }
+        .font-code { font-family: 'JetBrains Mono', monospace; }
+        
+        @media print {
+            #app-container { display: none !important; }
+            #print-section { display: block !important; width: 100%; position: absolute; left: 0; top: 0; background: white; color: black; }
         }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 </head>
-<body class="bg-executive text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-rose-500 selection:text-white relative">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
-    <!-- Subtle Background Ambient Light Orbs -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div class="absolute -top-32 -left-32 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute top-1/3 -right-32 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
-    </div>
+    <div id="print-section" class="hidden p-8 bg-white text-slate-900"></div>
 
-    <!-- Floating Navigation Return Button -->
-    <div id="floating-back-btn" class="hidden fixed bottom-6 right-6 z-50 animate-fade-in">
-        <button onclick="returnToHub()" class="group flex items-center space-x-2.5 bg-slate-900/90 text-slate-100 hover:bg-rose-600 border border-slate-700/80 hover:border-rose-500 font-semibold text-xs px-5 py-3 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 backdrop-blur-md cursor-pointer">
-            <span class="material-symbols-outlined text-base group-hover:rotate-180 transition-transform duration-500">grid_view</span>
-            <span class="tracking-wide">Switch Portal Menu</span>
-        </button>
-    </div>
-
-    <!-- Main Hub View -->
-    <div id="hub-view" class="flex-1 flex flex-col justify-between max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 lg:px-8 animate-fade-in z-10 relative">
-        
-        <!-- Executive Glass Header -->
-        <header class="mb-8 pt-2">
-            <div class="bg-slate-900/70 border border-slate-800/80 backdrop-blur-2xl rounded-2xl p-6 sm:p-7 shadow-2xl relative overflow-hidden">
-                <!-- Executive Accent Line -->
-                <div class="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-rose-500/60 to-transparent"></div>
-
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                    
-                    <!-- Brand & Title Block -->
-                    <div class="flex items-center gap-5">
-                        
-                        <!-- Executive Premium Logo Container -->
-                        <div class="relative group shrink-0">
-                            <!-- Soft Ambient Backlight Glow -->
-                            <div class="absolute -inset-1 bg-gradient-to-r from-rose-500/30 to-slate-500/20 rounded-2xl blur-md opacity-70 group-hover:opacity-100 transition duration-500"></div>
+    <div id="app-container" class="flex flex-col min-h-screen">
+        <nav class="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between shadow-xs z-20 gap-4">
+            <div class="flex items-center justify-between w-full lg:w-auto">
+                <div class="flex items-center space-x-3.5">
+                    <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-9 w-9 object-contain rounded" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm font-bold tracking-tight text-slate-900 max-w-[220px] md:max-w-none block truncate">Al Ghaith Trading &amp; Industrial Services</span>
                             
-                            <!-- Crisp Glassmorphic Logo Pod -->
-                            <div class="relative p-3.5 bg-white rounded-2xl shadow-2xl border border-slate-200/50 ring-1 ring-white/20 flex items-center justify-center">
-                                <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-11 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
-                            </div>
                         </div>
-                        
-                        <!-- Title Typography -->
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="font-mono-tech text-[10px] uppercase font-semibold text-rose-400 tracking-wider bg-rose-500/10 px-2.5 py-0.5 rounded border border-rose-500/20">
-                                    RLC Workshop Division
-                                </span>
-                                <span class="text-slate-600"></span>
-                                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-widest"></span>
-                            </div>
-                            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white uppercase">
-                                Al Ghaith Trading & Industrial Services
-                            </h1>
-                            <p class="text-xs sm:text-sm text-slate-400 font-medium tracking-wide mt-0.5">
-                                Enterprise Operations & Asset Management Command Center
-                            </p>
-                        </div>
+                        <p class="text-xs text-slate-500">Maintenance Management System</p>
                     </div>
+                </div>
+                <button onclick="toggleMobileSidebar()" class="md:hidden flex items-center text-slate-600 hover:text-slate-900 p-1 rounded border border-slate-200 cursor-pointer">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
 
-                    <!-- Telemetry & Status Panel -->
-                    <div class="flex flex-wrap items-center gap-3 self-start lg:self-auto pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-800/80">
-                        <div class="flex items-center gap-2 bg-slate-950/80 border border-slate-800 px-3.5 py-2 rounded-xl text-xs font-mono-tech">
-                            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-slate-300 font-semibold tracking-wide">SYSTEM:</span>
-                            <span class="text-emerald-400 font-bold">ONLINE</span>
-                        </div>
-
-                        <div class="hidden sm:flex items-center gap-2 bg-slate-950/80 border border-slate-800 px-3.5 py-2 rounded-xl text-xs font-mono-tech text-slate-400">
-                            <span class="material-symbols-outlined text-sm text-slate-500">verified_user</span>
-                            <span>SECURE GATEWAY</span>
-                        </div>
-                    </div>
-
+            <div class="w-full lg:w-auto">
+                <div class="grid grid-cols-2 sm:flex sm:items-center gap-3 lg:gap-5 text-xs font-code text-slate-600 bg-slate-50 p-3 lg:p-0 rounded border border-slate-100 lg:border-none lg:bg-transparent flex-wrap">
+                    <div>Assets: <span id="stat-fleet-count" class="text-slate-900 font-bold">0</span></div>
+                    <div>Work Orders: <span id="stat-wo-count" class="text-slate-900 font-bold">0</span></div>
+                    <div>Logs Saved: <span id="stat-log-count" class="text-slate-900 font-bold">0</span></div>
                 </div>
             </div>
-        </header>
+        </nav>
 
-        <!-- Visual Image Card Grid -->
-        <main class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 my-auto py-2">
-            
-            <!-- Card 1: High Pressure Pump Portal -->
-            <button onclick="openPortal('pump')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-rose-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-rose-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="hppump.jpg" alt="High Pressure Pump" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
+        <div class="flex flex-1 overflow-hidden relative">
+            <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-200 w-64 bg-white border-r border-slate-200 p-4 flex flex-col justify-between shadow-md md:shadow-xs h-full shrink-0">
+                <div class="space-y-1">
+                    <div class="flex items-center justify-between px-3 mb-4 md:mb-2">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Operations Modules</p>
+                        <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined text-sm">close</span></button>
+                    </div>
+                    
+                    <button onclick="setModule('fleet')" id="tab-fleet" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition bg-slate-900 text-white shadow-xs">
+                        <span class="material-symbols-outlined">analytics</span>
+                        <span>Master Fleet Registry</span>
+                    </button>
+
+                    <button onclick="setModule('cert')" id="tab-cert" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="material-symbols-outlined">verified</span>
+                        <span>Third Party Certificate</span>
+                    </button>
+
+                    <button onclick="setModule('wo')" id="tab-wo" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="material-symbols-outlined">build</span>
+                        <span>Maintenance Work Orders</span>
+                    </button>
+
+                    <button onclick="setModule('log')" id="tab-log" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="material-symbols-outlined">history_edu</span>
+                        <span>Maintenance Logs / History</span>
+                    </button>
+
+                    <button onclick="setModule('analytics')" id="tab-analytics" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="material-symbols-outlined">query_stats</span>
+                        <span>Analytical Reports</span>
+                    </button>
+
+                    <button onclick="setModule('parts-needed')" id="tab-parts-needed" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        <span>Materials / Parts Needed</span>
+                    </button>
+
+                    <button onclick="setModule('parts')" id="tab-parts" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="material-symbols-outlined">build_circle</span>
+                        <span>Parts Reference</span>
+                    </button>
+
+                    <button onclick="setModule('safety')" id="tab-safety" class="mod-tab group flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition hover:bg-slate-50">
+                        <span class="material-symbols-outlined text-red-600 group-hover:text-red-600">health_and_safety</span>
+                        <span class="text-red-600 group-hover:text-red-800">Maintenance Safety</span>
+                    </button>
                 </div>
 
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-400 flex items-center justify-center backdrop-blur-md group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">precision_manufacturing</span>
+                <div class="p-3 bg-slate-50 rounded border border-slate-200 mt-4">
+                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Authorization Matrix</div>
+                    <div id="connection-badge" class="text-xs text-amber-600 font-medium flex items-center">
+                        <span class="h-2 w-2 rounded-full bg-amber-500 mr-2 animate-pulse"></span>
+                        Connecting Terminal...
+                    </div>
+                </div>
+            </aside>
+
+            <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="hidden fixed inset-0 bg-slate-900/40 z-20 md:hidden"></div>
+
+            <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+                <div class="flex-1">
+                    <section id="pane-fleet" class="pane-view space-y-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Master Fleet Registry</h2>
+                                <p class="text-xs text-slate-500">Primary technical index indexed by unique hardware Asset IDs.</p>
                             </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-rose-400 px-2.5 py-1 rounded-full">High Pressure Pump</span>
-                        </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-rose-300 transition-colors">
-                            High Pressure Pump Portal
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Monitor and audit high pressure pump registries, maintenance work orders, Maintenance logs, dispatch histories, and credential records.
-                        </p>
-                    </div>
-
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-rose-400 group-hover:text-rose-300">
-                        <span>Launch Fleet Portal</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
-
-            <!-- Card 2: Vehicle Management Portal -->
-            <button onclick="openPortal('vehicle')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-sky-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="vehicle.jpg" alt="Fleet Vehicle" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
-
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-sky-500/20 border border-sky-500/30 text-sky-400 flex items-center justify-center backdrop-blur-md group-hover:bg-sky-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">directions_car</span>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-f-search" oninput="refreshWorkspaceView()" placeholder="Search ID, model, status, location..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
                             </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-sky-400 px-2.5 py-1 rounded-full">Vehicle</span>
                         </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-sky-300 transition-colors">
-                            Vehicle Management
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Track vehicles, Istimara validity dates, registration renewals, service logs, and operating costs.
-                        </p>
-                    </div>
 
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-sky-400 group-hover:text-sky-300">
-                        <span>Launch Vehicle Portal</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
-
-            <!-- Card 3: NLB Technician Login -->
-            <button onclick="openPortal('tech')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-amber-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="technician.jpg" alt="Technician" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
-
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center backdrop-blur-md group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">engineering</span>
+                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+                            <div class="overflow-x-auto w-full">
+                                <table class="w-full text-left border-collapse text-xs min-w-[800px]">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
+                                            <th class="p-4">Primary ID</th>
+                                            <th class="p-4">Model Number</th>
+                                            <th class="p-4">Make/Brand</th>
+                                            <th class="p-4">Max Pressure</th>
+                                            <th class="p-4">Serial Number</th>
+                                            <th class="p-4">Location</th>
+                                            <th class="p-4">Cert Status</th>
+                                            <th class="p-4">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rows-fleet" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                                </table>
                             </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-amber-400 px-2.5 py-1 rounded-full">Technician</span>
                         </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-amber-300 transition-colors">
-                            NLB Technician Login
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Secure terminal for Technician teams to update active work orders and complete field logs.
-                        </p>
-                    </div>
+                    </section>
 
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-amber-400 group-hover:text-amber-300">
-                        <span>Authenticate Terminal</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
-
-            <!-- Card 4: Inventory Control Portal -->
-            <button onclick="openPortal('inventory')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-emerald-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="inventory.png" alt="Inventory Racks" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
-
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center backdrop-blur-md group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">inventory_2</span>
+                    <section id="pane-cert" class="pane-view space-y-4 hidden">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Third Party Certificates</h2>
+                                <p class="text-xs text-slate-500">Manage external verification, compliance certifications, and alignment validations.</p>
                             </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-emerald-400 px-2.5 py-1 rounded-full">Warehouse</span>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-c-search" oninput="refreshWorkspaceView()" placeholder="Search asset ID..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
+                            </div>
                         </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-emerald-300 transition-colors">
-                            Inventory Control Portal
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Track workshop spare parts, monitor warehouse stock thresholds, and coordinate asset distribution.
-                        </p>
-                    </div>
 
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">
-                        <span>Access Stock Inventory</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
+                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+                            <div class="overflow-x-auto w-full">
+                                <table class="w-full text-left border-collapse text-xs min-w-[900px]">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
+                                            <th class="p-4">Assigned Equipment ID</th>
+                                            <th class="p-4">Model Number</th>
+                                            <th class="p-4">Make/Brand</th>
+                                            <th class="p-4">Serial Number</th>
+                                            <th class="p-4">Expiry Date</th>
+                                            <th class="p-4">Status Alarm</th>
+                                            <th class="p-4 text-center w-48">Documents</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rows-cert" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="pane-parts-needed" class="pane-view space-y-4 hidden">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Materials / Parts Needed</h2>
+                                <p class="text-xs text-slate-500">Material requests and pending parts inventory requirements.</p>
+                            </div>
+                        </div>
+
+                        <!-- Your Material Requests Management Snippet -->
+                        <div id="view-requests-pane" class="w-full space-y-6">
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                                        <i data-lucide="clipboard-list" class="text-blue-500 w-4 h-4"></i> Material Requests Management
+                                    </h3>
+                                    <div class="flex gap-2">
+                                   </div>
+                                </div>
+                                
+                                <div id="requests-list-container" class="overflow-x-auto text-[11px] hidden">
+                                    <table class="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr class="bg-slate-50 text-slate-400 font-bold uppercase text-[9px] border-b border-slate-100 tracking-wider">
+                                                <th class="p-3 pl-4 whitespace-nowrap">Req ID</th>
+                                                <th class="p-3 whitespace-nowrap">Part Number</th>
+                                                <th class="p-3 min-w-[150px]">Description</th>
+                                                <th class="p-3 whitespace-nowrap">Unit Price</th>
+                                                <th class="p-3 whitespace-nowrap">Qty / Unit</th>
+                                                <th class="p-3 whitespace-nowrap">Functional Category</th>
+                                                <th class="p-3 min-w-[120px]">Category Desc</th>
+                                                <th class="p-3 whitespace-nowrap">Date</th>
+                                                <th class="p-3 whitespace-nowrap">Requester</th>
+                                                <th class="p-3 text-center whitespace-nowrap">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="requests-table-body" class="divide-y divide-slate-100 text-slate-600 font-medium">
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div id="requests-empty-state" class="p-8 text-center text-slate-400 text-xs">
+                                    <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-3 text-slate-300"></i>
+                                    <p>No material requests currently logged in the system.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="pane-wo" class="pane-view space-y-4 hidden">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Work Orders</h2>
+                                <p class="text-xs text-slate-500">Operational tracking and scheduling logs.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+                            <div class="overflow-x-auto w-full">
+                                <table class="w-full text-left border-collapse text-xs min-w-[650px]">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
+                                            <th class="p-4">Order ID</th>
+                                            <th class="p-4">Date</th> <!-- New Date Column Added Here -->
+                                            <th class="p-4">Equipment Asset</th>
+                                            <th class="p-4">Serial Number</th> 
+                                            <th class="p-4">Current Metric</th>
+                                            <th class="p-4">Target Metric</th>
+                                            <th class="p-4">Remaining Hours / Info</th>
+                                            <th class="p-4">Reason</th>
+                                            <th class="p-4">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rows-wo" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!--//////////////////PARTS REFERENCE////////////////////////// -->
+                    <section id="pane-parts" class="pane-view space-y-4 hidden">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Parts Reference</h2>
+                                <p class="text-xs text-slate-500">Master repository for machine parts, components, and equipment references.</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-p-search" oninput="renderParts()" placeholder="Search parts..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+                            <div class="overflow-x-auto w-full">
+                                <table class="w-full text-left border-collapse text-xs min-w-[950px]">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
+                                            <th class="p-4">Item No.</th>
+                                            <th class="p-4">Parts Number</th>
+                                            <th class="p-4">Description</th>
+                                            <th class="p-4">Machine/Equipment Parts</th>
+                                            <th class="p-4">Category</th>
+                                            <th class="p-4">Pressure Rating</th>
+                                            <th class="p-4">Equipment Type</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rows-parts" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                    
+
+                    <section id="pane-log" class="pane-view space-y-4 hidden">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Logs & Service History</h2>
+                                <p class="text-xs text-slate-500">Execution records from resolved or active maintenance sequences.</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-l-search" oninput="refreshWorkspaceView()" placeholder="Search logs..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+                            <div class="overflow-x-auto w-full">
+                                <table class="w-full text-left border-collapse text-xs min-w-[850px]">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
+                                            <th class="p-4">Log ID / Date</th>
+                                            <th class="p-4">Equipment Asset</th>
+                                            <th class="p-4">Interval Bounds</th>
+                                            <th class="p-4">Remaining Before Maint.</th>
+                                            <th class="p-4">Fault Report & Action</th>
+                                            <th class="p-4">Parts & Tech</th>
+                                            <th class="p-4">Asset Status</th>
+                                            <th class="p-4 text-center w-36">Documents</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rows-log" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="pane-analytics" class="pane-view space-y-6 hidden">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Analytical Reports &amp; Insights</h2>
+                                <p class="text-xs text-slate-500">Live operational intelligence summary and custom date range reporting exports.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded p-6 shadow-xs flex flex-col sm:flex-row items-end gap-4">
+                            <div class="flex-1 w-full">
+                                <label class="block text-slate-600 font-semibold mb-1 text-xs">Analysis Start Date</label>
+                                <input type="date" id="print-start-date" onchange="updateLiveAnalyticsSummary()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900 text-sm">
+                            </div>
+                            <div class="flex-1 w-full">
+                                <label class="block text-slate-600 font-semibold mb-1 text-xs">Analysis End Date</label>
+                                <input type="date" id="print-end-date" onchange="updateLiveAnalyticsSummary()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900 text-sm">
+                            </div>
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <button onclick="printFilteredLogs()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
+                                    <span class="material-symbols-outlined text-sm">print</span>
+                                    <span>Print Maintenance</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-white border border-slate-200 p-4 rounded shadow-2xs">
+                                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Maintenance Events</p>
+                                <h3 id="analytics-total-logs" class="text-xl font-bold text-slate-900 mt-1 font-code">0 Logs</h3>
+                                <p class="text-[10px] text-slate-500 mt-1">Resolved or tracked sequences</p>
+                            </div>
+                            <div class="bg-white border border-slate-200 p-4 rounded shadow-2xs">
+                                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Work Order Volume</p>
+                                <h3 id="analytics-total-wo" class="text-xl font-bold text-slate-900 mt-1 font-code">0 Active</h3>
+                                <p class="text-[10px] text-slate-500 mt-1">Created/pending task tickets</p>
+                            </div>
+                            <div class="bg-white border border-slate-200 p-4 rounded shadow-2xs">
+                                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Asset Fleet Coverage</p>
+                                <h3 id="analytics-fleet-ratio" class="text-xl font-bold text-slate-900 mt-1 font-code">0% Operational</h3>
+                                <p class="text-[10px] text-slate-500 mt-1">Active operational status percentage</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+                            <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Data Selection Matrix Preview</h4>
+                                <span class="text-[11px] font-medium font-code text-slate-500" id="analytics-preview-count">0 records selected</span>
+                            </div>
+                            <div class="overflow-x-auto w-full">
+                                <table class="w-full text-left border-collapse text-xs min-w-[750px]">
+                                    <thead>
+                                        <tr class="bg-slate-100/50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                                            <th class="p-3">Reference ID</th>
+                                            <th class="p-3">Category Type</th>
+                                            <th class="p-3">Asset ID / Model</th>
+                                            <th class="p-3">Date Item</th>
+                                            <th class="p-3">Summary Description / Actions</th>
+                                            <th class="p-3 text-right">Value Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rows-analytics-preview" class="divide-y divide-slate-100 text-slate-700">
+                                        <tr>
+                                            <td colspan="6" class="p-6 text-center text-slate-400 italic">Please pick valid Start and End dates to construct the analytics intelligence view.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="pane-safety" class="pane-view space-y-6 hidden">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rose-200 pb-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-rose-700 tracking-tight flex items-center gap-2">
+                                    <span class="material-symbols-outlined">warning</span> Critical Safety Reminders
+                                </h2>
+                                <p class="text-xs text-rose-500 font-medium">Critical safety protocols and operational constraints for engineering teams.</p>
+                            </div>
+                            <button onclick="printSafetyGuidelines()" class="bg-rose-700 hover:bg-rose-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
+                                <span class="material-symbols-outlined text-sm">print</span>
+                                <span>Print Safety Sheet</span>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white border-l-4 border-rose-600 rounded-r-lg p-5 shadow-sm">
+                                <div class="flex items-center space-x-2 mb-3 border-b border-rose-100 pb-2">
+                                    <span class="material-symbols-outlined text-rose-600">crisis_alert</span>
+                                    <h3 class="font-bold text-slate-900 tracking-wide text-sm uppercase">High-Pressure Pump Protocols</h3>
+                                </div>
+                                <ul class="list-disc pl-5 text-xs text-slate-700 space-y-2.5 font-medium">
+                                    <li>Always depressurize the system entirely before loosening any fittings or opening the fluid end manifold.</li>
+                                    <li>Verify all pressure relief valves (PRVs) and rupture discs are valid and correctly calibrated for the operating threshold.</li>
+                                    <li>Never point the hydro-jetting lance or dump gun at yourself or other personnel during testing.</li>
+                                    <li>Ensure high-pressure hoses are inspected for wire exposure, ballooning, or coupling fatigue prior to every shift.</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white border-l-4 border-rose-600 rounded-r-lg p-5 shadow-sm">
+                                <div class="flex items-center space-x-2 mb-3 border-b border-rose-100 pb-2">
+                                    <span class="material-symbols-outlined text-rose-600">engineering</span>
+                                    <h3 class="font-bold text-slate-900 tracking-wide text-sm uppercase">Workshop &amp; LOTO Guidelines</h3>
+                                </div>
+                                <ul class="list-disc pl-5 text-xs text-slate-700 space-y-2.5 font-medium">
+                                    <li>Strictly adhere to Lockout/Tagout (LOTO) procedures when performing internal maintenance on diesel engines or electrical panels.</li>
+                                    <li>Ensure proper exhaust ventilation when running engine platforms indoors for load testing or diagnostics.</li>
+                                    <li>Mandatory PPE enforcement: Safety glasses, impact gloves, and hearing protection are required near active equipment.</li>
+                                    <li>Keep shop walkways and parts bin locations completely clear of fluid spills to prevent critical slip hazards.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
                 </div>
-            </button>
-
-        </main>
-
-        <div class="mt-6"></div>
-    </div>
-
-    <!-- Embedded Portal Container -->
-    <div id="portal-frame-container" class="hidden fixed inset-0 w-full h-full bg-slate-950 z-40">
-        <iframe id="portal-iframe" src="" class="w-full h-full border-0 m-0 p-0 overflow-hidden" allow="autoplay; clipboard-write"></iframe>
-    </div>
-
-    <!-- Global Footer -->
-    <footer id="hub-footer" class="py-5 border-t border-slate-800/80 text-center text-xs text-slate-500 relative z-10 bg-slate-950/90 backdrop-blur-md w-full mt-auto">
-        <div class="flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto px-6 gap-2">
-            <div>&copy; 2026 Al Ghaith Trading & Industrial Services. All Rights Reserved.</div>
-            
+            </main>
         </div>
-    </footer>
 
-    <!-- App Router Logic -->
+        <footer class="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-400 font-medium z-10 shrink-0">
+            2026 Michael. All rights reserved.
+        </footer>
+    </div>
+
+    <div id="modal-view-cert-image" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-2xl p-6 space-y-4 shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h3 id="view-cert-image-title" class="text-xs font-bold text-slate-900 uppercase tracking-wide">Certificate Document Attachment</h3>
+                <button onclick="toggleModal('modal-view-cert-image', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
+            </div>
+            <div class="flex-1 overflow-auto flex items-center justify-center bg-slate-900/5 rounded border p-2">
+                <img id="img-view-cert-expanded" src="" alt="Certificate Document File Not Loaded" class="max-w-full h-auto max-h-[60vh] object-contain rounded shadow-xs">
+            </div>
+            <div class="flex justify-end pt-2 border-t border-slate-100">
+                <button onclick="toggleModal('modal-view-cert-image', false)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs px-4 py-2 rounded font-semibold cursor-pointer">Close Document</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const config = {
-            pump: "nlbuser.html",
-            vehicle: "Vehicleuser.html",
-            tech: "techaddedit.html",
-            inventory: "inventory.html"
+        
+        const cmmsConfig = {
+            apiKey: "AIzaSyCS6OIQ6wFFKDRcq-SFGCLP2aVq6faq5fo",
+            authDomain: "cmms-e5cce.firebaseapp.com",
+            databaseURL: "https://cmms-e5cce-default-rtdb.firebaseio.com",
+            projectId: "cmms-e5cce",
+            storageBucket: "cmms-e5cce.firebasestorage.app",
+            messagingSenderId: "143521296047",
+            appId: "1:143521296047:web:3f6b2b46d025ec32f36e5a"
         };
 
-        function openPortal(type) {
-            const fileTarget = config[type];
-            if (!fileTarget) return;
+        // 2. Initialize your Inventory database configuration with a custom app name ("InventoryApp")
+        const inventoryConfig = {
+            apiKey: "AIzaSyALduwl7WSzyPkLA4kODFbXaI3vnHRLDMg",
+            authDomain: "inventory-fbd3c.firebaseapp.com",
+            databaseURL: "https://inventory-fbd3c-default-rtdb.firebaseio.com",
+            projectId: "inventory-fbd3c",
+            storageBucket: "inventory-fbd3c.firebasestorage.app",
+            messagingSenderId: "907986014952",
+            appId: "1:907986014952:web:bb3b12350335a4264faf5d",
+            measurementId: "G-3VF8F56DFE"
+        };
 
-            const hubView = document.getElementById('hub-view');
-            const hubFooter = document.getElementById('hub-footer');
-            const frameContainer = document.getElementById('portal-frame-container');
-            const iframe = document.getElementById('portal-iframe');
-            const floatingBtn = document.getElementById('floating-back-btn');
+        const cmmsApp = firebase.initializeApp(cmmsConfig, "CMMSApp");
+        const inventoryApp = firebase.initializeApp(inventoryConfig, "InventoryApp");
+        const cmmsDb = cmmsApp.database();
+        const inventoryDb = inventoryApp.database();
 
-            iframe.src = fileTarget;
+        let memory = {
+            assets: [],
+            workOrders: [],
+            maintenanceLogs: [],
+            certificates: [],
+            parts: []
+        };
+        let activeRequests = []; 
 
-            hubView.classList.add('hidden');
-            if (hubFooter) hubFooter.classList.add('hidden');
+        let currentActiveModule = "fleet";
 
-            frameContainer.classList.remove('hidden');
-            floatingBtn.classList.remove('hidden');
+        async function loadFirebaseData() {
+            try {
+                const dbStatusElement = document.getElementById('db-status');
+                // 1. Added a check to prevent a crash if 'db-status' doesn't exist in the HTML
+                if (dbStatusElement) {
+                    dbStatusElement.innerHTML = `<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Syncing Data...`;
+                }
+                
+                // 2. Changed 'db.ref()' to 'inventoryDb.ref()'
+                const dbRef = inventoryDb.ref(); 
+                
+                const invSnapshot = await dbRef.child("inventory").get();
+                // Note: Ensure localHubInventory is declared with 'let' at the top of your script if it isn't already
+                localHubInventory = invSnapshot.exists() ? Object.values(invSnapshot.val()) : [];
+
+                const inSnapshot = await dbRef.child("stock_in_logs").get();
+                stockInHistory = inSnapshot.exists() ? Object.values(inSnapshot.val()) : [];
+                stockInHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+                const outSnapshot = await dbRef.child("stock_out_logs").get();
+                stockOutHistory = outSnapshot.exists() ? Object.values(outSnapshot.val()) : [];
+                stockOutHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+                const reqSnapshot = await dbRef.child("requests").get();
+                activeRequests = reqSnapshot.exists() ? Object.values(reqSnapshot.val()) : [];
+                activeRequests.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()); 
+
+                // Make sure these functions exist in your broader codebase, otherwise comment them out:
+                // refreshHubTensors();
+                // populateTransactionDropdowns();
+                // renderTransactionLogs();
+                // calculateReports();
+                // compileDynamicInventory();
+                
+                renderRequests(); // This will now successfully populate your table
+
+                if (dbStatusElement) {
+                    dbStatusElement.innerHTML = `<i data-lucide="database" class="w-3.5 h-3.5"></i> Live Connected`;
+                }
+                
+                // Only run this if the lucide library is loaded
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error("Firebase connection error: ", error);
+                const dbStatusElement = document.getElementById('db-status');
+                if (dbStatusElement) {
+                    dbStatusElement.innerHTML = `<i data-lucide="alert-circle" class="w-3.5 h-3.5 text-rose-500"></i> Sync Failed`;
+                }
+            }
         }
 
-        function returnToHub() {
-            const hubView = document.getElementById('hub-view');
-            const hubFooter = document.getElementById('hub-footer');
-            const frameContainer = document.getElementById('portal-frame-container');
-            const iframe = document.getElementById('portal-iframe');
-            const floatingBtn = document.getElementById('floating-back-btn');
+        function renderRequests() {
+            const tbody = document.getElementById('requests-table-body');
+            const emptyState = document.getElementById('requests-empty-state');
+            const tableContainer = document.getElementById('requests-list-container');
 
-            iframe.src = "";
+            if(!tbody || !emptyState || !tableContainer) return;
 
-            frameContainer.classList.add('hidden');
-            floatingBtn.classList.add('hidden');
+            if (activeRequests.length === 0) {
+                emptyState.classList.remove('hidden');
+                tableContainer.classList.add('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+                tableContainer.classList.remove('hidden');
+            }
 
-            hubView.classList.remove('hidden');
-            if (hubFooter) hubFooter.classList.remove('hidden');
+            let htmlStr = '';
+            activeRequests.forEach(req => {
+                
+                let statusBadge = '';
+                if (req.status === 'Pending') statusBadge = '<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Pending</span>';
+                else if (req.status === 'Approved') statusBadge = '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Approved</span>';
+                else statusBadge = `<span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">${req.status}</span>`;
+
+                htmlStr += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-3 pl-4 font-mono font-bold text-slate-700 whitespace-nowrap">${req.reqId || 'N/A'}</td>
+                        <td class="p-3 font-mono text-slate-800 whitespace-nowrap">${req.partNumber || ''}</td>
+                        <td class="p-3 font-semibold text-slate-800 min-w-[150px]">${req.description || ''}</td>
+                        <td class="p-3 font-mono text-slate-800 whitespace-nowrap">${req.price ? parseFloat(req.price).toFixed(2) + ' QAR' : '-'}</td>
+                        <td class="p-3 text-slate-900 font-mono font-bold whitespace-nowrap">${req.qty} <span class="text-[9px] font-sans font-normal text-slate-500">${req.unit || ''}</span></td>
+                        <td class="p-3 whitespace-nowrap"><span class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">${req.category || ''}</span></td>
+                        <td class="p-3 text-slate-500 text-[10px] min-w-[120px] italic">${req.categoryDesc || ''}</td>
+                        <td class="p-3 font-mono text-slate-700 whitespace-nowrap">${req.date || req.dateNeeded || ''}</td>
+                        <td class="p-3 text-slate-600 font-medium whitespace-nowrap">${req.requester || ''}</td>
+                        <td class="p-3 text-center">${statusBadge}</td>
+                        
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = htmlStr;
+            lucide.createIcons();
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if(sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        window.onload = function() {
+            initDataPipeline();
+            loadFirebaseData();
+        };
+
+        function initDataPipeline() {
+            cmmsDb.ref('.info/connected').on('value', (snap) => {
+                const badge = document.getElementById('connection-badge');
+                if (snap.val() === true) {
+                    badge.className = "text-xs text-emerald-600 font-medium flex items-center";
+                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>Firebase Terminal Live (Read-Only)`;
+                } else {
+                    badge.className = "text-xs text-rose-600 font-medium flex items-center";
+                    badge.innerHTML = `<span class="h-2 w-2 rounded-full bg-rose-500 mr-2 animate-pulse"></span>Offline / Reconnecting`;
+                }
+            });
+
+            cmmsDb.ref('assets').on('value', (snapshot) => {
+                const data = snapshot.val();
+                memory.assets = [];
+                if (data) { Object.keys(data).forEach(id => { memory.assets.push({ id, ...data[id] }); }); }
+                updateDashboardTopCounters();
+                refreshWorkspaceView();
+            });
+
+            cmmsDb.ref('certificates').on('value', (snapshot) => {
+                const data = snapshot.val();
+                memory.certificates = [];
+                if (data) { Object.keys(data).forEach(id => { memory.certificates.push({ id, ...data[id] }); }); }
+                updateDashboardTopCounters();
+                refreshWorkspaceView();
+            });
+
+            cmmsDb.ref('workOrders').on('value', (snapshot) => {
+                const data = snapshot.val();
+                memory.workOrders = [];
+                if (data) { 
+                    Object.keys(data).forEach(id => { 
+                        memory.workOrders.push({ id, ...data[id] }); 
+                    }); 
+                    
+                    // Sort work orders to push 'Completed' status to the bottom
+                    memory.workOrders.sort((a, b) => {
+                        const statusA = a.status || "";
+                        const statusB = b.status || "";
+                        
+                        if (statusA === 'Completed' && statusB !== 'Completed') return 1;
+                        if (statusA !== 'Completed' && statusB === 'Completed') return -1;
+                        
+                        // Optional: Secondary sort by date (newest first) for non-completed items
+                        return new Date(b.date || 0) - new Date(a.date || 0);
+                    });
+                }
+                updateDashboardTopCounters();
+                refreshWorkspaceView();
+            });
+
+             cmmsDb.ref('maintenanceLogs').on('value', (snapshot) => {
+                const data = snapshot.val();
+                memory.maintenanceLogs = [];
+                if (data) { 
+                    Object.keys(data).forEach(id => { memory.maintenanceLogs.push({ id, ...data[id] }); }); 
+                    
+                    // Add this line to sort the logs so the newest date appears at the top
+                    memory.maintenanceLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+                }
+                updateDashboardTopCounters();
+                refreshWorkspaceView();
+            });
+
+            cmmsDb.ref('parts').on('value', snapshot => {
+                const data = snapshot.val() || {};
+                memory.parts = Object.entries(data).map(([key, val]) => ({
+                    id: key,
+                    itemNumber: val.itemNumber || key,
+                    partNumber: val.partNumber || key, // Ensures exact Part Number is read from Firebase
+                    ...val
+                }));
+                renderParts();
+            });
+
+            inventoryDb.ref('requests').on('value', (snapshot) => {
+                activeRequests = snapshot.exists() ? Object.values(snapshot.val()) : [];
+                // Sort by date (newest first)
+                activeRequests.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+                
+                // Automatically re-render the requests table whenever data changes
+                renderRequests();
+            });
+
+        }
+
+        function updateDashboardTopCounters() {
+            document.getElementById('stat-fleet-count').innerText = memory.assets.length;
+            document.getElementById('stat-wo-count').innerText = memory.workOrders.length;
+            document.getElementById('stat-log-count').innerText = memory.maintenanceLogs.length;
+        }
+
+        function setModule(moduleCode) {
+            currentActiveModule = moduleCode;
+            document.querySelectorAll('.pane-view').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.mod-tab').forEach(t => {
+                t.classList.remove('bg-slate-900', 'text-white', 'shadow-xs');
+                t.classList.add('text-slate-600', 'hover:bg-slate-50', 'hover:text-slate-900');
+            });
+
+            const targetPane = document.getElementById(`pane-${moduleCode}`);
+            if (targetPane) targetPane.classList.remove('hidden');
+
+            const targetTab = document.getElementById(`tab-${moduleCode}`);
+            if (targetTab) {
+                targetTab.classList.remove('text-slate-600', 'hover:bg-slate-50', 'hover:text-slate-900');
+                targetTab.classList.add('bg-slate-900', 'text-white', 'shadow-xs');
+            }
+            
+            const sidebar = document.getElementById('sidebar');
+            if(!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+                toggleMobileSidebar();
+            }
+            
+            refreshWorkspaceView();
+        }
+
+        function toggleModal(modalId, displayState) {
+            const el = document.getElementById(modalId);
+            if (!el) return;
+            if (displayState) {
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+            } else {
+                el.classList.remove('flex');
+                el.classList.add('hidden');
+            }
+        }
+
+        function checkCertificateStatusAlarm(expiryString) {
+            if (!expiryString) return { alarm: false, text: "No Cert Found", statusKey: "Expired", class: "bg-slate-100 text-slate-600 border border-slate-200" };
+            
+            const expiryDate = new Date(expiryString);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            expiryDate.setHours(0,0,0,0);
+            
+            if (isNaN(expiryDate.getTime())) {
+                return { alarm: false, text: "Malformed Date", statusKey: "Expired", class: "bg-slate-100 text-slate-600 border border-slate-200" };
+            }
+
+            const timeDiff = expiryDate.getTime() - today.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+            if (daysDiff < 0) {
+                return { alarm: true, text: `❌ EXPIRED`, statusKey: "Expired", class: "bg-rose-100 text-rose-800 font-bold border border-rose-300" };
+            } else if (daysDiff <= 30) {
+                return { alarm: true, text: `⚠️ Expiring (${daysDiff} Days)`, statusKey: "Near", class: "bg-amber-100 text-amber-800 font-bold border border-amber-300" };
+            } else {
+                return { alarm: false, text: `✅ Valid (${daysDiff} Days)`, statusKey: "Valid", class: "bg-emerald-50 text-emerald-700 border border-emerald-200" };
+            }
+        }
+
+        function getAssetStatusBadgeClass(status) {
+            switch (status) {
+                case "Operational": return "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                case "In Maintenance": return "bg-amber-100 text-amber-800 border border-amber-200";
+                case "Down": return "bg-rose-100 text-rose-800 border border-rose-200";
+                case "Dispatched": return "bg-blue-100 text-blue-800 border border-blue-200";
+                case "Standby": return "bg-slate-200 text-slate-800 border border-slate-300";
+                default: return "bg-slate-100 text-slate-700 border border-slate-200";
+            }
+        }
+
+        function viewCertificateImage(certId) {
+            const cert = memory.certificates.find(c => c.id === certId);
+            if (!cert || !cert.certificateImage) {
+                alert("No image document attachment linked with this certificate record.");
+                return;
+            }
+            document.getElementById('view-cert-image-title').innerText = `Document File Attachment Preview [${cert.id}]`;
+            document.getElementById('img-view-cert-expanded').src = cert.certificateImage;
+            toggleModal('modal-view-cert-image', true);
+        }
+
+        function printCertificateDocument(certId) {
+            const cert = memory.certificates.find(c => c.id === certId);
+            if (!cert || !cert.certificateImage) {
+                alert("No verified document image attachment was uploaded for this certificate record.");
+                return;
+            }
+
+            const pSec = document.getElementById('print-section');
+            pSec.innerHTML = `
+                <div style="text-align:center; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:white; padding:15px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:15px;">
+                        <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" style="height:35px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
+                        <span style="font-size:11px; font-weight:bold; color:#475569;">Certificate ID Scan Attachment Reference: ${cert.id}</span>
+                    </div>
+                    <img src="${cert.certificateImage}" style="max-width:100%; max-height:90vh; object-fit:contain; border:none;" alt="Third Party Certificate Attachment Scan" />
+                </div>
+            `;
+            window.print();
+        }
+
+        function renderParts() {
+                const tbody = document.getElementById('rows-parts');
+                if (!tbody) return;
+                
+                const searchInput = document.getElementById('in-p-search');
+                const search = searchInput ? searchInput.value.toLowerCase() : '';
+                
+                const filtered = (memory.parts || []).filter(p => 
+                    (p.itemNumber && String(p.itemNumber).toLowerCase().includes(search)) ||
+                    (p.partNumber && String(p.partNumber).toLowerCase().includes(search)) ||
+                    (p.id && String(p.id).toLowerCase().includes(search)) || 
+                    (p.description && p.description.toLowerCase().includes(search)) ||
+                    (p.equipmentType && p.equipmentType.toLowerCase().includes(search)) ||
+                    (p.category && p.category.toLowerCase().includes(search))
+                );
+                
+                const html = filtered.map((p, index) => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-4 font-code text-slate-500 font-medium">${p.itemNumber || p.id || (index + 1)}</td>
+                        <td class="p-4 font-code font-bold text-slate-900">${p.partNumber || p.id}</td>
+                        <td class="p-4">${p.description || '-'}</td>
+                        <td class="p-4">${p.machineParts || '-'}</td>
+                        <td class="p-4 font-semibold">${p.category || '-'}</td>
+                        <td class="p-4 font-code">${p.pressureRating || '-'}</td>
+                        <td class="p-4">${p.equipmentType || '-'}</td>
+                        
+                    </tr>
+                `).join('');
+                
+                tbody.innerHTML = html || '<tr><td colspan="8" class="p-6 text-center text-slate-500 italic">No parts found matching your criteria.</td></tr>';
+            }
+
+        function executeTablePrint(title, rowsHtml, headers) {
+            const pSec = document.getElementById('print-section');
+            const headersHtml = headers.map(h => `<th style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; text-align:left; font-weight:600; font-size:11px; text-transform:uppercase;">${h}</th>`).join('');
+
+            pSec.innerHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 20px; color: #0f172a; max-width: 1000px; margin: 0 auto; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" style="height: 42px; width: 42px; object-fit: contain; border-radius: 4px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
+                            <div>
+                                <h2 style="margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase;">Al Ghaith Trading &amp; Industrial Services</h2>
+                                <p style="margin: 2px 0 0 0; color: #64748b; font-size: 11px;">Operational Analytics &amp; Reporting System</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <h3 style="margin: 0; font-size: 13px; font-weight: bold; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px;">${title}</h3>
+                            <p style="margin: 3px 0 0 0; font-size: 10px; color: #64748b;">Generated: ${new Date().toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px;">
+                        <thead>
+                            <tr>${headersHtml}</tr>
+                        </thead>
+                        <tbody style="color: #334155;">
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            window.print();
+        }
+
+        function printSafetyGuidelines() {
+            const pSec = document.getElementById('print-section');
+            pSec.innerHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 30px; color: #0f172a; max-width: 900px; margin: 0 auto; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #e11d48; padding-bottom: 15px; margin-bottom: 30px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" style="height: 45px; width: 45px; object-fit: contain; border-radius: 4px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
+                            <div>
+                                <h2 style="margin: 0; font-size: 18px; font-weight: bold; color: #e11d48; text-transform: uppercase;">Al Ghaith Trading &amp; Industrial Services</h2>
+                                <p style="margin: 2px 0 0 0; color: #64748b; font-size: 11px;">HSE &amp; Maintenance Risk Management</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <h3 style="margin: 0; color: #e11d48; font-size: 13px; text-transform: uppercase; font-weight: bold;">CRITICAL SAFETY PROTOCOLS</h3>
+                            <p style="margin: 3px 0 0 0; font-size: 10px; color: #64748b;">Generated: ${new Date().toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px; border-left: 5px solid #e11d48; background: #fff1f2; padding: 15px;">
+                        <h4 style="margin: 0 0 10px 0; color: #9f1239; font-size: 16px; text-transform: uppercase;">High-Pressure Pump Protocols</h4>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #334155; line-height: 1.6;">
+                            <li style="margin-bottom: 8px;">Always depressurize the system entirely before loosening any fittings or opening the fluid end manifold.</li>
+                            <li style="margin-bottom: 8px;">Verify all pressure relief valves (PRVs) and rupture discs are valid and correctly calibrated for the operating threshold.</li>
+                            <li style="margin-bottom: 8px;">Never point the hydro-jetting lance or dump gun at yourself or other personnel during testing.</li>
+                            <li style="margin-bottom: 8px;">Ensure high-pressure hoses are inspected for wire exposure, ballooning, or coupling fatigue prior to every shift.</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-bottom: 30px; border-left: 5px solid #e11d48; background: #fff1f2; padding: 15px;">
+                        <h4 style="margin: 0 0 10px 0; color: #9f1239; font-size: 16px; text-transform: uppercase;">Workshop &amp; LOTO Guidelines</h4>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #334155; line-height: 1.6;">
+                            <li style="margin-bottom: 8px;">Strictly adhere to Lockout/Tagout (LOTO) procedures when performing internal maintenance on diesel engines or electrical panels.</li>
+                            <li style="margin-bottom: 8px;">Ensure proper exhaust ventilation when running engine platforms indoors for load testing or diagnostics.</li>
+                            <li style="margin-bottom: 8px;">Mandatory PPE enforcement: Safety glasses, impact gloves, and hearing protection are required near active equipment.</li>
+                            <li style="margin-bottom: 8px;">Keep shop walkways and parts bin locations completely clear of fluid spills to prevent critical slip hazards.</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-top: 50px; font-size: 12px; color: #64748b; text-align: center; border-top: 1px solid #cbd5e1; padding-top: 15px;">
+                        <p style="margin: 0;"><strong>Safety is a collective responsibility.</strong> Any deviations from these protocols must be reported immediately.</p>
+                        <p style="margin: 5px 0 0 0;">Document Generated: ${new Date().toLocaleString()}</p>
+                    </div>
+                </div>
+            `;
+            window.print();
+        }
+
+        function refreshWorkspaceView() {
+            if (currentActiveModule === "fleet") {
+                const search = document.getElementById('in-f-search').value.toLowerCase();
+                const container = document.getElementById('rows-fleet');
+                container.innerHTML = "";
+                
+                const filtered = memory.assets.filter(a => 
+                    a.id.toLowerCase().includes(search) || 
+                    a.model.toLowerCase().includes(search) || 
+                    a.description.toLowerCase().includes(search) || 
+                    a.status.toLowerCase().includes(search) || 
+                    (a.location && a.location.toLowerCase().includes(search))
+                );
+
+                filtered.forEach(a => {
+                    const cert = memory.certificates.find(c => c.assetId === a.id);
+                    const statusCheck = cert ? checkCertificateStatusAlarm(cert.expiryDate) : { text: "No Cert Assigned", class: "bg-slate-100 text-slate-500 border border-slate-200" };
+                    const badgeColorClass = getAssetStatusBadgeClass(a.status);
+
+                    container.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold font-code text-slate-900">${a.id}</td>
+                            <td class="p-4 font-code">${a.model}</td>
+                            <td class="p-4 max-w-xs truncate">${a.description}</td>
+                            <td class="p-4 font-code text-slate-600">${a.pressure || 'N/A'}</td>
+                            <td class="p-4 font-code text-slate-500">${a.serial || 'N/A'}</td>
+                            <td class="p-4 uppercase font-semibold text-slate-600">${a.location || 'WORKSHOP'}</td>
+                            <td class="p-4"><span class="px-2 py-0.5 rounded text-[11px] font-semibold ${statusCheck.class}">${statusCheck.text}</span></td>
+                            <td class="p-4"><span class="px-2.5 py-1 rounded-sm text-[11px] font-bold ${badgeColorClass}">${a.status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            if (currentActiveModule === "cert") {
+                const search = document.getElementById('in-c-search').value.toLowerCase();
+                const container = document.getElementById('rows-cert');
+                container.innerHTML = "";
+
+                const filtered = memory.certificates.filter(c => 
+                    c.assetId.toLowerCase().includes(search) || 
+                    c.id.toLowerCase().includes(search)
+                );
+
+                filtered.forEach(c => {
+                    const asset = memory.assets.find(a => a.id === c.assetId) || { model: 'N/A', description: 'N/A', serial: 'N/A' };
+                    const statusCheck = checkCertificateStatusAlarm(c.expiryDate);
+                    
+                    const attachmentButtonHtml = c.certificateImage 
+                        ? `<button onclick="viewCertificateImage('${c.id}')" class="text-emerald-600 hover:text-emerald-900 font-bold cursor-pointer inline-flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">image</span> View</button>`
+                        : `<span class="text-slate-300 font-normal italic pointer-events-none">No File</span>`;
+
+                    container.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold font-code text-slate-900">${c.assetId}</td>
+                            <td class="p-4 font-code">${asset.model}</td>
+                            <td class="p-4 max-w-xs truncate">${asset.description}</td>
+                            <td class="p-4 font-code text-slate-500">${asset.serial || 'N/A'}</td>
+                            <td class="p-4 font-code">${c.expiryDate}</td>
+                            <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${statusCheck.class}">${statusCheck.text}</span></td>
+                            <td class="p-4 text-center space-x-2">
+                                ${attachmentButtonHtml}
+                                <button onclick="printCertificateDocument('${c.id}')" class="text-slate-900 hover:text-black font-bold cursor-pointer inline-flex items-center gap-0.5 pl-1 border border-slate-200 rounded px-1.5 py-0.5 bg-slate-50 hover:bg-slate-100"><span class="material-symbols-outlined text-xs">print</span> Print</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+             if (currentActiveModule === "wo") {
+                const container = document.getElementById('rows-wo');
+                container.innerHTML = "";
+                memory.workOrders.forEach(w => {
+                    
+                    // --- ADDED LOGIC FOR SERIAL NUMBER ---
+                    // Find the matching asset in your memory/database
+                    const asset = memory.assets.find(a => a.id === w.assetId);
+                    // Safely grab the serial number, defaulting to 'N/A' if it doesn't exist
+                    const serialNumber = asset && asset.serial ? asset.serial : 'N/A';
+                    // -------------------------------------
+
+                    let metricInfo = w.type === 'hours' ? `${w.currentHours} Hrs` : (w.type === 'date' ? w.currentDate : 'N/A');
+                    let targetInfo = w.type === 'hours' ? `${w.targetHours} Hrs` : (w.type === 'date' ? w.targetDate : 'N/A');
+                    let diffInfo = w.type === 'hours' ? `${w.targetHours - w.currentHours} Hours Remaining` : 'Target Schedule Bound';
+                    
+                    let woStatusClass = "bg-slate-100 text-slate-700 border border-slate-200";
+                    if (w.status === "Pending") woStatusClass = "bg-slate-100 text-slate-700 border border-slate-300";
+                    else if (w.status === "In Progress") woStatusClass = "bg-blue-100 text-blue-800 border border-blue-200";
+                    else if (w.status === "Check-up/Inspection") woStatusClass = "bg-amber-100 text-amber-800 border border-amber-200";
+                    else if (w.status === "Completed") woStatusClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                    else if (w.status === "Cancelled") woStatusClass = "bg-rose-100 text-rose-800 border border-rose-200";
+
+                    container.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold font-code text-slate-900">${w.id}</td>
+                            <td class="p-4 font-code font-medium">${formatDisplayDate(w.date)}</td>
+                            <td class="p-4 font-code font-medium">${w.assetId}</td>
+                            <td class="p-4 font-code">${serialNumber}</td>
+                            <td class="p-4 font-code">${metricInfo}</td>
+                            <td class="p-4 font-code">${targetInfo}</td>
+                            <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
+                            <td class="p-4 text-xs">${w.reason || 'N/A'}</td>
+                            <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woStatusClass}">${w.status}</span></td>
+                            
+                        </tr>
+                    `;
+                });
+            }
+
+            if (currentActiveModule === "log") {
+                const search = document.getElementById('in-l-search').value.toLowerCase();
+                const container = document.getElementById('rows-log');
+                container.innerHTML = "";
+
+                const filtered = memory.maintenanceLogs.filter(l => 
+                    l.id.toLowerCase().includes(search) || 
+                    l.assetId.toLowerCase().includes(search) || 
+                    l.fault.toLowerCase().includes(search) || 
+                    l.action.toLowerCase().includes(search)
+                );
+
+                filtered.forEach(l => {
+                    const logBadgeColorClass = getAssetStatusBadgeClass(l.status);
+
+                    container.innerHTML += `
+                        <tr class="hover:bg-slate-50 text-xs">
+                            <td class="p-4 font-code"><div class="font-bold text-slate-900">${l.id}</div><div class="text-[10px] text-slate-400 mt-0.5">${l.date}</div></td>
+                            <td class="p-4 font-code font-bold text-slate-700">${l.assetId}</td>
+                            <td class="p-4 font-code text-slate-500">${l.currentMetric} / ${l.targetMetric}</td>
+                            <td class="p-4 font-semibold text-slate-600">${l.remainingHours}</td>
+                            <td class="p-4 max-w-xs"><div class="truncate text-rose-700 font-medium">⚠️ ${l.fault}</div><div class="whitespace-pre-line text-slate-600 mt-0.5 text-[11px]">⚙️ ${l.action}</div></td>
+                            <td class="p-4"><div class="font-medium">${l.technician}</div><div class="text-[10px] text-slate-400 mt-0.5">Parts: ${l.parts}</div></td>
+                            <td class="p-4"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${logBadgeColorClass}">${l.status}</span></td>
+                            <td class="p-4 text-center">
+                                <button onclick="printMaintenanceLog('${l.id}')" class="text-slate-900 border border-slate-300 px-2 py-0.5 rounded font-bold hover:bg-slate-100 flex items-center gap-1 cursor-pointer w-full text-center justify-center"><span class="material-symbols-outlined text-xs">print</span> Print Slip</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            if (currentActiveModule === "analytics") {
+                updateLiveAnalyticsSummary();
+            }
+
+            if (currentActiveModule === "parts") {
+                renderParts();
+            }
+            
+        }
+
+        function printMaintenanceLog(logId) {
+            const log = memory.maintenanceLogs.find(l => l.id === logId);
+            if (!log) return;
+            const asset = memory.assets.find(a => a.id === log.assetId) || { model: 'N/A', serial: 'N/A' };
+            
+            const pSec = document.getElementById('print-section');
+            pSec.innerHTML = `
+                <div style="font-family: Arial, sans-serif; color: #0f172a; padding: 30px; line-height: 1.5; max-width: 850px; margin: 0 auto; background: #ffffff;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 24px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" style="height: 45px; width: 45px; object-fit: contain; border-radius: 4px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
+                            <div>
+                                <h2 style="margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase;">Al Ghaith Trading &amp; Industrial Services</h2>
+                                <p style="margin: 2px 0 0 0; color: #64748b; font-size: 11px;">Maintenance Log Verification Slip</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <h3 style="margin: 0; font-size: 13px; font-weight: bold; text-transform: uppercase;">Maintenance Slip</h3>
+                            <p style="margin: 3px 0 0 0; font-size: 10px; color: #64748b;">Log ID: ${log.id}</p>
+                        </div>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px;">
+                        <tr>
+                            <td style="vertical-align: top; width: 50%; padding-right: 20px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 35%;">Log Entry ID:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; font-size: 13px;">${log.id}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Execution Date:</td><td style="padding: 5px 0;">${log.date}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Assigned Tech:</td><td style="padding: 5px 0; font-weight: 500;">${log.technician}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Resulting Status:</td><td style="padding: 5px 0;"><span style="font-weight: bold; color: #059669;">${log.status}</span></td></tr>
+                                </table>
+                            </td>
+                            <td style="vertical-align: top; width: 50%; padding-left: 20px; border-left: 1px solid #e2e8f0;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 35%;">Asset Tag ID:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; color: #1e293b;">${log.assetId}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Model Number:</td><td style="padding: 5px 0; font-family: monospace; font-weight: bold; color: #0f172a;">${asset.model || 'N/A'}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Serial Number:</td><td style="padding: 5px 0; font-family: monospace; color: #334155;">${asset.serial || 'N/A'}</td></tr>
+                                    <tr><td style="padding: 5px 0; font-weight: bold; color: #64748b;">Metrics Log:</td><td style="padding: 5px 0; font-family: monospace;">${log.currentMetric} / ${log.targetMetric} (${log.remainingHours})</td></tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <div style="font-size: 12px; border-top: 1px solid #cbd5e1; padding-top: 16px;">
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Fault Discovery / Inspection Diagnostics:</strong>
+                            <div style="font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; color: #991b1b; white-space: pre-line;">⚠️ ${log.fault}</div>
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Service Maintenance Performed / Corrective Action:</strong>
+                            <div style="font-family: monospace; background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; color: #1e293b; white-space: pre-line; line-height: 1.6;">⚙️ ${log.action}</div>
+                        </div>
+                        
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
+                            <tr>
+                                <td style="width: 50%; padding-right: 10px; vertical-align: top;">
+                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Components / Parts Applied:</strong>
+                                    <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.parts || '<span style="color:#94a3b8; font-style:italic">None recorded</span>'}</div>
+                                </td>
+                                <td style="width: 50%; padding-left: 10px; vertical-align: top;">
+                                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px;">Operations Constraint Remarks:</strong>
+                                    <div style="background: #f8fafc; padding: 10px; border: 1px solid #e2e8f0; border-radius: 4px; min-height: 34px;">${log.remarks || '<span style="color:#94a3b8; font-style:italic">None</span>'}</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div style="margin-top: 70px; display: flex; justify-content: space-between; font-size: 11px; color: #475569;">
+                        <div style="text-align: center; width: 220px; border-top: 1px dashed #64748b; padding-top: 8px; font-weight: 500;">Technician Signature</div>
+                        <div style="text-align: center; width: 220px; border-top: 1px dashed #64748b; padding-top: 8px; font-weight: 500;">Workshop Supervisor Approval</div>
+                    </div>
+                </div>
+            `;
+            window.print();
+        }
+
+        function formatDisplayDate(dateString) {
+            if (!dateString) return 'N/A';
+            const parts = dateString.split('-');
+            if (parts.length !== 3) return dateString; // Fallback if format is unexpected
+            const [year, month, day] = parts;
+            return `${day}-${month}-${year}`;
+        }
+
+        function updateLiveAnalyticsSummary() {
+            let start = document.getElementById('print-start-date').value;
+            let end = document.getElementById('print-end-date').value;
+            
+            if(!start || !end) {
+                start = "1970-01-01";
+                end = "2099-12-31";
+            }
+            
+            let filteredLogs = memory.maintenanceLogs.filter(l => l.date >= start && l.date <= end);
+            document.getElementById('analytics-total-logs').innerText = filteredLogs.length + " Logs";
+            
+            let activeWoCount = memory.workOrders.filter(w => w.status !== 'Completed' && w.status !== 'Cancelled').length;
+            document.getElementById('analytics-total-wo').innerText = activeWoCount + " Active";
+            
+            let totalAssets = memory.assets.length;
+            let operationalAssets = memory.assets.filter(a => a.status === 'Operational').length;
+            let fleetRatio = totalAssets > 0 ? Math.round((operationalAssets / totalAssets) * 100) : 0;
+            document.getElementById('analytics-fleet-ratio').innerText = fleetRatio + "% Operational";
+            
+            const previewContainer = document.getElementById('rows-analytics-preview');
+            if (!previewContainer) return;
+            previewContainer.innerHTML = "";
+            
+            let combinedItems = [];
+            
+            filteredLogs.forEach(l => {
+                combinedItems.push({
+                    id: l.id,
+                    type: "Maintenance Log",
+                    assetId: l.assetId,
+                    date: l.date,
+                    desc: l.action,
+                    val: l.status,
+                    rawDate: new Date(l.date)
+                });
+            });
+            
+            combinedItems.sort((a, b) => b.rawDate - a.rawDate);
+            document.getElementById('analytics-preview-count').innerText = combinedItems.length + " records selected";
+            
+            if (combinedItems.length === 0) {
+                previewContainer.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 italic">No historical entries found for this specific timeframe range configuration parameters.</td></tr>`;
+                return;
+            }
+            
+            combinedItems.forEach(item => {
+                let assetObj = memory.assets.find(a => a.id === item.assetId) || { model: 'N/A' };
+                previewContainer.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition text-xs font-medium">
+                        <td class="p-3 font-bold font-code text-slate-900">${item.id}</td>
+                        <td class="p-3 text-[11px]"><span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">${item.type}</span></td>
+                        <td class="p-3 font-code font-bold text-slate-700">${item.assetId} <span class="text-[10px] font-normal text-slate-400 font-sans block">${assetObj.model}</span></td>
+                        <td class="p-3 text-slate-500 font-code">${item.date}</td>
+                        <td class="p-3 max-w-sm truncate text-slate-600">${item.desc}</td>
+                        <td class="p-3 text-right font-bold text-emerald-700">${item.val}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function printFilteredLogs() {
+            let start = document.getElementById('print-start-date').value;
+            let end = document.getElementById('print-end-date').value;
+            if(!start || !end) { alert("Please input start and end parameters before trying validation export."); return; }
+            
+            let filtered = memory.maintenanceLogs.filter(l => l.date >= start && l.date <= end);
+            let rowsHtml = filtered.sort((a,b) => new Date(a.date) - new Date(b.date)).map(l => {
+                const asset = memory.assets.find(a => a.id === l.assetId) || { model: 'N/A' };
+                return `
+                <tr>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.date}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1; font-weight:bold;">${l.id}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.assetId} - ${asset.model}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.technician}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1;">${l.action}</td>
+                    <td style="padding:6px; border:1px solid #cbd5e1; font-weight:600;">${l.status}</td>
+                </tr>`;
+            }).join('');
+
+            if(filtered.length === 0) { rowsHtml = '<tr><td colspan="6" style="padding:12px; text-align:center; color:#64748b;">No maintenance records match.</td></tr>'; }
+            executeTablePrint(`Maintenance Analytical Record (${start} to ${end})`, rowsHtml, ['Date Executed', 'Log Reference', 'Equipment Target', 'Technician Assignee', 'Executed Actions Summary', 'Status State']);
         }
     </script>
 </body>
