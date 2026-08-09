@@ -85,8 +85,13 @@
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Operations Modules</p>
                         <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined text-sm">close</span></button>
                     </div>
+
+                    <button onclick="setModule('dashboard')" id="tab-dashboard" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition bg-slate-900 text-white shadow-xs">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        <span>Main Dashboard</span>
+                    </button>
                     
-                    <button onclick="setModule('fleet')" id="tab-fleet" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition bg-slate-900 text-white shadow-xs">
+                    <button onclick="setModule('fleet')" id="tab-fleet" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
                         <span class="material-symbols-outlined">analytics</span>
                         <span>Master Fleet Registry</span>
                     </button>
@@ -161,7 +166,7 @@
 
             <main class="flex-1 p-4 md:p-8 overflow-y-auto">
                 <div class="flex-1">
-                    <section id="pane-fleet" class="pane-view space-y-4">
+                    <section id="pane-fleet" class="pane-view space-y-4 hidden">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Master Fleet Registry</h2>
@@ -197,6 +202,98 @@
                                     </thead>
                                     <tbody id="rows-fleet" class="divide-y divide-slate-100 text-slate-700"></tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="pane-dashboard" class="pane-view space-y-6">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">System Dashboard</h2>
+                                <p class="text-xs text-slate-500">High-level operational overview and active alerts.</p>
+                            </div>
+                        </div>
+
+                        <!-- KPI Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="bg-white border border-slate-200 p-5 rounded shadow-sm flex items-center justify-between border-l-4 border-l-blue-600">
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Assets</p>
+                                    <h3 id="dash-fleet-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">0</h3>
+                                </div>
+                                <span class="material-symbols-outlined text-3xl text-blue-100">local_shipping</span>
+                            </div>
+                            <div class="bg-white border border-slate-200 p-5 rounded shadow-sm flex items-center justify-between border-l-4 border-l-amber-500">
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pending Work Orders</p>
+                                    <h3 id="dash-wo-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">0</h3>
+                                </div>
+                                <span class="material-symbols-outlined text-3xl text-amber-100">build</span>
+                            </div>
+                            <div class="bg-white border border-slate-200 p-5 rounded shadow-sm flex items-center justify-between border-l-4 border-l-emerald-600">
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Techs</p>
+                                    <h3 id="dash-tech-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">0</h3>
+                                </div>
+                                <span class="material-symbols-outlined text-3xl text-emerald-100">badge</span>
+                            </div>
+                            <div class="bg-white border border-slate-200 p-5 rounded shadow-sm flex items-center justify-between border-l-4 border-l-rose-600">
+                                <div>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Maintenance Cost</p>
+                                    <h3 id="dash-alert-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">0</h3>
+                                </div>
+                                <span class="material-symbols-outlined text-3xl text-rose-100">fact_check</span>
+                            </div>
+                        </div>
+
+                        <!-- Widgets Grid -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Recent Work Orders -->
+                            <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden flex flex-col">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-amber-600">construction</span> Active Work Orders</h4>
+                                    <button onclick="setModule('wo')" class="text-[10px] font-bold text-slate-500 hover:text-slate-900 uppercase cursor-pointer">View All</button>
+                                </div>
+                                <div class="p-4 flex-1 overflow-auto max-h-64">
+                                    <ul id="dash-recent-wo" class="divide-y divide-slate-100 text-xs">
+                                        <li class="py-2 text-slate-400 italic text-center">Loading pending orders...</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Expiring Certificates -->
+                            <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden flex flex-col">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-rose-600">verified</span> Upcoming Expirations</h4>
+                                    <button onclick="setModule('cert')" class="text-[10px] font-bold text-slate-500 hover:text-slate-900 uppercase cursor-pointer">View All</button>
+                                </div>
+                                <div class="p-4 flex-1 overflow-auto max-h-64">
+                                    <ul id="dash-recent-certs" class="divide-y divide-slate-100 text-xs">
+                                        <li class="py-2 text-slate-400 italic text-center">Loading certificates...</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Expenses Per Asset -->
+                            <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden flex flex-col">
+                                <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-sm text-blue-600">payments</span> Expenses Per Asset
+                                    </h4>
+                                    <div class="flex items-center gap-2">
+                                        <select id="dash-expense-period-filter" onchange="populateMainDashboard()" class="text-[10px] bg-white border border-slate-200 rounded px-1.5 py-0.5 font-semibold text-slate-600 focus:outline-none cursor-pointer">
+                                            <option value="month">This Month</option>
+                                            <option value="year">This Year</option>
+                                            <option value="all">All Time</option>
+                                        </select>
+                                        <button onclick="setModule('expenses')" class="text-[10px] font-bold text-slate-500 hover:text-slate-900 uppercase cursor-pointer">View All</button>
+                                    </div>
+                                </div>
+                                <div class="p-4 flex-1 overflow-auto max-h-64">
+                                    <ul id="dash-expenses-asset" class="divide-y divide-slate-100 text-xs">
+                                        <li class="py-2 text-slate-400 italic text-center">Loading expenses...</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -399,16 +496,33 @@
                     </section>
 
                     <section id="pane-expenses" class="pane-view space-y-4 hidden">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Expenses Tracking</h2>
-                                <p class="text-xs text-slate-500">Financial records and parts purchasing logs.</p>
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 tracking-tight">Expenses Tracking</h2>
+                            <p class="text-xs text-slate-500">Financial records and parts purchasing logs.</p>
+                        </div>
+                        
+                        <!-- NEW: Print Controls and Log Expense Button -->
+                        <div class="flex flex-col sm:flex-row items-center gap-3">
+                            <div class="flex items-center gap-2 bg-slate-50 p-1.5 rounded border border-slate-200">
+                                <select id="print-expense-type" onchange="toggleExpensePrintInputs()" class="text-xs p-1.5 rounded border border-slate-300 bg-white focus:outline-none focus:border-slate-900">
+                                    <option value="month">Monthly Summary</option>
+                                    <option value="year">Yearly Summary</option>
+                                </select>
+                                <input type="month" id="print-expense-month" class="text-xs p-1.5 rounded border border-slate-300 bg-white focus:outline-none focus:border-slate-900">
+                                <input type="number" id="print-expense-year" placeholder="YYYY" class="hidden text-xs p-1.5 rounded border border-slate-300 bg-white w-20 focus:outline-none focus:border-slate-900">
+                                <button onclick="printExpenseSummary()" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-semibold text-xs px-3 py-1.5 rounded flex items-center space-x-1 transition shadow-sm cursor-pointer">
+                                    <span class="material-symbols-outlined text-sm">print</span>
+                                    <span>Print</span>
+                                </button>
                             </div>
-                            <button onclick="openAddExpenseModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
+
+                            <button onclick="openAddExpenseModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm w-full sm:w-auto">
                                 <span class="material-symbols-outlined text-sm">add_shopping_cart</span>
                                 <span>Log Expense</span>
                             </button>
                         </div>
+                    </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
                             <div class="overflow-x-auto w-full">
@@ -1237,7 +1351,7 @@
 </div>
 
     <script>
-        const firebaseConfig = {
+        const cmmsConfig = {
             apiKey: "AIzaSyCS6OIQ6wFFKDRcq-SFGCLP2aVq6faq5fo",
             authDomain: "cmms-e5cce.firebaseapp.com",
             databaseURL: "https://cmms-e5cce-default-rtdb.firebaseio.com",
@@ -1247,9 +1361,24 @@
             appId: "1:143521296047:web:3f6b2b46d025ec32f36e5a"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth(); // ADDED: Initialize Firebase Auth
+        // 2. Initialize your Inventory database configuration with a custom app name ("InventoryApp")
+        const inventoryConfig = {
+            apiKey: "AIzaSyALduwl7WSzyPkLA4kODFbXaI3vnHRLDMg",
+            authDomain: "inventory-fbd3c.firebaseapp.com",
+            databaseURL: "https://inventory-fbd3c-default-rtdb.firebaseio.com",
+            projectId: "inventory-fbd3c",
+            storageBucket: "inventory-fbd3c.firebasestorage.app",
+            messagingSenderId: "907986014952",
+            appId: "1:907986014952:web:bb3b12350335a4264faf5d",
+            measurementId: "G-3VF8F56DFE"
+        };
+
+        const cmmsApp = firebase.initializeApp(cmmsConfig, "CMMSApp");
+        const inventoryApp = firebase.initializeApp(inventoryConfig, "InventoryApp");
+        const cmmsDb = cmmsApp.database();
+        const inventoryDb = inventoryApp.database();
+        const auth = cmmsApp.auth();
+        
 
         let memory = {
             assets: [],
@@ -1263,7 +1392,7 @@
             parts: []
         };
 
-        let currentActiveModule = "fleet";
+        let currentActiveModule = "dashboard";
         let isDataInitialized = false;
 
         function toggleMobileSidebar() {
@@ -1288,6 +1417,7 @@
                     if (!isDataInitialized) {
                         initDataPipeline();
                         isDataInitialized = true;
+                        setModule('dashboard'); // Forces the dashboard to render
                     }
                 } else {
                     // Logged out: Show overlay, hide app
@@ -1327,7 +1457,7 @@
         }
 
         function initDataPipeline() {
-            db.ref('.info/connected').on('value', (snap) => {
+            cmmsDb.ref('.info/connected').on('value', (snap) => {
                 const badge = document.getElementById('connection-badge');
                 if (snap.val() === true) {
                     badge.className = "text-xs text-emerald-600 font-medium flex items-center";
@@ -1338,7 +1468,7 @@
                 }
             });
 
-            db.ref('assets').on('value', (snapshot) => {
+            cmmsDb.ref('assets').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.assets = [];
                 if (data) { Object.keys(data).forEach(id => { memory.assets.push({ id, ...data[id] }); }); }
@@ -1346,7 +1476,7 @@
                 refreshWorkspaceView();
             });
 
-            db.ref('certificates').on('value', (snapshot) => {
+            cmmsDb.ref('certificates').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.certificates = [];
                 if (data) { Object.keys(data).forEach(id => { memory.certificates.push({ id, ...data[id] }); }); }
@@ -1354,7 +1484,7 @@
                 refreshWorkspaceView();
             });
 
-            db.ref('workOrders').on('value', (snapshot) => {
+            cmmsDb.ref('workOrders').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.workOrders = [];
                 if (data) { 
@@ -1378,7 +1508,7 @@
                 refreshWorkspaceView();
             });
 
-            db.ref('maintenanceLogs').on('value', (snapshot) => {
+            cmmsDb.ref('maintenanceLogs').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.maintenanceLogs = [];
                 if (data) { 
@@ -1391,7 +1521,7 @@
                 refreshWorkspaceView();
             });
 
-            db.ref('expenses').on('value', (snapshot) => {
+            cmmsDb.ref('expenses').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.expenses = [];
                 if (data) { Object.keys(data).forEach(id => { memory.expenses.push({ id, ...data[id] }); }); }
@@ -1399,7 +1529,7 @@
                 refreshWorkspaceView();
             });
 
-            db.ref('dispatches').on('value', (snapshot) => {
+            cmmsDb.ref('dispatches').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.dispatches = [];
                 if (data) { Object.keys(data).forEach(id => { memory.dispatches.push({ id, ...data[id] }); }); }
@@ -1407,20 +1537,20 @@
                 refreshWorkspaceView();
             });
 
-            db.ref('technicians').on('value', (snapshot) => {
+            cmmsDb.ref('technicians').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.technicians = [];
                 if (data) { Object.keys(data).forEach(id => { memory.technicians.push({ id, ...data[id] }); }); }
                 updateDashboardTopCounters();
                 refreshWorkspaceView();
             });
-            db.ref('preops').on('value', (snapshot) => {
+            cmmsDb.ref('preops').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.preops = [];
                 if (data) { Object.keys(data).forEach(id => { memory.preops.push({ id, ...data[id] }); }); }
                 refreshWorkspaceView();
             });
-            db.ref('parts').on('value', snapshot => {
+            cmmsDb.ref('parts').on('value', snapshot => {
                 const data = snapshot.val() || {};
                 memory.parts = Object.entries(data).map(([key, val]) => ({
                     id: key,
@@ -1487,7 +1617,7 @@
                 };
 
                 // Save directly under parts/ITEMxxxx
-                db.ref('parts/' + finalItemNumberStr).set(payload)
+                cmmsDb.ref('parts/' + finalItemNumberStr).set(payload)
                     .then(() => {
                         const form = document.getElementById('form-part');
                         if (form) form.reset();
@@ -1498,7 +1628,7 @@
 
             function deletePart(itemNumber) {
                 if (confirm(`Are you sure you want to delete Item #${itemNumber}?`)) {
-                    db.ref('parts/' + itemNumber).remove()
+                    cmmsDb.ref('parts/' + itemNumber).remove()
                         .catch(err => alert("Error deleting part: " + err.message));
                 }
             }
@@ -1569,7 +1699,7 @@
                 status: document.getElementById('in-po-status').value
             };
 
-            db.ref('preops/' + id).set(payload)
+            cmmsDb.ref('preops/' + id).set(payload)
                 .then(() => {
                     toggleModal('modal-add-preop', false);
                 })
@@ -1578,7 +1708,7 @@
 
         function dropPreop(id) {
             if (confirm(`Are you sure you want to delete Pre-Op Checklist ${id}?`)) {
-                db.ref('preops/' + id).remove();
+                cmmsDb.ref('preops/' + id).remove();
             }
         }
 
@@ -2218,14 +2348,14 @@
                 location: document.getElementById('in-f-location').value,
                 status: document.getElementById('in-f-status').value
             };
-            db.ref('assets/' + id).set(payload, (error) => {
+            cmmsDb.ref('assets/' + id).set(payload, (error) => {
                 if (!error) toggleModal('modal-add-fleet', false);
             });
         }
 
         function dropAssetSpec(id) {
             if (confirm(`Are you sure you want to delete Asset ${id}?`)) {
-                db.ref('assets/' + id).remove();
+                cmmsDb.ref('assets/' + id).remove();
             }
         }
 
@@ -2373,14 +2503,14 @@
                 expiryDate: document.getElementById('in-c-expiry').value,
                 certificateImage: document.getElementById('in-c-image-base64').value || ""
             };
-            db.ref('certificates/' + id).set(payload, (error) => {
+            cmmsDb.ref('certificates/' + id).set(payload, (error) => {
                 if (!error) toggleModal('modal-add-cert', false);
             });
         }
 
         function dropCertificate(id) {
             if (confirm("Are you sure you want to delete this certificate record?")) {
-                db.ref('certificates/' + id).remove();
+                cmmsDb.ref('certificates/' + id).remove();
             }
         }
 
@@ -2412,7 +2542,23 @@
                         if (!rawPartNo) return; // Skip rows without a Part Number
 
                         const exactPartNo = String(rawPartNo).trim();
-                        const itemNumber = String(row['Item No.'] || row['Item No'] || row['Item Number'] || row['Item'] || (index + 1)).trim();
+                        
+                        // Read raw value from sheet
+                        let rawItemNo = row['Item No.'] || row['Item No'] || row['Item Number'] || row['Item'];
+                        
+                        let itemNumber = "";
+                        if (rawItemNo !== undefined && rawItemNo !== null && String(rawItemNo).trim() !== "") {
+                            let cleaned = String(rawItemNo).trim();
+                            // If raw item is purely numeric, prefix with 'ITEM' and zero-pad to 4 digits
+                            if (/^\d+$/.test(cleaned)) {
+                                itemNumber = 'ITEM' + cleaned.padStart(4, '0');
+                            } else {
+                                itemNumber = cleaned;
+                            }
+                        } else {
+                            // Fallback to row index if no item number exists in column
+                            itemNumber = 'ITEM' + String(index + 1).padStart(4, '0');
+                        }
 
                         const description = row['Description'] || row['Part Description'] || row['Desc'] || '';
                         const machineParts = row['Machine/Equipment Parts'] || row['Machine Parts'] || row['Equipment Parts'] || row['Machine/Equipment'] || '';
@@ -2422,19 +2568,19 @@
 
                         // Uses itemNumber as the Firebase DB Key
                         updates[`parts/${itemNumber}`] = {
-                        itemNumber: String(itemNumber).trim(),
-                        partNumber: exactPartNo, // Preserves untouched Part Number (e.g., BM20948-6.0)
-                        description: String(description).trim(),
-                        machineParts: String(machineParts).trim(),
-                        category: String(category).trim(),
-                        pressureRating: String(pressureRating).trim(),
-                        equipmentType: String(equipmentType).trim()
-                    };
+                            itemNumber: itemNumber,
+                            partNumber: exactPartNo,
+                            description: String(description).trim(),
+                            machineParts: String(machineParts).trim(),
+                            category: String(category).trim(),
+                            pressureRating: String(pressureRating).trim(),
+                            equipmentType: String(equipmentType).trim()
+                        };
                         importedCount++;
                     });
 
                     if (importedCount > 0) {
-                        db.ref().update(updates)
+                        cmmsDb.ref().update(updates)
                             .then(() => {
                                 alert(`Successfully uploaded and synced ${importedCount} parts into Parts Reference.`);
                                 event.target.value = ''; // Reset input
@@ -2533,7 +2679,14 @@
                 return;
             }
 
-            // 2. Build the payload, ensuring NO undefined values are passed (Firebase strictly rejects undefined)
+            // 2. Status check: Prevent adding work order if equipment is dispatched
+            const targetAsset = memory.assets.find(a => a.id === assetId);
+            if (targetAsset && targetAsset.status === 'Dispatched') {
+                alert("Submission Blocked: Cannot add a work order for equipment currently in 'Dispatched' status.");
+                return;
+            }
+
+            // 3. Build the payload, ensuring NO undefined values are passed (Firebase strictly rejects undefined)
             const payload = {
                 id: id,
                 assetId: assetId,
@@ -2547,11 +2700,11 @@
                 targetDate: type === 'date' ? (document.getElementById('in-w-target-date').value || "") : ""
             };
 
-            // 3. Use Promises instead of callbacks for better error catching
-            db.ref('workOrders/' + id).set(payload)
+            // 4. Use Promises instead of callbacks for better error catching
+            cmmsDb.ref('workOrders/' + id).set(payload)
                 .then(() => {
                     // If the first write succeeds, update the asset status
-                    return db.ref('assets/' + assetId).update({ 
+                    return cmmsDb.ref('assets/' + assetId).update({ 
                         status: "In Maintenance",
                         statusColor: "#FF9800" 
                     });
@@ -2570,7 +2723,7 @@
 
         function dropWorkOrder(id) {
             if (confirm(`Purge Work Order ${id}?`)) {
-                const woRef = db.ref('workOrders/' + id);
+                const woRef = cmmsDb.ref('workOrders/' + id);
 
                 // 1. Fetch the work order to find the associated assetId and status
                 woRef.once('value').then((snapshot) => {
@@ -2588,7 +2741,7 @@
                             woRef.remove();
                         } else {
                             // 2. Revert the asset status back to "Operational" + Success/Green Color
-                            db.ref('assets/' + assetId).update({ 
+                            cmmsDb.ref('assets/' + assetId).update({ 
                                 status: "Operational",
                                 statusColor: "#4CAF50" // Adjust to your specific Hex Code or CSS class (e.g., 'text-success')
                             }).then(() => {
@@ -2719,12 +2872,12 @@
                 remarks: document.getElementById('in-l-remarks').value
             };
             
-            db.ref('maintenanceLogs/' + id).set(payload, (error) => {
+            cmmsDb.ref('maintenanceLogs/' + id).set(payload, (error) => {
                 if (!error) {
                     if (opStatus === "Operational") {
-                        db.ref('workOrders/' + woId + '/status').set('Completed');
+                        cmmsDb.ref('workOrders/' + woId + '/status').set('Completed');
                     }
-                    db.ref('assets/' + wo.assetId + '/status').set(opStatus);
+                    cmmsDb.ref('assets/' + wo.assetId + '/status').set(opStatus);
                     toggleModal('modal-add-log', false);
                 }
             });
@@ -2732,7 +2885,7 @@
 
         function dropLogEntry(id) {
             if (confirm(`Delete Log Entry ${id}?`)) {
-                db.ref('maintenanceLogs/' + id).remove();
+                cmmsDb.ref('maintenanceLogs/' + id).remove();
             }
         }
 
@@ -3116,11 +3269,11 @@
                 };
 
                 // Update the asset status, THEN create the work order
-                db.ref('assets/' + assetId).update({
+                cmmsDb.ref('assets/' + assetId).update({
                     status: "Request Dispatch"
                 }).then(() => {
                     // After the asset updates successfully, write the new work order
-                    return db.ref('workOrders/' + autoWoId).set(workOrderPayload);
+                    return cmmsDb.ref('workOrders/' + autoWoId).set(workOrderPayload);
                 }).then(() => {
                     console.log(`Asset ${assetId} status updated. Auto-Work Order ${autoWoId} created.`);
                     alert(`Dispatch requested successfully! Work Order ${autoWoId} has been automatically generated.`);
@@ -3230,14 +3383,14 @@
                 price: parseFloat(document.getElementById('in-e-price').value) || 0,
                 total: parseFloat(document.getElementById('in-e-total').value) || 0
             };
-            db.ref('expenses/' + id).set(payload, (error) => {
+            cmmsDb.ref('expenses/' + id).set(payload, (error) => {
                 if (!error) toggleModal('modal-add-expense', false);
             });
         }
 
         function dropExpense(id) {
             if (confirm(`Delete financial receipt log item ${id}?`)) {
-                db.ref('expenses/' + id).remove();
+                cmmsDb.ref('expenses/' + id).remove();
             }
         }
 
@@ -3292,14 +3445,14 @@
             };
 
             // Save the dispatch log event
-            db.ref('dispatches/' + id).set(dispatchLog).then(() => {
+            cmmsDb.ref('dispatches/' + id).set(dispatchLog).then(() => {
                 
                 if (type === 'Dispatch Out') {
                     let assetUpdates = {
                         status: 'Dispatched',
                         location: destination.toUpperCase()
                     };
-                    return db.ref('assets/' + assetId).update(assetUpdates); // Updates the asset status in Firebase
+                    return cmmsDb.ref('assets/' + assetId).update(assetUpdates); // Updates the asset status in Firebase
                     
                 } else if (type === 'Return In') {
                     let assetUpdates = {
@@ -3321,8 +3474,8 @@
 
                     // Use Promise.all to execute both updates to Firebase simultaneously[cite: 1]
                     return Promise.all([
-                        db.ref('assets/' + assetId).update(assetUpdates),
-                        db.ref('workOrders/' + autoWoId).set(autoWorkOrder)
+                        cmmsDb.ref('assets/' + assetId).update(assetUpdates),
+                        cmmsDb.ref('workOrders/' + autoWoId).set(autoWorkOrder)
                     ]);
                 }
             }).then(() => {
@@ -3392,7 +3545,7 @@
 
                 // Base delete action WITH Protection Warning Popup
                 let actionButtons = `
-                    <button onclick="if(confirm('⚠️ WARNING: Are you sure you want to delete this dispatch log?')) db.ref('dispatches/${d.id}').remove()" class="text-rose-500 hover:text-rose-700 p-1 bg-rose-50 rounded border border-rose-100 transition" title="Delete Log">
+                    <button onclick="if(confirm('⚠️ WARNING: Are you sure you want to delete this dispatch log?')) cmmsDb.ref('dispatches/${d.id}').remove()" class="text-rose-500 hover:text-rose-700 p-1 bg-rose-50 rounded border border-rose-100 transition" title="Delete Log">
                         <span class="material-symbols-outlined text-sm">delete</span>
                     </button>
                 `;
@@ -3433,7 +3586,7 @@
 
         function dropDispatchEvent(id) {
             if (confirm(`Purge mobilization tracking configuration file index ${id}?`)) {
-                db.ref('dispatches/' + id).remove();
+                cmmsDb.ref('dispatches/' + id).remove();
             }
         }
 
@@ -3468,16 +3621,290 @@
                 designation: document.getElementById('in-t-designation').value.trim(),
                 contact: document.getElementById('in-t-contact').value.trim()
             };
-            db.ref('technicians/' + id).set(payload, (error) => {
+            cmmsDb.ref('technicians/' + id).set(payload, (error) => {
                 if (!error) toggleModal('modal-add-tech', false);
             });
         }
 
         function dropTechnician(id) {
             if (confirm(`Purge engineer credential record mapping file matching ${id}?`)) {
-                db.ref('technicians/' + id).remove();
+                cmmsDb.ref('technicians/' + id).remove();
             }
         }
+
+        // Function to toggle between Month and Year input fields for printing
+        function toggleExpensePrintInputs() {
+            const type = document.getElementById('print-expense-type').value;
+            if (type === 'month') {
+                document.getElementById('print-expense-month').classList.remove('hidden');
+                document.getElementById('print-expense-year').classList.add('hidden');
+            } else {
+                document.getElementById('print-expense-month').classList.add('hidden');
+                document.getElementById('print-expense-year').classList.remove('hidden');
+                
+                // Auto-fill current year if empty
+                if(!document.getElementById('print-expense-year').value) {
+                    document.getElementById('print-expense-year').value = new Date().getFullYear();
+                }
+            }
+        }
+
+        // Automatically set the month input to the current month on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            const now = new Date();
+            const monthInput = document.getElementById('print-expense-month');
+            if (monthInput) {
+                monthInput.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+            }
+        });
+
+        // Main function to calculate totals and trigger the print view
+        function printExpenseSummary() {
+            const type = document.getElementById('print-expense-type').value;
+            let filterMonth = '';
+            let filterYear = '';
+            let reportTitle = '';
+
+            if (type === 'month') {
+                filterMonth = document.getElementById('print-expense-month').value;
+                if (!filterMonth) return alert("Please select a valid month.");
+                
+                // Format for display (e.g. "August 2026")
+                const dateObj = new Date(filterMonth + '-01T00:00:00');
+                const monthName = dateObj.toLocaleString('default', { month: 'long', year: 'numeric' });
+                reportTitle = `Equipment Expense Summary - ${monthName}`;
+            } else {
+                filterYear = document.getElementById('print-expense-year').value;
+                if (!filterYear) return alert("Please enter a valid year.");
+                reportTitle = `Equipment Expense Summary - Year ${filterYear}`;
+            }
+
+            // Aggregate Data: Group by Equipment Asset and Sum Totals
+            const summary = {};
+            let grandTotal = 0;
+
+            memory.expenses.forEach(exp => {
+                if (!exp.date) return;
+                
+                const expDate = new Date(exp.date);
+                const expMonth = expDate.getFullYear() + '-' + String(expDate.getMonth() + 1).padStart(2, '0');
+                const expYear = String(expDate.getFullYear());
+
+                let include = false;
+                if (type === 'month' && expMonth === filterMonth) include = true;
+                if (type === 'year' && expYear === filterYear) include = true;
+
+                if (include) {
+                    // FIXED: Uses exp.assetId matching your payload structure
+                    const assetId = exp.assetId || 'Uncategorized Equipment';
+                    const cost = parseFloat(exp.total || 0);
+                    
+                    if (!summary[assetId]) {
+                        summary[assetId] = 0;
+                    }
+                    summary[assetId] += cost;
+                    grandTotal += cost;
+                }
+            });
+
+            // Generate HTML for the hidden #print-section
+            // Added columns for Make/Description and Serial Number
+            let html = `
+                <div class="mb-6 border-b border-slate-200 pb-4">
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Al Ghaith Trading & Industrial Services</h1>
+                    <h2 class="text-lg font-semibold text-slate-700 mt-1">${reportTitle}</h2>
+                    <p class="text-xs text-slate-500 mt-1">Report Generated on: ${new Date().toLocaleString()}</p>
+                </div>
+                <table class="w-full text-left border-collapse text-sm mb-6">
+                    <thead>
+                        <tr class="bg-slate-100 border-b border-slate-300 text-slate-700 font-bold uppercase text-xs tracking-wider">
+                            <th class="p-3 border border-slate-200">Asset ID</th>
+                            <th class="p-3 border border-slate-200">Make / Brand</th>
+                            <th class="p-3 border border-slate-200">Serial Number</th>
+                            <th class="p-3 border border-slate-200 text-right">Total Parts/Maintenance Cost (QAR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // Populate Table Rows
+            if (Object.keys(summary).length === 0) {
+                // Adjusted colspan to 4 to account for the new columns
+                html += `<tr><td colspan="4" class="p-6 text-center italic text-slate-500 border border-slate-200">No financial expenses recorded for this specific period.</td></tr>`;
+            } else {
+                // Sort alphabetically by asset name
+                const sortedAssets = Object.keys(summary).sort();
+                for (const assetId of sortedAssets) {
+                    
+                    // Retrieve Make and Serial Number from memory.assets
+                    let make = 'N/A';
+                    let serial = 'N/A';
+                    
+                    if (assetId !== 'Uncategorized Equipment') {
+                        const assetData = memory.assets.find(a => a.id === assetId);
+                        if (assetData) {
+                            make = assetData.description || assetData.make || 'N/A';
+                            serial = assetData.serial || 'N/A';
+                        }
+                    }
+
+                    html += `
+                        <tr class="border-b border-slate-200">
+                            <td class="p-3 border border-slate-200 font-medium text-slate-800">${assetId}</td>
+                            <td class="p-3 border border-slate-200 text-slate-700">${make}</td>
+                            <td class="p-3 border border-slate-200 text-slate-700 font-code">${serial}</td>
+                            <td class="p-3 border border-slate-200 text-right font-code text-slate-900">QAR ${summary[assetId].toFixed(2)}</td>
+                        </tr>
+                    `;
+                }
+            }
+
+            // Adjusted footer colspan to 3 to align the grand total properly
+            html += `
+                    </tbody>
+                    <tfoot>
+                        <tr class="bg-slate-50 font-bold text-slate-900">
+                            <td colspan="3" class="p-3 border border-slate-200 text-right uppercase text-xs tracking-wider">Grand Total:</td>
+                            <td class="p-3 border border-slate-200 text-right font-code text-lg">QAR ${grandTotal.toFixed(2)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+
+            // Inject into print section and call print function
+            const printSection = document.getElementById('print-section');
+            printSection.innerHTML = html;
+            
+            window.print();
+        }
+
+        // ADD THIS FUNCTION
+        function populateMainDashboard() {
+            // Top KPI Counters
+            if(document.getElementById('dash-fleet-count')) document.getElementById('dash-fleet-count').innerText = memory.assets.length;
+            if(document.getElementById('dash-wo-count')) {
+                const pendingWos = memory.workOrders.filter(w => w.status !== 'Completed').length;
+                document.getElementById('dash-wo-count').innerText = pendingWos;
+            }
+            if(document.getElementById('dash-tech-count')) document.getElementById('dash-tech-count').innerText = memory.technicians.length;
+            if(document.getElementById('dash-alert-count')) document.getElementById('dash-alert-count').innerText = memory.preops.length;
+
+            // Recent Work Orders Widget
+            const woList = document.getElementById('dash-recent-wo');
+            if (woList) {
+                const recentWOs = memory.workOrders.filter(w => w.status !== 'Completed').slice(0, 5);
+                if (recentWOs.length === 0) {
+                    woList.innerHTML = '<li class="py-3 text-slate-400 italic text-center">All caught up! No pending work orders.</li>';
+                } else {
+                    woList.innerHTML = recentWOs.map(w => `
+                        <li class="py-3 flex justify-between items-center hover:bg-slate-50 transition px-2 rounded -mx-2">
+                            <div>
+                                <p class="font-bold text-slate-800 font-code text-[11px]">${w.id}</p>
+                                <p class="text-[10px] text-slate-500 mt-0.5">${w.asset || w.assetId || 'Unknown Asset'} - ${w.reason || ''}</p>
+                            </div>
+                            <span class="px-2 py-1 rounded text-[9px] font-bold bg-amber-50 border border-amber-200 text-amber-700 uppercase tracking-wider">${w.status || 'Pending'}</span>
+                        </li>
+                    `).join('');
+                }
+            }
+
+            // Expiring Certificates Widget
+            const certList = document.getElementById('dash-recent-certs');
+            if (certList) {
+                // Sort by closest expiry date
+                const certs = [...memory.certificates]
+                    .sort((a, b) => new Date(a.expiryDate || a.expiry || 0) - new Date(b.expiryDate || b.expiry || 0))
+                    .slice(0, 5);
+                    
+                if (certs.length === 0) {
+                    certList.innerHTML = '<li class="py-3 text-slate-400 italic text-center">No certificates filed.</li>';
+                } else {
+                    certList.innerHTML = certs.map(c => `
+                        <li class="py-3 flex justify-between items-center hover:bg-slate-50 transition px-2 rounded -mx-2">
+                            <div>
+                                <p class="font-bold text-slate-800 font-code text-[11px]">${c.asset || c.assetId || 'Unknown Asset'}</p>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Expires: <span class="font-bold text-rose-600">${c.expiryDate || c.expiry || 'N/A'}</span></p>
+                            </div>
+                            <span class="material-symbols-outlined text-slate-300 text-lg">description</span>
+                        </li>
+                    `).join('');
+                }
+            }
+
+            // Expenses Per Asset Widget (with Month/Year filtering)
+            const expenseList = document.getElementById('dash-expenses-asset');
+            if (expenseList) {
+                const periodFilterElement = document.getElementById('dash-expense-period-filter');
+                const period = periodFilterElement ? periodFilterElement.value : 'month';
+                
+                const now = new Date();
+                const currentYear = now.getFullYear();
+                const currentMonth = now.getMonth();
+
+                const expenseMap = {};
+                    if (memory.expenses && Array.isArray(memory.expenses)) {
+                        memory.expenses.forEach(ex => {
+                            const expenseDateStr = ex.date || ex.createdAt || ex.timestamp;
+                            const expenseDate = expenseDateStr ? new Date(expenseDateStr) : null;
+
+                            // Filter based on selected dropdown period
+                            if (expenseDate && !isNaN(expenseDate.getTime())) {
+                                if (period === 'month') {
+                                    if (expenseDate.getFullYear() !== currentYear || expenseDate.getMonth() !== currentMonth) {
+                                        return; // Skip if not current month
+                                    }
+                                } else if (period === 'year') {
+                                    if (expenseDate.getFullYear() !== currentYear) {
+                                        return; // Skip if not current year
+                                    }
+                                }
+                            } else if (period !== 'all') {
+                                return; // Skip items with no valid date if filtering by month/year
+                            }
+
+                            const assetKey = ex.asset || ex.assetId || 'Unassigned';
+                            
+                            // Added fallback checks for 'total' and 'totalPrice'
+                            const cost = parseFloat(ex.cost || ex.amount || ex.total || ex.totalPrice || 0);
+                            
+                            expenseMap[assetKey] = (expenseMap[assetKey] || 0) + cost;
+                        });
+                    }
+
+                const sortedExpenses = Object.entries(expenseMap)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+
+                const periodLabel = period === 'month' ? 'This Month' : (period === 'year' ? 'This Year' : 'All-Time');
+
+                if (sortedExpenses.length === 0) {
+                    expenseList.innerHTML = `<li class="py-3 text-slate-400 italic text-center">No expenses found for ${periodLabel.toLowerCase()}.</li>`;
+                } else {
+                    expenseList.innerHTML = sortedExpenses.map(([asset, total]) => `
+                        <li class="py-3 flex justify-between items-center hover:bg-slate-50 transition px-2 rounded -mx-2">
+                            <div>
+                                <p class="font-bold text-slate-800 font-code text-[11px]">${asset}</p>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Cost (${periodLabel})</p>
+                            </div>
+                            <span class="font-bold text-slate-900 font-code text-xs bg-slate-100 px-2 py-1 rounded">$${total.toFixed(2)}</span>
+                        </li>
+                    `).join('');
+                }
+            }
+        }
+
+        function updateDashboardTopCounters() {
+            document.getElementById('stat-fleet-count').innerText = memory.assets.length;
+            document.getElementById('stat-wo-count').innerText = memory.workOrders.length;
+            document.getElementById('stat-log-count').innerText = memory.maintenanceLogs.length;
+            document.getElementById('stat-expense-count').innerText = memory.expenses.length;
+            document.getElementById('stat-dispatch-count').innerText = memory.dispatches.length;
+            document.getElementById('stat-tech-count').innerText = memory.technicians.length;
+            
+            // Trigger dashboard refresh whenever data updates
+            populateMainDashboard(); 
+        }
+        
         
     </script>
 </body>
