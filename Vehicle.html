@@ -155,7 +155,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs font-bold text-slate-500 uppercase" id="print-timestamp">Generated on: <script>document.write(new Date().toLocaleDateString())</script></p>
+                        <p class="text-xs font-bold text-slate-500 uppercase" id="print-timestamp">Generated on: <script>document.write(window.formatDate(new Date()))</script></p>
                     </div>
                 </div>
 
@@ -222,7 +222,7 @@
                     </div>
 
                     <div class="bg-white border border-slate-200 rounded shadow-sm overflow-hidden">
-                        <div class="overflow-x-auto w-full">
+                        <div class="overflow-x-scroll w-full always-show-scrollbar">
                             <table class="w-full text-left border-collapse text-xs min-w-[1100px]">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
@@ -501,6 +501,20 @@
     let memory = { 
         vehicles: [], maintenance: [], istimaras: [], expenses: []
     };
+
+    window.formatDate = function(dateInput) {
+        if (!dateInput) return '-';
+        const date = new Date(dateInput);
+        if (isNaN(date)) return dateInput; // Return as-is if invalid
+        
+        const day = String(date.getDate()).padStart(2, '0');
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const month = monthNames[date.getMonth()];
+        const year = date.getFullYear();
+        
+        return `${day}-${month}-${year}`;
+    };
+
     let dbListenersAttached = false; // Prevent duplicate listeners
 
     // --- Authentication Logic ---
@@ -763,11 +777,11 @@
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
                     if (diffDays < 0) {
-                        estValidityHtml = `<span class="text-rose-600 font-bold bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[10px]">${expiry} (Expired)</span>`;
+                        estValidityHtml = `<span class="text-rose-600 font-bold bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[10px]">${window.formatDate(expiry)} (Expired)</span>`;
                     } else if (diffDays <= 30) {
-                        estValidityHtml = `<span class="text-amber-600 font-bold bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-[10px]">${expiry} (${diffDays}d left)</span>`;
+                        estValidityHtml = `<span class="text-amber-600 font-bold bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-[10px]">${window.formatDate(expiry)} (${diffDays}d left)</span>`;
                     } else {
-                        estValidityHtml = `<span class="text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[10px]">${expiry}</span>`;
+                        estValidityHtml = `<span class="text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[10px]">${window.formatDate(expiry)}</span>`;
                     }
                 }
 
@@ -780,11 +794,11 @@
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
                     if (diffDays < 0) {
-                        certValidityHtml = `<span class="text-rose-600 font-bold bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[10px]">${certExpiry} (Expired)</span>`;
+                        certValidityHtml = `<span class="text-rose-600 font-bold bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[10px]">${window.formatDate(certExpiry)} (Expired)</span>`;
                     } else if (diffDays <= 30) {
-                        certValidityHtml = `<span class="text-amber-600 font-bold bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-[10px]">${certExpiry} (${diffDays}d left)</span>`;
+                        certValidityHtml = `<span class="text-amber-600 font-bold bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-[10px]">${window.formatDate(certExpiry)} (${diffDays}d left)</span>`;
                     } else {
-                        certValidityHtml = `<span class="text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[10px]">${certExpiry}</span>`;
+                        certValidityHtml = `<span class="text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[10px]">${window.formatDate(certExpiry)}</span>`;
                     }
                 }
 
@@ -955,7 +969,22 @@
             container.innerHTML = sorted.map(m => {
                 const logStatus = m.status || "Operational";
                 let statusBadgeClass = logStatus === "In Maintenance" ? "bg-amber-50 text-amber-700 border-amber-200" : logStatus === "Out of Service" ? "bg-rose-50 text-rose-700 border-rose-200" : logStatus === "Dispatched" ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-emerald-50 text-emerald-700 border-emerald-200";
-                return `<tr class="hover:bg-slate-50/50 transition border-b border-slate-50 last:border-0"><td class="p-4 font-code text-slate-900 font-bold">${m.id}</td><td class="p-4 font-code text-slate-700">${m.vehicle}</td><td class="p-4"><span class="px-2 py-0.5 border rounded text-[10px] font-bold uppercase ${statusBadgeClass}">${logStatus}</span></td><td class="p-4 text-slate-500 font-code uppercase">${m.location || '-'}</td><td class="p-4 text-slate-600">${m.date}</td><td class="p-4 text-emerald-600 font-medium">${m.dateCompleted || '-'}</td><td class="p-4 text-slate-800">${m.description}</td><td class="p-4 text-slate-600">${m.mechanic}</td><td class="p-4 text-slate-500">${m.parts}</td><td class="p-4 text-slate-600 font-semibold font-code uppercase">${m.condition || '-'}</td><td class="p-4 text-slate-500 italic max-w-xs truncate">${m.remarks || '-'}</td><td class="p-4 text-center space-x-2 whitespace-nowrap no-print"><button onclick="window.printMaintenanceRecord('${m.id}')" class="text-blue-600 hover:text-blue-800 font-medium transition cursor-pointer">Print</button><button onclick="window.openEditMaintenanceModal('${m.id}')" class="text-slate-500 hover:text-slate-900 font-medium transition cursor-pointer">Edit</button><span class="text-slate-200">|</span><button onclick="window.dropMaintenance('${m.id}')" class="text-rose-400 hover:text-rose-600 font-medium transition cursor-pointer">Delete</button></td></tr>`;
+                return `<tr class="hover:bg-slate-50/50 transition border-b border-slate-50 last:border-0">
+                    <td class="p-4 font-code text-slate-900 font-bold">${m.id}</td>
+                    <td class="p-4 font-code text-slate-700">${m.vehicle}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 border rounded text-[10px] font-bold uppercase ${statusBadgeClass}">${logStatus}</span></td>
+                    <td class="p-4 text-slate-500 font-code uppercase">${m.location || '-'}</td>
+                    <td class="p-4 text-slate-600">${m.date}</td><td class="p-4 text-emerald-600 font-medium">${m.dateCompleted || '-'}</td>
+                    <td class="p-4 text-slate-800">${m.description}</td><td class="p-4 text-slate-600">${m.mechanic}</td>
+                    <td class="p-4 text-slate-500">${m.parts}</td>
+                    <td class="p-4 text-slate-600 font-semibold font-code uppercase">${m.condition || '-'}</td>
+                    <td class="p-4 text-slate-500 italic max-w-xs whitespace-normal break-words">${m.remarks || '-'}</td>
+                    <td class="p-4 text-center space-x-2 whitespace-nowrap no-print">
+                        <button onclick="window.printMaintenanceRecord('${m.id}')" class="text-blue-600 hover:text-blue-800 font-medium transition cursor-pointer">Print</button>
+                        <button onclick="window.openEditMaintenanceModal('${m.id}')" class="text-slate-500 hover:text-slate-900 font-medium transition cursor-pointer">Edit</button>
+                        <span class="text-slate-200">|</span>
+                        <button onclick="window.dropMaintenance('${m.id}')" class="text-rose-400 hover:text-rose-600 font-medium transition cursor-pointer">Delete</button>
+                        </td></tr>`;
             }).join('');
         };
         
@@ -1033,9 +1062,9 @@
                 return `<tr class="hover:bg-slate-50/50 transition">
                     <td class="p-4 font-code font-bold text-slate-900">${v.id}</td>
                     <td class="p-4 text-slate-700">${v.make || '-'} / ${v.type || '-'}</td>
-                    <td class="p-4 font-semibold text-slate-800">${expiry || 'Not Set'}</td>
+                    <td class="p-4 font-semibold text-slate-800">${expiry ? window.formatDate(expiry) : 'Not Set'}</td>
                     <td class="p-4">${statusHtml}</td>
-                    <td class="p-4 font-semibold text-slate-800">${certExpiry || 'Not Set'}</td>
+                    <td class="p-4 font-semibold text-slate-800">${certExpiry ? window.formatDate(certExpiry) : 'Not Set'}</td>
                     <td class="p-4">${certStatusHtml}</td>
                     <td class="p-4 text-center space-x-2 no-print">
                         <button onclick="window.openRenewIstimaraModal('${v.id}')" class="text-blue-600 hover:text-blue-800 font-medium transition cursor-pointer">Renew</button>
