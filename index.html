@@ -116,7 +116,7 @@
         </header>
 
         <!-- Visual Image Card Grid -->
-        <main class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 my-auto py-2">
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 my-auto py-2">
             
             <!-- Card 1: High Pressure Pump Portal -->
             <button onclick="openPortal('pump')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-rose-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-rose-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
@@ -208,7 +208,37 @@
                 </div>
             </button>
 
-            <!-- Card 4: Inventory Control Portal -->
+            <!-- Card 4: Vehicle Mechanic Login -->
+            <button onclick="openPortal('mechanic')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-purple-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
+                <div class="absolute inset-0 z-0">
+                    <img src="mechanic.jpg" alt="Vehicle Mechanic" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700" onerror="this.src='vehicle.jpg'">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
+                </div>
+
+                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="h-10 w-10 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-400 flex items-center justify-center backdrop-blur-md group-hover:bg-purple-500 group-hover:text-white transition-all duration-300">
+                                <span class="material-symbols-outlined text-2xl">car_repair</span>
+                            </div>
+                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-purple-400 px-2.5 py-1 rounded-full">Mechanic</span>
+                        </div>
+                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors">
+                            Vehicle Mechanic Login
+                        </h2>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Dedicated terminal for vehicle mechanics to view service tickets, update repairs, and document maintenance actions.
+                        </p>
+                    </div>
+
+                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-purple-400 group-hover:text-purple-300">
+                        <span>Access Mechanic Terminal</span>
+                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+                    </div>
+                </div>
+            </button>
+
+            <!-- Card 5: Inventory Control Portal -->
             <button onclick="openPortal('inventory')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-emerald-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
                 <div class="absolute inset-0 z-0">
                     <img src="inventory.png" alt="Inventory Racks" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
@@ -262,6 +292,7 @@
             pump: "nlbuser.html",
             vehicle: "Vehicleuser.html",
             tech: "techaddedit.html",
+            mechanic: "vehicle.html",
             inventory: "inventory.html"
         };
 
