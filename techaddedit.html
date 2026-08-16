@@ -16,11 +16,13 @@
             #print-section { display: block !important; width: 100%; position: absolute; left: 0; top: 0; background: white; color: black; }
         }
 
-        button[onclick*="drop"],
-        button[onclick*="delete"] {
+        body.hide-delete .btn-delete,
+        body.hide-delete button[onclick*="delete"],
+        body.hide-delete button[onclick*="drop"] {
             display: none !important;
         }
 
+        
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -79,7 +81,6 @@
                     <div>Logs Saved: <span id="stat-log-count" class="text-slate-900 font-bold">0</span></div>
                     <div>Expenses: <span id="stat-expense-count" class="text-slate-900 font-bold">0</span></div>
                     <div>Dispatches: <span id="stat-dispatch-count" class="text-slate-900 font-bold">0</span></div>
-                    <div>Technicians: <span id="stat-tech-count" class="text-slate-900 font-bold">0</span></div>
                 </div>
             </div>
         </nav>
@@ -99,7 +100,7 @@
                     
                     <button onclick="setModule('fleet')" id="tab-fleet" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
                         <span class="material-symbols-outlined">analytics</span>
-                        <span>Master Fleet Registry</span>
+                        <span>Asset Registry</span>
                     </button>
 
                     <button onclick="setModule('cert')" id="tab-cert" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
@@ -175,7 +176,7 @@
                     <section id="pane-fleet" class="pane-view space-y-4 hidden">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Master Fleet Registry</h2>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Asset Registry</h2>
                                 <p class="text-xs text-slate-500">Primary technical index indexed by unique hardware Asset IDs.</p>
                             </div>
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -245,10 +246,10 @@
                             </div>
                             <div class="bg-white border border-slate-200 p-5 rounded shadow-sm flex items-center justify-between border-l-4 border-l-rose-600">
                                 <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Maintenance Cost</p>
-                                    <h3 id="dash-alert-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">0</h3>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Maintenance Cost (This Year)</p>
+                                    <h3 id="dash-alert-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">QAR 0.00</h3>
                                 </div>
-                                <span class="material-symbols-outlined text-3xl text-rose-100">fact_check</span>
+                                <span class="material-symbols-outlined text-3xl text-rose-100">payments</span>
                             </div>
                         </div>
 
@@ -1060,6 +1061,29 @@
         </div>
     </div>
 
+    <div id="modal-accept-wo" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-slate-700">handshake</span> Accept Work Order
+                </h3>
+                <button onclick="toggleModal('modal-accept-wo', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
+            </div>
+            <form id="form-accept-wo" onsubmit="executeAcceptWo(event)" class="space-y-3.5 text-xs">
+                <input type="hidden" id="in-accept-wo-id" value="">
+                <div>
+                    <label class="block text-slate-600 font-medium mb-1">Assign Technician(s) *</label>
+                    <select id="in-accept-tech" required multiple class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900 h-20"></select>
+                    <p class="text-[10px] text-slate-400 mt-1">Hold Ctrl/Cmd to select multiple technicians.</p>
+                </div>
+                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="toggleModal('modal-accept-wo', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
+                    <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Accept & Add to Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="modal-add-log" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
         <div class="bg-white border border-slate-200 rounded-lg w-full max-w-xl p-6 space-y-4 shadow-xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center pb-3 border-b border-slate-100">
@@ -1417,16 +1441,24 @@
         window.onload = function() {
             auth.onAuthStateChanged((user) => {
                 if (user) {
+                    // Check if logged-in user is tech@gmail.com
+                    if (user.email && user.email.toLowerCase() === 'tech@gmail.com') {
+                        document.body.classList.add('hide-delete');
+                    } else {
+                        document.body.classList.remove('hide-delete');
+                    }
+
                     // Logged in: Hide overlay, show app, and init DB listeners
                     document.getElementById('auth-overlay').classList.add('hidden');
                     document.getElementById('app-container').classList.remove('hidden');
                     if (!isDataInitialized) {
                         initDataPipeline();
                         isDataInitialized = true;
-                        setModule('dashboard'); // Forces the dashboard to render
+                        setModule('dashboard');
                     }
                 } else {
-                    // Logged out: Show overlay, hide app
+                    // Logged out: Remove restriction class, show overlay, hide app
+                    document.body.classList.remove('hide-delete');
                     document.getElementById('auth-overlay').classList.remove('hidden');
                     document.getElementById('app-container').classList.add('hidden');
                 }
@@ -2158,6 +2190,9 @@
                             <td class="p-4 text-center space-x-2">
                                 <button onclick="openEditWoModal('${w.id}')" class="text-slate-600 hover:text-slate-900 font-semibold cursor-pointer">Edit State</button>
                                 <button onclick="dropWorkOrder('${w.id}')" class="text-rose-600 hover:text-rose-900 font-semibold cursor-pointer">Purge</button>
+                                <button onclick="openAcceptWoModal('${w.id}')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-2 py-1 rounded transition text-[10px] font-bold shadow-sm" title="Accept Work Order">
+                                    Accept
+                                </button>
                             </td>
                         </tr>
                     `;
@@ -2345,17 +2380,61 @@
 
         function executeFleetSubmission(e) {
             e.preventDefault();
+
+            const mode = document.getElementById('in-f-mode').value;
+            const oldId = document.getElementById('in-f-old-id').value;
             const id = document.getElementById('in-f-id').value.trim().toUpperCase();
+            const model = document.getElementById('in-f-model').value.trim().toUpperCase();
+            const description = document.getElementById('in-f-description').value.trim();
+
+            // Ensure error message container exists inside the modal form
+            let errorDiv = document.getElementById('fleet-form-error');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'fleet-form-error';
+                errorDiv.className = 'hidden bg-rose-50 border border-rose-200 text-rose-700 text-xs p-3 rounded font-medium flex items-center gap-2 mb-3';
+                const form = document.getElementById('form-fleet');
+                form.insertBefore(errorDiv, form.firstChild);
+            }
+            errorDiv.classList.add('hidden');
+
+            // Warning Check 1: Mandatory Fields Validation
+            if (!id || !model || !description) {
+                errorDiv.innerHTML = `<span class="material-symbols-outlined text-sm">warning</span> <strong>Warning:</strong> Please fill in all required fields (Asset ID, Model, Description).`;
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            // Warning Check 2: Prevent Duplicate Asset IDs on New Asset Registration
+            const isDuplicate = memory.assets && memory.assets.some(asset => asset.id === id);
+            if (mode === 'create' && isDuplicate) {
+                errorDiv.innerHTML = `<span class="material-symbols-outlined text-sm">warning</span> <strong>Warning:</strong> Asset ID "${id}" already exists in the system.`;
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
             const payload = {
-                model: document.getElementById('in-f-model').value.trim().toUpperCase(),
-                description: document.getElementById('in-f-description').value.trim(),
+                model: model,
+                description: description,
                 pressure: document.getElementById('in-f-pressure').value.trim().toUpperCase(),
                 serial: document.getElementById('in-f-serial').value.trim().toUpperCase(),
                 location: document.getElementById('in-f-location').value,
                 status: document.getElementById('in-f-status').value
             };
+
+            // Save asset specification to Firebase
             cmmsDb.ref('assets/' + id).set(payload, (error) => {
-                if (!error) toggleModal('modal-add-fleet', false);
+                if (error) {
+                    // Warning Check 3: Firebase Permission or System Error
+                    errorDiv.innerHTML = `<span class="material-symbols-outlined text-sm">warning</span> <strong>Error:</strong> Failed to save asset. ${error.message}`;
+                    errorDiv.classList.remove('hidden');
+                } else {
+                    // Remove old Firebase node if ID was changed during edit mode
+                    if (mode === 'edit' && oldId && oldId !== id) {
+                        cmmsDb.ref('assets/' + oldId).remove();
+                    }
+                    toggleModal('modal-add-fleet', false);
+                }
             });
         }
 
@@ -2967,7 +3046,7 @@
                     
                     <div style="margin-top: 70px; display: flex; justify-content: space-between; font-size: 11px; color: #475569;">
                         <div style="text-align: center; width: 220px; border-top: 1px dashed #64748b; padding-top: 8px; font-weight: 500;">Technician Signature</div>
-                        <div style="text-align: center; width: 220px; border-top: 1px dashed #64748b; padding-top: 8px; font-weight: 500;">Workshop Supervisor Approval</div>
+                        <div style="text-align: center; width: 220px; border-top: 1px dashed #64748b; padding-top: 8px; font-weight: 500;">Workshop Manager / Supervisorr</div>
                     </div>
                 </div>
             `;
@@ -3793,7 +3872,39 @@
                 document.getElementById('dash-wo-count').innerText = pendingWos;
             }
             if(document.getElementById('dash-tech-count')) document.getElementById('dash-tech-count').innerText = memory.technicians.length;
-            if(document.getElementById('dash-alert-count')) document.getElementById('dash-alert-count').innerText = memory.preops.length;
+            
+            // Expenses Period Filter Setup (Shared across widgets)
+            const periodFilterElement = document.getElementById('dash-expense-period-filter');
+            const period = periodFilterElement ? periodFilterElement.value : 'month';
+            
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+
+            // Total Maintenance Cost KPI Card Update
+            if(document.getElementById('dash-alert-count')) {
+                let totalCost = 0;
+                if (memory.expenses && Array.isArray(memory.expenses)) {
+                    memory.expenses.forEach(ex => {
+                        const expenseDateStr = ex.date || ex.createdAt || ex.timestamp;
+                        const expenseDate = expenseDateStr ? new Date(expenseDateStr) : null;
+
+                        if (expenseDate && !isNaN(expenseDate.getTime())) {
+                            if (period === 'month') {
+                                if (expenseDate.getFullYear() !== currentYear || expenseDate.getMonth() !== currentMonth) return;
+                            } else if (period === 'year') {
+                                if (expenseDate.getFullYear() !== currentYear) return;
+                            }
+                        } else if (period !== 'all') {
+                            return;
+                        }
+
+                        const cost = parseFloat(ex.cost || ex.amount || ex.total || ex.totalPrice || 0);
+                        totalCost += cost;
+                    });
+                }
+                document.getElementById('dash-alert-count').innerText = 'QAR ' + totalCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
 
             // Recent Work Orders Widget
             const woList = document.getElementById('dash-recent-wo');
@@ -3817,7 +3928,6 @@
             // Expiring Certificates Widget
             const certList = document.getElementById('dash-recent-certs');
             if (certList) {
-                // Sort by closest expiry date
                 const certs = [...memory.certificates]
                     .sort((a, b) => new Date(a.expiryDate || a.expiry || 0) - new Date(b.expiryDate || b.expiry || 0))
                     .slice(0, 5);
@@ -3840,42 +3950,32 @@
             // Expenses Per Asset Widget (with Month/Year filtering)
             const expenseList = document.getElementById('dash-expenses-asset');
             if (expenseList) {
-                const periodFilterElement = document.getElementById('dash-expense-period-filter');
-                const period = periodFilterElement ? periodFilterElement.value : 'month';
-                
-                const now = new Date();
-                const currentYear = now.getFullYear();
-                const currentMonth = now.getMonth();
-
                 const expenseMap = {};
-                    if (memory.expenses && Array.isArray(memory.expenses)) {
-                        memory.expenses.forEach(ex => {
-                            const expenseDateStr = ex.date || ex.createdAt || ex.timestamp;
-                            const expenseDate = expenseDateStr ? new Date(expenseDateStr) : null;
+                if (memory.expenses && Array.isArray(memory.expenses)) {
+                    memory.expenses.forEach(ex => {
+                        const expenseDateStr = ex.date || ex.createdAt || ex.timestamp;
+                        const expenseDate = expenseDateStr ? new Date(expenseDateStr) : null;
 
-                            // Filter based on selected dropdown period
-                            if (expenseDate && !isNaN(expenseDate.getTime())) {
-                                if (period === 'month') {
-                                    if (expenseDate.getFullYear() !== currentYear || expenseDate.getMonth() !== currentMonth) {
-                                        return; // Skip if not current month
-                                    }
-                                } else if (period === 'year') {
-                                    if (expenseDate.getFullYear() !== currentYear) {
-                                        return; // Skip if not current year
-                                    }
+                        if (expenseDate && !isNaN(expenseDate.getTime())) {
+                            if (period === 'month') {
+                                if (expenseDate.getFullYear() !== currentYear || expenseDate.getMonth() !== currentMonth) {
+                                    return; 
                                 }
-                            } else if (period !== 'all') {
-                                return; // Skip items with no valid date if filtering by month/year
+                            } else if (period === 'year') {
+                                if (expenseDate.getFullYear() !== currentYear) {
+                                    return; 
+                                }
                             }
+                        } else if (period !== 'all') {
+                            return; 
+                        }
 
-                            const assetKey = ex.asset || ex.assetId || 'Unassigned';
-                            
-                            // Added fallback checks for 'total' and 'totalPrice'
-                            const cost = parseFloat(ex.cost || ex.amount || ex.total || ex.totalPrice || 0);
-                            
-                            expenseMap[assetKey] = (expenseMap[assetKey] || 0) + cost;
-                        });
-                    }
+                        const assetKey = ex.asset || ex.assetId || 'Unassigned';
+                        const cost = parseFloat(ex.cost || ex.amount || ex.total || ex.totalPrice || 0);
+                        
+                        expenseMap[assetKey] = (expenseMap[assetKey] || 0) + cost;
+                    });
+                }
 
                 const sortedExpenses = Object.entries(expenseMap)
                     .sort((a, b) => b[1] - a[1])
@@ -3900,17 +4000,126 @@
         }
 
         function updateDashboardTopCounters() {
-            document.getElementById('stat-fleet-count').innerText = memory.assets.length;
-            document.getElementById('stat-wo-count').innerText = memory.workOrders.length;
-            document.getElementById('stat-log-count').innerText = memory.maintenanceLogs.length;
-            document.getElementById('stat-expense-count').innerText = memory.expenses.length;
-            document.getElementById('stat-dispatch-count').innerText = memory.dispatches.length;
-            document.getElementById('stat-tech-count').innerText = memory.technicians.length;
+            // Helper function to safely update an element's text only if it exists in the DOM
+            const safelyUpdateText = (id, value) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.innerText = value;
+                }
+            };
+
+            // Safely update all your counters
+            safelyUpdateText('stat-fleet-count', memory.assets.length);
+            safelyUpdateText('stat-wo-count', memory.workOrders.length);
+            safelyUpdateText('stat-log-count', memory.maintenanceLogs.length);
+            safelyUpdateText('stat-expense-count', memory.expenses.length);
+            safelyUpdateText('stat-dispatch-count', memory.dispatches.length);
+            safelyUpdateText('stat-tech-count', memory.technicians.length);
             
             // Trigger dashboard refresh whenever data updates
-            populateMainDashboard(); 
+            // (Added a safety check here too, just in case populateMainDashboard has similar issues)
+            if (typeof populateMainDashboard === 'function') {
+                populateMainDashboard(); 
+            }
         }
         
+        // Opens the modal and populates the technician list
+        function openAcceptWoModal(woId) {
+            document.getElementById('in-accept-wo-id').value = woId;
+            const techSelect = document.getElementById('in-accept-tech');
+            
+            // Clear and populate technicians from memory cache
+            if (memory.technicians && memory.technicians.length > 0) {
+                // DEBUG: Check your console (F12) to see actual Technician properties
+                console.log("Sample Tech Data:", memory.technicians[0]); 
+                
+                techSelect.innerHTML = memory.technicians.map(t => {
+                    // Checks multiple common keys for names just in case 'name' is incorrect
+                    const techName = t.name || t.fullName || t.techName || t.id || 'Unknown Tech';
+                    return `<option value="${techName}">${techName} (${t.id || 'N/A'})</option>`;
+                }).join('');
+            } else {
+                techSelect.innerHTML = `<option value="">No technicians available</option>`;
+            }
+            
+            toggleModal('modal-accept-wo', true);
+        }
+
+        // Executes the form submission to automate the log creation
+        function executeAcceptWo(e) {
+            e.preventDefault();
+            
+            const woId = document.getElementById('in-accept-wo-id').value;
+            const techSelect = document.getElementById('in-accept-tech');
+            
+            if (techSelect.selectedOptions.length === 0) {
+                return alert("Please assign at least one technician.");
+            }
+            const selectedTechs = Array.from(techSelect.selectedOptions).map(opt => opt.value).join(', ');
+
+            const wo = memory.workOrders.find(w => String(w.id) === String(woId));
+            if (!wo) return alert("Work order not found in memory cache.");
+
+            const logId = 'LOG-' + Math.floor(100000 + Math.random() * 900000); 
+            const currentDate = new Date().toISOString().split('T')[0];
+
+            // --- EXACT PROPERTY MAPPING MATCHED TO YOUR DB SCHEMA ---
+            const foundAsset = wo.assetId || wo.asset || wo.equipment || 'Unknown Asset';
+            const foundFault = wo.fault || wo.reason || wo.issue || wo.description || 'Work order dispatched';
+            
+            // Handles formatting current hours using your actual property name
+            let currentRaw = wo.currentHours !== undefined ? wo.currentHours : (wo.current || wo.meter || 'N/A');
+            let currentMetric = currentRaw !== 'N/A' && !String(currentRaw).toLowerCase().includes('hrs') ? currentRaw + ' Hrs' : currentRaw;
+
+            // Handles formatting target hours using your actual property name
+            let targetRaw = wo.targetHours !== undefined ? wo.targetHours : (wo.target || wo.due || 'N/A');
+            let targetMetric = targetRaw !== 'N/A' && !String(targetRaw).toLowerCase().includes('hrs') ? targetRaw + ' Hrs' : targetRaw;
+
+            // Calculate remaining hours if possible to prevent undefined in the table
+            let remaining = 'N/A';
+            const cNum = parseFloat(currentRaw);
+            const tNum = parseFloat(targetRaw);
+            if (!isNaN(cNum) && !isNaN(tNum)) {
+                remaining = (tNum - cNum) + ' Hrs';
+            }
+
+            const logData = {
+                id: logId,
+                date: currentDate,
+                woId: wo.id, 
+                assetId: foundAsset,          
+                currentMetric: currentMetric,  
+                targetMetric: targetMetric,    
+                remainingHours: remaining,     
+                fault: foundFault,
+                action: 'Work Order Accepted & Initialized',
+                parts: 'N/A',
+                technician: selectedTechs,     
+                status: 'In Maintenance', 
+                remarks: 'Auto-generated from WO acceptance portal'
+            };
+
+            // 1. Update Work Order status
+            cmmsDb.ref('workOrders/' + wo.id).update({ status: 'In Progress' })
+                .then(() => {
+                    // 2. Save Log
+                    return cmmsDb.ref('maintenanceLogs/' + logId).set(logData);
+                })
+                .then(() => {
+                    // 3. Update Asset status if valid
+                    if (foundAsset && foundAsset !== 'Unknown Asset') {
+                        return cmmsDb.ref('assets/' + foundAsset).update({ status: 'In Maintenance' });
+                    }
+                })
+                .then(() => {
+                    toggleModal('modal-accept-wo', false);
+                    alert('Work Order Accepted & Log Generated Successfully!');
+                })
+                .catch(err => {
+                    console.error("Error accepting Work Order:", err);
+                    alert("Database Error: Could not accept work order.");
+                });
+        }
         
     </script>
 </body>
