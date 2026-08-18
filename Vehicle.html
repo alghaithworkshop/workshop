@@ -264,7 +264,7 @@
                             </div>
                              <button onclick="window.openRenewIstimaraModal('')" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm shrink-0">
                                 <span class="material-symbols-outlined text-sm">autorenew</span>
-                                <span>ReNew Istimara / Certificate</span>
+                                <span>Renew Istimara</span>
                             </button>
                         </div>
                     </div>
@@ -815,10 +815,23 @@
                         <td class="p-4">${estValidityHtml}</td>
                         <td class="p-4">${certValidityHtml}</td>
                         <td class="p-4"><span class="px-2.5 py-1 border rounded text-[10px] font-bold uppercase ${badgeClass}">${vehicle.status || 'Operational'}</span></td>
-                        <td class="p-4 text-center space-x-2 no-print">
-                            <button onclick="window.openEditModal('${vehicle.id}')" class="text-slate-500 hover:text-slate-900 font-semibold transition cursor-pointer">Edit</button>
-                            <span class="text-slate-200">|</span>
-                            <button onclick="window.dropVehicle('${vehicle.id}')" class="text-rose-400 hover:text-rose-600 font-medium transition cursor-pointer">Delete</button>
+                        <td class="p-4 text-center no-print">
+                            <div class="inline-flex items-center justify-center gap-1">
+                                <button 
+                                    onclick="window.openEditModal('${vehicle.id}')" 
+                                    title="Edit Vehicle"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition cursor-pointer">
+                                    <span class="material-symbols-outlined text-sm">edit</span>
+                                    <span>Edit</span>
+                                </button>
+                                <button 
+                                    onclick="window.dropVehicle('${vehicle.id}')" 
+                                    title="Delete Vehicle"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition cursor-pointer">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -866,48 +879,99 @@
                 document.body.appendChild(printContainer);
             }
 
-            // Populate the container with the record's data and company branding
+            // Populate the container matching the preview image layout
             printContainer.innerHTML = `
-                <div class="border-b-2 border-slate-900 pb-4 mb-6 flex items-end justify-between">
-                    <div class="flex items-center space-x-4">
-                        <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-16 w-auto object-contain">
-                        <div>
-                            <h1 class="text-2xl font-black uppercase tracking-tight text-slate-900">Al Ghaith Trading & Industrial Services</h1>
-                            <p class="text-sm text-slate-600 font-bold uppercase tracking-wider mt-1">Vehicle Maintenance Record</p>
+                <div class="max-w-2xl mx-auto text-slate-800 text-xs font-sans">
+                    <!-- Header -->
+                    <div class="border-b-2 border-slate-900 pb-3 mb-6 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-10 w-auto object-contain">
+                            <div>
+                                <h1 class="text-sm font-black uppercase tracking-tight text-slate-900">Al Ghaith Trading & Industrial Services</h1>
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Maintenance Log Verification Slip</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <h2 class="text-xs font-black uppercase tracking-widest text-slate-900">Maintenance Slip</h2>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase mt-0.5">Log ID: <span class="font-code text-slate-700">${m.id}</span></p>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <p class="text-xs font-bold text-slate-500 uppercase">Generated on: ${new Date().toLocaleDateString()}</p>
+
+                    <!-- Two-Column Grid Info -->
+                    <div class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-[11px] mb-6">
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between"><span class="font-bold text-slate-600">Log Entry ID:</span><span class="font-code font-bold">${m.id}</span></div>
+                            <div class="flex justify-between"><span class="font-bold text-slate-600">Execution Date:</span><span>${m.date || '-'}</span></div>
+                            <div class="flex justify-between"><span class="font-bold text-slate-600">Assigned Tech(s):</span><span class="uppercase font-semibold text-right max-w-[140px] truncate">${m.mechanic || '-'}</span></div>
+                            <div class="flex justify-between items-center"><span class="font-bold text-slate-600">Resulting Status:</span><span class="text-emerald-600 font-bold uppercase">${m.status || 'Operational'}</span></div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between"><span class="font-bold text-slate-600">Asset Tag ID:</span><span class="font-code font-bold">${m.vehicle}</span></div>
+                            <div class="flex justify-between"><span class="font-bold text-slate-600">Location:</span><span class="font-code">${m.location || '-'}</span></div>
+                            <div class="flex justify-between"><span class="font-bold text-slate-600">Date Completed:</span><span>${m.dateCompleted || '-'}</span></div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4 text-sm text-slate-800 border border-slate-200 p-6 rounded">
-                    <div><span class="font-bold text-slate-500">Maintenance ID:</span> <span class="font-code font-bold">${m.id}</span></div>
-                    <div><span class="font-bold text-slate-500">Vehicle:</span> <span class="font-code">${m.vehicle}</span></div>
-                    <div><span class="font-bold text-slate-500">Status:</span> <span class="uppercase font-semibold">${m.status || 'Operational'}</span></div>
-                    <div><span class="font-bold text-slate-500">Location:</span> <span class="font-code">${m.location || '-'}</span></div>
-                    <div><span class="font-bold text-slate-500">Date Started:</span> ${m.date}</div>
-                    <div><span class="font-bold text-slate-500">Date Completed:</span> ${m.dateCompleted || '-'}</div>
-                    <div><span class="font-bold text-slate-500">Mechanic:</span> ${m.mechanic}</div>
-                    <div><span class="font-bold text-slate-500">Parts Used:</span> ${m.parts || '-'}</div>
-                    <div class="col-span-2"><span class="font-bold text-slate-500">Physical Condition:</span> <span class="uppercase">${m.condition || '-'}</span></div>
-                    <div class="col-span-2"><span class="font-bold text-slate-500">Description:</span> ${m.description}</div>
-                    <div class="col-span-2"><span class="font-bold text-slate-500">Remarks:</span> ${m.remarks || '-'}</div>
-                </div>
-                
-                <div class="mt-16 flex justify-between px-8 text-sm">
-                    <div class="text-center border-t border-slate-400 pt-2 w-48">Mechanic Signature</div>
-                    <div class="text-center border-t border-slate-400 pt-2 w-48">Manager Signature</div>
+
+                    <!-- Section 1: Fault Discovery / Diagnostics -->
+                    <div class="mb-4">
+                        <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">Fault Discovery / Inspection Diagnostics:</h3>
+                        <div class="border border-slate-200 rounded p-2.5 bg-slate-50/50 min-h-[38px] flex items-center">
+                            <p class="text-rose-600 font-medium flex items-center gap-1.5">
+                                <span>⚠️</span>
+                                <span>${m.description || 'No diagnostic errors logged.'}</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Service Maintenance Performed -->
+                    <div class="mb-4">
+                        <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">Service Maintenance Performed / Corrective Action:</h3>
+                        <div class="border border-slate-200 rounded p-2.5 bg-slate-50/50 min-h-[50px]">
+                            <div class="text-slate-800 flex items-start gap-1.5">
+                                <span class="text-slate-400">⚙️</span>
+                                <div>${m.remarks || 'Standard maintenance procedure applied.'}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Components & Remarks Box Grid -->
+                    <div class="grid grid-cols-2 gap-4 mb-12">
+                        <div>
+                            <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">Components / Parts Applied:</h3>
+                            <div class="border border-slate-200 rounded p-2 bg-slate-50/50 min-h-[36px] text-slate-700 font-code">
+                                ${m.parts || 'None'}
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">Physical Condition:</h3>
+                            <div class="border border-slate-200 rounded p-2 bg-slate-50/50 min-h-[36px] text-slate-700 uppercase font-semibold">
+                                ${m.condition || 'Operational'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Signatures -->
+                    <div class="mt-20 flex justify-between px-6 text-[11px] text-slate-600">
+                        <div class="text-center w-40">
+                            <div class="border-b border-dashed border-slate-400 mb-1.5"></div>
+                            <span>Technician Signature</span>
+                        </div>
+                        <div class="text-center w-40">
+                            <div class="border-b border-dashed border-slate-400 mb-1.5"></div>
+                            <span>Workshop Manager / Supervisor</span>
+                        </div>
+                    </div>
                 </div>
             `;
 
-            // Isolate the print target using the CSS class added in Step 1
+            // Isolate the print target
             document.body.classList.add('printing-single-record');
             
-            // Trigger the browser's print dialog
+            // Trigger print dialog
             window.print();
             
-            // Restore normal view when printing is done
+            // Restore normal view
             setTimeout(() => {
                 document.body.classList.remove('printing-single-record');
             }, 500);
@@ -972,21 +1036,41 @@
                 const logStatus = m.status || "Operational";
                 let statusBadgeClass = logStatus === "In Maintenance" ? "bg-amber-50 text-amber-700 border-amber-200" : logStatus === "Out of Service" ? "bg-rose-50 text-rose-700 border-rose-200" : logStatus === "Dispatched" ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-emerald-50 text-emerald-700 border-emerald-200";
                 return `<tr class="hover:bg-slate-50/50 transition border-b border-slate-50 last:border-0">
-                    <td class="p-4 font-code text-slate-900 font-bold">${m.id}</td>
-                    <td class="p-4 font-code text-slate-700">${m.vehicle}</td>
-                    <td class="p-4"><span class="px-2 py-0.5 border rounded text-[10px] font-bold uppercase ${statusBadgeClass}">${logStatus}</span></td>
-                    <td class="p-4 text-slate-500 font-code uppercase">${m.location || '-'}</td>
-                    <td class="p-4 text-slate-600">${m.date}</td><td class="p-4 text-emerald-600 font-medium">${m.dateCompleted || '-'}</td>
-                    <td class="p-4 text-slate-800">${m.description}</td><td class="p-4 text-slate-600">${m.mechanic}</td>
-                    <td class="p-4 text-slate-500">${m.parts}</td>
-                    <td class="p-4 text-slate-600 font-semibold font-code uppercase">${m.condition || '-'}</td>
-                    <td class="p-4 text-slate-500 italic max-w-xs whitespace-normal break-words">${m.remarks || '-'}</td>
-                    <td class="p-4 text-center space-x-2 whitespace-nowrap no-print">
-                        <button onclick="window.printMaintenanceRecord('${m.id}')" class="text-blue-600 hover:text-blue-800 font-medium transition cursor-pointer">Print</button>
-                        <button onclick="window.openEditMaintenanceModal('${m.id}')" class="text-slate-500 hover:text-slate-900 font-medium transition cursor-pointer">Edit</button>
-                        <span class="text-slate-200">|</span>
-                        <button onclick="window.dropMaintenance('${m.id}')" class="text-rose-400 hover:text-rose-600 font-medium transition cursor-pointer">Delete</button>
-                        </td></tr>`;
+                            <td class="p-4 font-code text-slate-900 font-bold">${m.id}</td>
+                            <td class="p-4 font-code text-slate-700">${m.vehicle}</td>
+                            <td class="p-4"><span class="px-2 py-0.5 border rounded text-[10px] font-bold uppercase ${statusBadgeClass}">${logStatus}</span></td>
+                            <td class="p-4 text-slate-500 font-code uppercase">${m.location || '-'}</td>
+                            <td class="p-4 text-slate-600">${m.date}</td><td class="p-4 text-emerald-600 font-medium">${m.dateCompleted || '-'}</td>
+                            <td class="p-4 text-slate-800">${m.description}</td><td class="p-4 text-slate-600">${m.mechanic}</td>
+                            <td class="p-4 text-slate-500">${m.parts}</td>
+                            <td class="p-4 text-slate-600 font-semibold font-code uppercase">${m.condition || '-'}</td>
+                            <td class="p-4 text-slate-500 italic max-w-xs whitespace-normal break-words">${m.remarks || '-'}</td>
+                            <td class="p-4 text-center whitespace-nowrap no-print">
+                                <div class="inline-flex items-center justify-center gap-1.5">
+                                    <button 
+                                        onclick="window.printMaintenanceRecord('${m.id}')" 
+                                        title="Print Maintenance Record"
+                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 hover:text-blue-800 transition cursor-pointer shadow-sm">
+                                        <span class="material-symbols-outlined text-sm">print</span>
+                                        <span>Print</span>
+                                    </button>
+                                    <button 
+                                        onclick="window.openEditMaintenanceModal('${m.id}')" 
+                                        title="Edit Record"
+                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition cursor-pointer">
+                                        <span class="material-symbols-outlined text-sm">edit</span>
+                                        <span>Edit</span>
+                                    </button>
+                                    <button 
+                                        onclick="window.dropMaintenance('${m.id}')" 
+                                        title="Delete Record"
+                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition cursor-pointer">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                        <span>Delete</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>`;
             }).join('');
         };
         
@@ -1068,9 +1152,25 @@
                     <td class="p-4">${statusHtml}</td>
                     <td class="p-4 font-semibold text-slate-800">${certExpiry ? window.formatDate(certExpiry) : 'Not Set'}</td>
                     <td class="p-4">${certStatusHtml}</td>
-                    <td class="p-4 text-center space-x-2 no-print">
-                        <button onclick="window.openRenewIstimaraModal('${v.id}')" class="text-blue-600 hover:text-blue-800 font-medium transition cursor-pointer">Renew</button>
-                        ${est ? `<span class="text-slate-200">|</span> <button onclick="window.dropIstimara('${v.id}')" class="text-rose-400 hover:text-rose-600 font-medium transition cursor-pointer">Delete</button>` : ''}
+                    <td class="p-4 text-center no-print">
+                        <div class="inline-flex items-center justify-center gap-1">
+                            <button 
+                                onclick="window.openRenewIstimaraModal('${v.id}')" 
+                                title="Renew Istimara"
+                                class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 hover:text-blue-800 transition cursor-pointer shadow-sm">
+                                <span class="material-symbols-outlined text-sm">autorenew</span>
+                                <span>Renew</span>
+                            </button>
+                            ${est ? `
+                                <button 
+                                    onclick="window.dropIstimara('${v.id}')" 
+                                    title="Delete Record"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition cursor-pointer">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                    <span>Delete</span>
+                                </button>
+                            ` : ''}
+                        </div>
                     </td>
                 </tr>`;
             }).join('');
