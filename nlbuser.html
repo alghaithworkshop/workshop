@@ -836,7 +836,8 @@
                     (p.id && String(p.id).toLowerCase().includes(search)) || 
                     (p.description && p.description.toLowerCase().includes(search)) ||
                     (p.equipmentType && p.equipmentType.toLowerCase().includes(search)) ||
-                    (p.category && p.category.toLowerCase().includes(search))
+                    (p.category && p.category.toLowerCase().includes(search)) ||
+                    (p.machineParts && p.machineParts.toLowerCase().includes(search))
                 );
                 
                 const html = filtered.map((p, index) => `
