@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NLB 20k Pump & Engine Maintenance Plan</title>
+    
+    <!-- Material Symbols Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2b6cb0;
+            --accent-color: #3182ce;
+            --bg-light: #f7fafc;
+            --border-color: #e2e8f0;
+            --text-dark: #2d3748;
+            --text-muted: #718096;
+            --header-bg: #2d3748;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-item {
+            font-size: 0.95rem;
+        }
+
+        .info-item span.label {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        tr.subtotal-row {
+            background-color: #edf2f7;
+            font-weight: bold;
+        }
+
+        tr.subtotal-row td {
+            border-top: 2px solid #cbd5e0;
+            border-bottom: 2px solid #cbd5e0;
+        }
+
+        tr.total-row {
+            background-color: #e2e8f0;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        tr.total-row td {
+            border-top: 2px solid var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        tr.section-header {
+            background-color: #ebf8ff;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        tr.section-header td {
+            font-size: 0.95rem;
+            padding: 8px 12px;
+            border-top: 1px solid #bee3f8;
+            border-bottom: 1px solid #bee3f8;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--secondary-color);
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .tabs {
+                display: none;
+            }
+            .tab-content {
+                display: block !important;
+                page-break-after: always;
+            }
+            .header-wrapper a {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-wrapper">
+        <h1 style="font-size: 1.85rem; font-weight: 700;">NLB 20k High-Pressure Pump & Engine Maintenance Plan</h1>
+        <a href="nlb.html" class="group flex items-center space-x-2 bg-slate-800 text-white hover:bg-slate-700 border border-slate-700 font-medium text-sm px-4 py-2 rounded-md shadow-sm transition-colors duration-200 cursor-pointer animate-fade-in" style="text-decoration: none;">
+            <span class="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform duration-300">arrow_back</span>
+            <span>Return to Dashboard</span>
+        </a>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-item"><span class="label">Equipment Class:</span> 20,000 PSI Water Jetting Unit (NLB 225/350 Series)</div>
+        <div class="info-item"><span class="label">Engine Type:</span> Heavy-Duty Diesel Engine (Caterpillar / John Deere)</div>
+        <div class="info-item"><span class="label">Target Operating Hours/Year:</span> 1,200 Hours</div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('summary')">Summary & Dashboard</button>
+        <button class="tab-btn" onclick="switchTab('schedule')">Schedule & Costs</button>
+    </div>
+
+    <!-- TAB 1: SUMMARY & DASHBOARD -->
+    <div id="summary" class="tab-content active">
+        <h2>Cost Summary & Budgets</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category / Interval</th>
+                    <th class="text-right">Estimated Annual Cost (QAR)</th>
+                    <th class="text-right">% of Total Budget</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Daily / Pre-Operational (Inspections)</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.00%</td>
+                </tr>
+                <tr>
+                    <td>50 Hours / Weekly (Routine Maintenance)</td>
+                    <td class="text-right">3,494.40</td>
+                    <td class="text-right">7.14%</td>
+                </tr>
+                <tr>
+                    <td>100-125 Hours / Monthly (Engine Oil & Filter)</td>
+                    <td class="text-right">7,462.00</td>
+                    <td class="text-right">15.24%</td>
+                </tr>
+                <tr>
+                    <td>250 Hours / Quarterly (Pump Seals & Packing)</td>
+                    <td class="text-right">14,501.76</td>
+                    <td class="text-right">29.62%</td>
+                </tr>
+                <tr>
+                    <td>500 Hours / Semi-Annual (Valves & Engine Belts)</td>
+                    <td class="text-right">11,313.12</td>
+                    <td class="text-right">23.10%</td>
+                </tr>
+                <tr>
+                    <td>1000-1500 Hours / Annual (Major Overhaul/Fluids)</td>
+                    <td class="text-right">12,194.00</td>
+                    <td class="text-right">24.90%</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Total Estimated Annual Maintenance Cost</td>
+                    <td class="text-right">48,965.28</td>
+                    <td class="text-right">100.00%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TAB 2: SCHEDULE & COSTS -->
+    <div id="schedule" class="tab-content">
+        <h2>Detailed Preventive Maintenance Schedule & Cost Breakdown</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>System</th>
+                    <th>Maintenance Task</th>
+                    <th>Frequency / Interval</th>
+                    <th>Parts Required</th>
+                    <th class="text-right">Parts Cost (QAR)</th>
+                    <th class="text-right">Labor Hours</th>
+                    <th class="text-right">Total Cost / Cycle (QAR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Daily -->
+                <tr class="section-header">
+                    <td colspan="7">Daily / Pre-Operational (Routine Checks)</td>
+                </tr>
+                <tr>
+                    <td>Pump Fluid End</td>
+                    <td>Check for water/oil leaks around plungers & manifold</td>
+                    <td>Daily</td>
+                    <td>—</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.10</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+                <tr>
+                    <td>Pump Power End</td>
+                    <td>Check power end oil level & condition</td>
+                    <td>Daily</td>
+                    <td>—</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.10</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+                <tr>
+                    <td>Diesel Engine</td>
+                    <td>Check engine oil, coolant levels & fuel pre-filter</td>
+                    <td>Daily</td>
+                    <td>—</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.10</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+                <tr>
+                    <td>System Safety</td>
+                    <td>Inspect burst discs, relief valves & high-pressure hoses</td>
+                    <td>Daily</td>
+                    <td>—</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.20</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+                <tr>
+                    <td>Water Supply</td>
+                    <td>Inspect & clean inlet water filters (10-micron)</td>
+                    <td>Daily</td>
+                    <td>Filter element</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.10</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td colspan="6">Daily Subtotal (Included in Routine Ops)</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+
+                <!-- 50 Hours -->
+                <tr class="section-header">
+                    <td colspan="7">50 Hours / Weekly Maintenance</td>
+                </tr>
+                <tr>
+                    <td>Pump Power End</td>
+                    <td>Grease crosshead guides & check belt tension</td>
+                    <td>50 Hours</td>
+                    <td>Premium Grease</td>
+                    <td class="text-right">54.60</td>
+                    <td class="text-right">0.50</td>
+                    <td class="text-right">54.60</td>
+                </tr>
+                <tr>
+                    <td>Diesel Engine</td>
+                    <td>Clean/blow out air filter element & check battery</td>
+                    <td>50 Hours</td>
+                    <td>—</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.50</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+                <tr>
+                    <td>Accessories</td>
+                    <td>Inspect & lubricate dump valves / lances</td>
+                    <td>50 Hours</td>
+                    <td>O-rings & Grease</td>
+                    <td class="text-right">91.00</td>
+                    <td class="text-right">0.50</td>
+                    <td class="text-right">91.00</td>
+                </tr>
+                <tr>
+                    <td>System Base</td>
+                    <td>Check trailer/skid mounting bolts & vibration isolators</td>
+                    <td>50 Hours</td>
+                    <td>—</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.30</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td colspan="6">Weekly Routine Subtotal (Annualized - 24 cycles)</td>
+                    <td class="text-right">3,494.40</td>
+                </tr>
+
+                <!-- 100-125 Hours -->
+                <tr class="section-header">
+                    <td colspan="7">100-125 Hours / Monthly Maintenance</td>
+                </tr>
+                <tr>
+                    <td>Diesel Engine</td>
+                    <td>Change engine oil & replace spin-on oil filter</td>
+                    <td>100-125 Hours</td>
+                    <td>Engine Oil & Filter</td>
+                    <td class="text-right">436.80</td>
+                    <td class="text-right">1.00</td>
+                    <td class="text-right">436.80</td>
+                </tr>
+                <tr>
+                    <td>Diesel Engine</td>
+                    <td>Replace primary and secondary fuel filters</td>
+                    <td>100-125 Hours</td>
+                    <td>Fuel Filters Pack</td>
+                    <td class="text-right">309.40</td>
+                    <td class="text-right">0.50</td>
+                    <td class="text-right">309.40</td>
+                </tr>
+                <tr>
+                    <td>Pump Fluid End</td>
+                    <td>Inspect plungers for scoring/wear</td>
+                    <td>100-125 Hours</td>
+                    <td>—</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.50</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td colspan="6">Monthly Routine Subtotal (Annualized - 10 cycles)</td>
+                    <td class="text-right">7,462.00</td>
+                </tr>
+
+                <!-- 250 Hours -->
+                <tr class="section-header">
+                    <td colspan="7">250 Hours / Quarterly Maintenance</td>
+                </tr>
+                <tr>
+                    <td>Pump Fluid End</td>
+                    <td>Replace high-pressure seals & packing brass v-rings</td>
+                    <td>250 Hours</td>
+                    <td>20k PSI Seal & Packing Kit</td>
+                    <td class="text-right">2,366.00</td>
+                    <td class="text-right">2.50</td>
+                    <td class="text-right">2,366.00</td>
+                </tr>
+                <tr>
+                    <td>Pump Power End</td>
+                    <td>Change pump crankcase oil (ISO 150)</td>
+                    <td>250 Hours</td>
+                    <td>NLB Crankcase Lube (4 Gal)</td>
+                    <td class="text-right">655.20</td>
+                    <td class="text-right">1.00</td>
+                    <td class="text-right">655.20</td>
+                </tr>
+                <tr>
+                    <td>Diesel Engine</td>
+                    <td>Inspect engine air intake system & ducting</td>
+                    <td>250 Hours</td>
+                    <td>—</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.50</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td colspan="6">Quarterly Maintenance Subtotal (Annualized - 4.8 cycles)</td>
+                    <td class="text-right">14,501.76</td>
+                </tr>
+
+                <!-- 500 Hours -->
+                <tr class="section-header">
+                    <td colspan="7">500 Hours / Semi-Annual Maintenance</td>
+                </tr>
+                <tr>
+                    <td>Pump Fluid End</td>
+                    <td>Inspect/Replace suction & discharge valves/seats</td>
+                    <td>500 Hours</td>
+                    <td>Valve & Seat Kit</td>
+                    <td class="text-right">4,368.00</td>
+                    <td class="text-right">3.00</td>
+                    <td class="text-right">4,368.00</td>
+                </tr>
+                <tr>
+                    <td>Diesel Engine</td>
+                    <td>Replace outer air filter element & inspect alternator</td>
+                    <td>500 Hours</td>
+                    <td>Heavy Duty Air Filter</td>
+                    <td class="text-right">345.80</td>
+                    <td class="text-right">0.80</td>
+                    <td class="text-right">345.80</td>
+                </tr>
+                <tr>
+                    <td>Cooling System</td>
+                    <td>Flush radiator fins & inspect coolant hoses</td>
+                    <td>500 Hours</td>
+                    <td>—</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">1.00</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+                <tr>
+                    <td>Control System</td>
+                    <td>Calibrate pressure transducers & verify E-Stops</td>
+                    <td>500 Hours</td>
+                    <td>—</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">1.50</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td colspan="6">Semi-Annual Maintenance Subtotal (Annualized - 2.4 cycles)</td>
+                    <td class="text-right">11,313.12</td>
+                </tr>
+
+                <!-- 1000-1500 Hours -->
+                <tr class="section-header">
+                    <td colspan="7">1000-1500 Hours / Annual Overhaul</td>
+                </tr>
+                <tr>
+                    <td>Pump Fluid End</td>
+                    <td>Replace ceramic plungers & guide bushings</td>
+                    <td>1000 Hours</td>
+                    <td>Ceramic Plungers (Set of 3)</td>
+                    <td class="text-right">6,552.00</td>
+                    <td class="text-right">4.00</td>
+                    <td class="text-right">6,552.00</td>
+                </tr>
+                <tr>
+                    <td>Pump Power End</td>
+                    <td>Inspect crosshead pins, bearings & oil seals</td>
+                    <td>1000 Hours</td>
+                    <td>Power End Seal Kit</td>
+                    <td class="text-right">1,274.00</td>
+                    <td class="text-right">5.00</td>
+                    <td class="text-right">1,274.00</td>
+                </tr>
+                <tr>
+                    <td>Diesel Engine</td>
+                    <td>Deep engine service: Flush coolant, replace belts, adjust valves</td>
+                    <td>1000 Hours</td>
+                    <td>Coolant, Belts, Gaskets</td>
+                    <td class="text-right">1,638.00</td>
+                    <td class="text-right">6.00</td>
+                    <td class="text-right">1,638.00</td>
+                </tr>
+                <tr>
+                    <td>Unloader / Valve</td>
+                    <td>Overhaul bypass valve & multi-gun unloader station</td>
+                    <td>1000 Hours</td>
+                    <td>NLB 20k Unloader Repair Kit</td>
+                    <td class="text-right">2,730.00</td>
+                    <td class="text-right">2.00</td>
+                    <td class="text-right">2,730.00</td>
+                </tr>
+                <tr class="subtotal-row">
+                    <td colspan="6">Annual Major Overhaul Subtotal (1 cycle/year)</td>
+                    <td class="text-right">12,194.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
