@@ -117,6 +117,11 @@
                         <span class="material-symbols-outlined">history_edu</span>
                         <span>Maintenance Logs / History</span>
                     </button>
+
+                    <button onclick="setModule('dispatch')" id="tab-dispatch" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="material-symbols-outlined">local_shipping</span>
+                        <span>In/Out Dispatch</span>
+                    </button>
                     
                     <button onclick="setModule('preop')" id="tab-preop" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
                         <span class="material-symbols-outlined">fact_check</span>
@@ -128,11 +133,7 @@
                         <span>Expenses Tracking</span>
                     </button>
 
-                    <button onclick="setModule('dispatch')" id="tab-dispatch" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
-                        <span class="material-symbols-outlined">local_shipping</span>
-                        <span>In/Out Dispatch</span>
-                    </button>
-
+                    
                     <button onclick="setModule('tech')" id="tab-tech" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
                         <span class="material-symbols-outlined">badge</span>
                         <span>Technician Profile</span>
@@ -148,10 +149,33 @@
                         <span>Parts Reference</span>
                     </button>
 
+                    <div class="flex flex-col w-full">
+                        <button onclick="document.getElementById('plan-submenu').classList.toggle('hidden')" id="tab-plan" class="mod-tab flex items-center justify-between w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900 cursor-pointer">
+                            <div class="flex items-center space-x-3">
+                                <span class="material-symbols-outlined">event_repeat</span>
+                                <span>Maintenance Plan</span>
+                            </div>
+                            <span class="material-symbols-outlined text-sm">expand_more</span>
+                        </button>
+                        
+                        <!-- Sub-menu Links -->
+                        <div id="plan-submenu" class="hidden flex-col space-y-1 pl-9 mt-1">
+                            <a href="20kplan.html" class="flex items-center w-full px-3 py-2 rounded text-xs font-semibold transition text-slate-500 hover:bg-slate-100 hover:text-slate-900 cursor-pointer border-l-2 border-transparent hover:border-slate-900">
+                                20k Maintenance Plan
+                            </a>
+                            <a href="40kplan.html" class="flex items-center w-full px-3 py-2 rounded text-xs font-semibold transition text-slate-500 hover:bg-slate-100 hover:text-slate-900 cursor-pointer border-l-2 border-transparent hover:border-slate-900">
+                                40k Maintenance Plan
+                            </a>
+                        </div>
+                    </div>
+
                     <button onclick="setModule('safety')" id="tab-safety" class="mod-tab group flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition hover:bg-slate-50">
                         <span class="material-symbols-outlined text-red-600 group-hover:text-red-600">health_and_safety</span>
                         <span class="text-red-600 group-hover:text-red-800">Maintenance Safety</span>
                     </button>
+
+                    
+
                 </div>
 
                 <div>
@@ -1684,7 +1708,8 @@
                     (p.id && String(p.id).toLowerCase().includes(search)) || 
                     (p.description && p.description.toLowerCase().includes(search)) ||
                     (p.equipmentType && p.equipmentType.toLowerCase().includes(search)) ||
-                    (p.category && p.category.toLowerCase().includes(search))
+                    (p.category && p.category.toLowerCase().includes(search)) ||
+                    (p.machineParts && p.machineParts.toLowerCase().includes(search))
                 );
                 
                 const html = filtered.map((p, index) => `
@@ -1910,12 +1935,25 @@
         }
 
         function printCertificateList() {
-            const search = document.getElementById('in-c-search').value.toLowerCase();
-            const filtered = memory.certificates.filter(c => 
-                c.assetId.toLowerCase().includes(search) || 
-                c.id.toLowerCase().includes(search)
-            );
+            const search = document.getElementById('in-c-search').value.toLowerCase().trim();
+            
+            // 1. Expanded Filter Logic
+            const filtered = memory.certificates.filter(c => {
+                // Find the linked asset to search its properties
+                const asset = memory.assets.find(a => a.id === c.assetId) || { model: '', description: '', serial: '' };
+                // Generate the status text so we can search it (e.g., "Valid", "Expired")
+                const statusCheck = checkCertificateStatusAlarm(c.expiryDate);
+                
+                // Search across all relevant columns
+                return (c.assetId || "").toLowerCase().includes(search) || 
+                    (c.id || "").toLowerCase().includes(search) ||
+                    (asset.model || "").toLowerCase().includes(search) ||
+                    (asset.description || "").toLowerCase().includes(search) ||
+                    (asset.serial || "").toLowerCase().includes(search) ||
+                    (statusCheck.text || "").toLowerCase().includes(search);
+            });
 
+            // 2. Map HTML Rows
             let rowsHtml = filtered.map(c => {
                 const asset = memory.assets.find(a => a.id === c.assetId) || { model: 'N/A', description: 'N/A', serial: 'N/A' };
                 const statusCheck = checkCertificateStatusAlarm(c.expiryDate);
@@ -1931,11 +1969,54 @@
                 </tr>`;
             }).join('');
 
+            // 3. Handle Empty State
             if(filtered.length === 0) { 
                 rowsHtml = '<tr><td colspan="6" style="padding:12px; text-align:center; color:#64748b;">No certificate records match.</td></tr>'; 
             }
             
+            // 4. Execute Print
             executeTablePrint('Third Party Certificates Registry', rowsHtml, ['Assigned Equipment ID', 'Model Number', 'Description', 'Serial Number', 'Expiry Date', 'Status Alarm']);
+        }
+
+        function executeTablePrint(title, rowsHtml, headers) {
+            // 1. Generate the table headers dynamically
+            const headersHtml = headers.map(header => 
+                `<th style="padding:10px 8px; border-bottom:2px solid #cbd5e1; color:#475569; text-align:left;">${header}</th>`
+            ).join('');
+
+            // 2. Build the full printable HTML structure
+            const fullHtml = `
+                <div style="font-family: sans-serif; max-width: 100%;">
+                    <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 16px; color: #0f172a;">${title}</h2>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+                        <thead>
+                            <tr>${headersHtml}</tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            // 3. Inject the HTML into your hidden print container
+            const printSection = document.getElementById('print-section');
+            if (!printSection) {
+                console.error("Print section container (#print-section) not found in the DOM.");
+                return;
+            }
+            
+            printSection.innerHTML = fullHtml;
+
+            // 4. The crucial delay: Give the browser 150ms to paint the injected HTML before printing
+            setTimeout(() => {
+                window.print();
+                
+                // Optional cleanup: Clear the print section after printing
+                setTimeout(() => {
+                    printSection.innerHTML = '';
+                }, 500);
+            }, 150);
         }
 
         function populateEquipmentDropdown(selectElementId) {
@@ -2068,16 +2149,20 @@
 
         function refreshWorkspaceView() {
             if (currentActiveModule === "fleet") {
-                const search = document.getElementById('in-f-search').value.toLowerCase();
+                // Added a fallback in case the element doesn't exist yet
+                const searchInput = document.getElementById('in-f-search');
+                const search = searchInput ? searchInput.value.toLowerCase() : "";
+                
                 const container = document.getElementById('rows-fleet');
                 container.innerHTML = "";
                 
+                // Safely filter using optional chaining (?.)
                 const filtered = memory.assets.filter(a => 
-                    a.id.toLowerCase().includes(search) || 
-                    a.model.toLowerCase().includes(search) || 
-                    a.description.toLowerCase().includes(search) || 
-                    a.status.toLowerCase().includes(search) || 
-                    (a.location && a.location.toLowerCase().includes(search))
+                    a.id?.toLowerCase().includes(search) || 
+                    a.model?.toLowerCase().includes(search) || 
+                    a.description?.toLowerCase().includes(search) || 
+                    a.status?.toLowerCase().includes(search) || 
+                    a.location?.toLowerCase().includes(search)
                 );
 
                 filtered.forEach(a => {
@@ -2087,14 +2172,14 @@
 
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="p-4 font-bold font-code text-slate-900">${a.id}</td>
-                            <td class="p-4 font-code">${a.model}</td>
-                            <td class="p-4 max-w-xs truncate">${a.description}</td>
+                            <td class="p-4 font-bold font-code text-slate-900">${a.id || 'N/A'}</td>
+                            <td class="p-4 font-code">${a.model || 'N/A'}</td>
+                            <td class="p-4 max-w-xs truncate">${a.description || 'N/A'}</td>
                             <td class="p-4 font-code text-slate-600">${a.pressure || 'N/A'}</td>
                             <td class="p-4 font-code text-slate-500">${a.serial || 'N/A'}</td>
                             <td class="p-4 uppercase font-semibold text-slate-600">${a.location || 'WORKSHOP'}</td>
                             <td class="p-4"><span class="px-2 py-0.5 rounded text-[11px] font-semibold ${statusCheck.class}">${statusCheck.text}</span></td>
-                            <td class="p-4"><span class="px-2.5 py-1 rounded-sm text-[11px] font-bold ${badgeColorClass}">${a.status}</span></td>
+                            <td class="p-4"><span class="px-2.5 py-1 rounded-sm text-[11px] font-bold ${badgeColorClass}">${a.status || 'N/A'}</span></td>
                             <td class="p-4 text-center space-x-2">
                                 <!-- Upgraded Request Dispatch Button (Primary Action) -->
                                 <button onclick="requestDispatch('${a.id}')" class="w-32 text-center px-3 py-1.5 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-md shadow-sm transition-all cursor-pointer">
@@ -2115,16 +2200,28 @@
                     `;
                 });
             }
+        
 
             if (currentActiveModule === "cert") {
-                const search = document.getElementById('in-c-search').value.toLowerCase();
+                const searchInput = document.getElementById('in-c-search');
+                const search = searchInput ? searchInput.value.toLowerCase() : "";
                 const container = document.getElementById('rows-cert');
                 container.innerHTML = "";
 
-                const filtered = memory.certificates.filter(c => 
-                    c.assetId.toLowerCase().includes(search) || 
-                    c.id.toLowerCase().includes(search)
-                );
+                const filtered = memory.certificates.filter(c => {
+                    const asset = memory.assets.find(a => a.id === c.assetId) || {};
+                    const statusCheck = checkCertificateStatusAlarm(c.expiryDate);
+                    
+                    return (
+                        c.assetId?.toLowerCase().includes(search) || 
+                        c.id?.toLowerCase().includes(search) ||
+                        c.expiryDate?.toLowerCase().includes(search) ||
+                        asset.model?.toLowerCase().includes(search) ||
+                        asset.description?.toLowerCase().includes(search) ||
+                        asset.serial?.toLowerCase().includes(search) ||
+                        statusCheck.text?.toLowerCase().includes(search)
+                    );
+                });
 
                 filtered.forEach(c => {
                     const asset = memory.assets.find(a => a.id === c.assetId) || { model: 'N/A', description: 'N/A', serial: 'N/A' };
@@ -2136,11 +2233,11 @@
 
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50">
-                            <td class="p-4 font-bold font-code text-slate-900">${c.assetId}</td>
-                            <td class="p-4 font-code">${asset.model}</td>
-                            <td class="p-4 max-w-xs truncate">${asset.description}</td>
+                            <td class="p-4 font-bold font-code text-slate-900">${c.assetId || 'N/A'}</td>
+                            <td class="p-4 font-code">${asset.model || 'N/A'}</td>
+                            <td class="p-4 max-w-xs truncate">${asset.description || 'N/A'}</td>
                             <td class="p-4 font-code text-slate-500">${asset.serial || 'N/A'}</td>
-                            <td class="p-4 font-code">${c.expiryDate}</td>
+                            <td class="p-4 font-code">${c.expiryDate || 'N/A'}</td>
                             <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${statusCheck.class}">${statusCheck.text}</span></td>
                             <td class="p-4 text-center space-x-2">
                                 ${attachmentButtonHtml}
@@ -4023,8 +4120,29 @@
             }
         }
         
-        // Opens the modal and populates the technician list
         function openAcceptWoModal(woId) {
+            // 1. Find the specific work order in the memory cache
+            const workOrder = memory.workOrders.find(wo => wo.id === woId);
+
+            // 2. Validate existence and status
+            if (!workOrder) {
+                alert("Error: Work order not found.");
+                return;
+            }
+
+            // Do not allow if the work order is completed
+            if (workOrder.status.toLowerCase() === 'completed') {
+                alert("This work order is already completed and cannot be modified.");
+                return;
+            }
+
+            // Do not allow if the work order is anything other than pending
+            if (workOrder.status.toLowerCase() !== 'pending') {
+                alert(`Action denied. Only 'Pending' work orders can be accepted. Current status: ${workOrder.status}`);
+                return;
+            }
+
+            // 3. If validation passes, proceed with opening the modal
             document.getElementById('in-accept-wo-id').value = woId;
             const techSelect = document.getElementById('in-accept-tech');
             
@@ -4042,7 +4160,7 @@
                 techSelect.innerHTML = `<option value="">No technicians available</option>`;
             }
             
-            toggleModal('modal-accept-wo', true);
+            toggleModal('modal-accept-wo', true); //[cite: 1]
         }
 
         // Executes the form submission to automate the log creation
