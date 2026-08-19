@@ -94,11 +94,22 @@
             color: var(--primary-color);
         }
 
+        /* Responsive Table Wrapper */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
         table {
             width: 100%;
+            min-width: 650px;
             border-collapse: collapse;
-            margin-bottom: 25px;
             font-size: 0.9rem;
+            margin-bottom: 0;
         }
 
         th, td {
@@ -114,6 +125,7 @@
             text-transform: uppercase;
             font-size: 0.8rem;
             letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
         tr:nth-child(even) {
@@ -195,6 +207,47 @@
             display: block;
         }
 
+        /* --- MOBILE RESPONSIVE STYLES --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+            .header-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            h1 {
+                font-size: 1.4rem !important;
+                line-height: 1.3;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .tabs {
+                flex-direction: column;
+                border-bottom: none;
+                background: var(--bg-light);
+                border-radius: 6px;
+                overflow: hidden;
+            }
+            .tab-btn {
+                width: 100%;
+                text-align: left;
+                padding: 12px 15px;
+                border-bottom: 1px solid var(--border-color);
+                border-left: 4px solid transparent;
+            }
+            .tab-btn.active {
+                border-bottom: 1px solid var(--border-color);
+                border-left: 4px solid var(--secondary-color);
+                background: white;
+            }
+        }
+
         @media print {
             body {
                 background: white;
@@ -215,6 +268,10 @@
             .header-wrapper a {
                 display: none;
             }
+            .table-responsive {
+                border: none;
+                overflow: visible;
+            }
         }
     </style>
 </head>
@@ -223,7 +280,7 @@
 <div class="container">
     <div class="header-wrapper">
         <h1 style="font-size: 1.85rem; font-weight: 700;">NLB 40k Ultra-High Pressure (UHP) Pump & Engine Maintenance Plan</h1>
-        <a href="techaddedit.html" class="group flex items-center space-x-2 bg-slate-800 text-white hover:bg-slate-700 border border-slate-700 font-medium text-sm px-4 py-2 rounded-md shadow-sm transition-colors duration-200 cursor-pointer animate-fade-in" style="text-decoration: none;">
+        <a href="nlb.html" class="group flex items-center space-x-2 bg-slate-800 text-white hover:bg-slate-700 border border-slate-700 font-medium text-sm px-4 py-2 rounded-md shadow-sm transition-colors duration-200 cursor-pointer animate-fade-in" style="text-decoration: none;">
             <span class="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform duration-300">arrow_back</span>
             <span>Return to Dashboard</span>
         </a>
@@ -243,339 +300,343 @@
     <!-- TAB 1: SUMMARY & DASHBOARD -->
     <div id="summary" class="tab-content active">
         <h2>Cost Summary & Budgets (UHP 40k Class)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Category / Interval</th>
-                    <th class="text-right">Estimated Annual Cost (QAR)</th>
-                    <th class="text-right">% of Total Budget</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Daily / Pre-Operational (Critical Checks)</td>
-                    <td class="text-right">0.00</td>
-                    <td class="text-right">0.00%</td>
-                </tr>
-                <tr>
-                    <td>25-50 Hours / Weekly (Accelerated Seals)</td>
-                    <td class="text-right">48,048.00</td>
-                    <td class="text-right">40.52%</td>
-                </tr>
-                <tr>
-                    <td>100-125 Hours / Monthly (Engine & Polish Filters)</td>
-                    <td class="text-right">11,284.00</td>
-                    <td class="text-right">9.52%</td>
-                </tr>
-                <tr>
-                    <td>250 Hours / Quarterly (40k Rebuild Kits)</td>
-                    <td class="text-right">29,527.68</td>
-                    <td class="text-right">24.90%</td>
-                </tr>
-                <tr>
-                    <td>500 Hours / Semi-Annual (Stuffing Box Hardware)</td>
-                    <td class="text-right">9,522.24</td>
-                    <td class="text-right">8.03%</td>
-                </tr>
-                <tr>
-                    <td>1000 Hours / Annual Major Overhaul (UHP Plungers)</td>
-                    <td class="text-right">20,202.00</td>
-                    <td class="text-right">17.04%</td>
-                </tr>
-                <tr class="total-row">
-                    <td>Total Estimated Annual Maintenance Cost (40k PSI Class)</td>
-                    <td class="text-right">118,583.92</td>
-                    <td class="text-right">100.00%</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category / Interval</th>
+                        <th class="text-right">Estimated Annual Cost (QAR)</th>
+                        <th class="text-right">% of Total Budget</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Daily / Pre-Operational (Critical Checks)</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">0.00%</td>
+                    </tr>
+                    <tr>
+                        <td>25-50 Hours / Weekly (Accelerated Seals)</td>
+                        <td class="text-right">48,048.00</td>
+                        <td class="text-right">40.52%</td>
+                    </tr>
+                    <tr>
+                        <td>100-125 Hours / Monthly (Engine & Polish Filters)</td>
+                        <td class="text-right">11,284.00</td>
+                        <td class="text-right">9.52%</td>
+                    </tr>
+                    <tr>
+                        <td>250 Hours / Quarterly (40k Rebuild Kits)</td>
+                        <td class="text-right">29,527.68</td>
+                        <td class="text-right">24.90%</td>
+                    </tr>
+                    <tr>
+                        <td>500 Hours / Semi-Annual (Stuffing Box Hardware)</td>
+                        <td class="text-right">9,522.24</td>
+                        <td class="text-right">8.03%</td>
+                    </tr>
+                    <tr>
+                        <td>1000 Hours / Annual Major Overhaul (UHP Plungers)</td>
+                        <td class="text-right">20,202.00</td>
+                        <td class="text-right">17.04%</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>Total Estimated Annual Maintenance Cost (40k PSI Class)</td>
+                        <td class="text-right">118,583.92</td>
+                        <td class="text-right">100.00%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- TAB 2: SCHEDULE & COSTS -->
     <div id="schedule" class="tab-content">
         <h2>Detailed Preventive Maintenance Schedule & Cost Breakdown</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>System</th>
-                    <th>Maintenance Task</th>
-                    <th>Frequency / Interval</th>
-                    <th>Parts Required</th>
-                    <th class="text-right">Parts Cost (QAR)</th>
-                    <th class="text-right">Labor Hours</th>
-                    <th class="text-right">Total Cost / Cycle (QAR)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="section-header">
-                    <td colspan="7">Daily / Pre-Operational (Critical UHP Inspections)</td>
-                </tr>
-                <tr>
-                    <td>Pump Fluid End</td>
-                    <td>Check for high-pressure weep hole leakage (early seal warning)</td>
-                    <td>Daily</td>
-                    <td>—</td>
-                    <td class="text-right">0.00</td>
-                    <td class="text-right">0.20</td>
-                    <td class="text-right">0.00</td>
-                </tr>
-                <tr>
-                    <td>Pump Power End</td>
-                    <td>Check power end oil level & clean breather cap</td>
-                    <td>Daily</td>
-                    <td>—</td>
-                    <td class="text-right">0.00</td>
-                    <td class="text-right">0.10</td>
-                    <td class="text-right">0.00</td>
-                </tr>
-                <tr>
-                    <td>Diesel Engine</td>
-                    <td>Check engine oil, coolant levels & drain fuel water separator</td>
-                    <td>Daily</td>
-                    <td>—</td>
-                    <td class="text-right">0.00</td>
-                    <td class="text-right">0.10</td>
-                    <td class="text-right">0.00</td>
-                </tr>
-                <tr>
-                    <td>UHP Safety System</td>
-                    <td>Inspect burst discs (40k rated), bypass valves & safety shrouding</td>
-                    <td>Daily</td>
-                    <td>—</td>
-                    <td class="text-right">0.00</td>
-                    <td class="text-right">0.30</td>
-                    <td class="text-right">0.00</td>
-                </tr>
-                <tr>
-                    <td>Water Supply System</td>
-                    <td>Inspect dual-stage inlet filters (1-micron & 5-micron structural absolute)</td>
-                    <td>Daily</td>
-                    <td>Dual Filter Elements</td>
-                    <td class="text-right">0.00</td>
-                    <td class="text-right">0.20</td>
-                    <td class="text-right">0.00</td>
-                </tr>
-                <tr class="subtotal-row">
-                    <td colspan="6">Daily Subtotal (Absorbed in Routine Ops)</td>
-                    <td class="text-right">0.00</td>
-                </tr>
-                <tr class="section-header">
-                    <td colspan="7">25-50 Hours / Weekly UHP Maintenance</td>
-                </tr>
-                <tr>
-                    <td>Pump Fluid End</td>
-                    <td>Rotate or replace ultra-high pressure packing seals (40k rated)</td>
-                    <td>25-50 Hours</td>
-                    <td>40k Packing Seal Kit</td>
-                    <td class="text-right">1,383.20</td>
-                    <td class="text-right">1.50</td>
-                    <td class="text-right">1,383.20</td>
-                </tr>
-                <tr>
-                    <td>Pump Power End</td>
-                    <td>Grease crosshead guides & verify drive belt alignment</td>
-                    <td>25-50 Hours</td>
-                    <td>Premium Synthetic Grease</td>
-                    <td class="text-right">54.60</td>
-                    <td class="text-right">0.50</td>
-                    <td class="text-right">54.60</td>
-                </tr>
-                <tr>
-                    <td>Diesel Engine</td>
-                    <td>Clean engine air intake pre-cleaners & test battery charge</td>
-                    <td>25-50 Hours</td>
-                    <td>—</td>
-                    <td class="text-right">0.00</td>
-                    <td class="text-right">0.50</td>
-                    <td class="text-right">0.00</td>
-                </tr>
-                <tr>
-                    <td>UHP Accessories</td>
-                    <td>Inspect, clean & lubricate 40k tumble box / foot pedals</td>
-                    <td>25-50 Hours</td>
-                    <td>O-rings & High-Vacuum Grease</td>
-                    <td class="text-right">163.80</td>
-                    <td class="text-right">0.60</td>
-                    <td class="text-right">163.80</td>
-                </tr>
-                <tr class="subtotal-row">
-                    <td colspan="6">Weekly UHP Subtotal (Annualized - 30 cycles standard over 1200 hrs)</td>
-                    <td class="text-right">48,048.00</td>
-                </tr>
-                <tr class="section-header">
-                    <td colspan="7">100-125 Hours / Monthly Maintenance</td>
-                </tr>
-                <tr>
-                    <td>Diesel Engine</td>
-                    <td>Change engine oil & replace spin-on oil filter element</td>
-                    <td>100-125 Hours</td>
-                    <td>Engine Oil & Filter</td>
-                    <td class="text-right">509.60</td>
-                    <td class="text-right">1.00</td>
-                    <td class="text-right">509.60</td>
-                </tr>
-                <tr>
-                    <td>Diesel Engine</td>
-                    <td>Replace primary and secondary fuel filters</td>
-                    <td>100-125 Hours</td>
-                    <td>Fuel Filters Pack</td>
-                    <td class="text-right">345.80</td>
-                    <td class="text-right">0.50</td>
-                    <td class="text-right">345.80</td>
-                </tr>
-                <tr>
-                    <td>Pump Fluid End</td>
-                    <td>Inspect polished solid plungers for micro-scratching or scoring</td>
-                    <td>100-125 Hours</td>
-                    <td>—</td>
-                    <td class="text-right">0.00</td>
-                    <td class="text-right">0.80</td>
-                    <td class="text-right">0.00</td>
-                </tr>
-                <tr>
-                    <td>Water Filtration</td>
-                    <td>Replace absolute 1-micron polish filter cartridges to protect 40k fluid end</td>
-                    <td>100-125 Hours</td>
-                    <td>1-Micron Core Filters (Set)</td>
-                    <td class="text-right">273.00</td>
-                    <td class="text-right">0.30</td>
-                    <td class="text-right">273.00</td>
-                </tr>
-                <tr class="subtotal-row">
-                    <td colspan="6">Monthly Routine Subtotal (Annualized - 10 cycles)</td>
-                    <td class="text-right">11,284.00</td>
-                </tr>
-                <tr class="section-header">
-                    <td colspan="7">250 Hours / Quarterly Maintenance</td>
-                </tr>
-                <tr>
-                    <td>Pump Fluid End</td>
-                    <td>Complete overhaul of 40k fluid end valve assemblies (Suction/Discharge)</td>
-                    <td>250 Hours</td>
-                    <td>40k Valve & Seat Rebuild Kit</td>
-                    <td class="text-right">5,278.00</td>
-                    <td class="text-right">3.50</td>
-                    <td class="text-right">5,278.00</td>
-                </tr>
-                <tr>
-                    <td>Pump Power End</td>
-                    <td>Change pump crankcase oil (Synthetic ISO 150 High-Load)</td>
-                    <td>250 Hours</td>
-                    <td>UHP Crankcase Synthetic Lube (4 Gal)</td>
-                    <td class="text-right">873.60</td>
-                    <td class="text-right">1.00</td>
-                    <td class="text-right">873.60</td>
-                </tr>
-                <tr>
-                    <td>Diesel Engine</td>
-                    <td>Inspect charge air cooler connections & engine ducting</td>
-                    <td>250 Hours</td>
-                    <td>—</td>
-                    <td class="text-right">0.00</td>
-                    <td class="text-right">0.50</td>
-                    <td class="text-right">0.00</td>
-                </tr>
-                <tr class="subtotal-row">
-                    <td colspan="6">Quarterly Maintenance Subtotal (Annualized - 4.8 cycles)</td>
-                    <td class="text-right">29,527.68</td>
-                </tr>
-                <tr class="section-header">
-                    <td colspan="7">500 Hours / Semi-Annual Maintenance</td>
-                </tr>
-                <tr>
-                    <td>Pump Fluid End</td>
-                    <td>Replace complete guide bushings, pressure rings, and backing brass</td>
-                    <td>500 Hours</td>
-                    <td>40k Stuffing Box Hardware Kit</td>
-                    <td class="text-right">3,567.20</td>
-                    <td class="text-right">2.50</td>
-                    <td class="text-right">3,567.20</td>
-                </tr>
-                <tr>
-                    <td>Diesel Engine</td>
-                    <td>Replace heavy duty outer air filter & check alternator / belt tensioner</td>
-                    <td>500 Hours</td>
-                    <td>Heavy Duty Air Filter Element</td>
-                    <td class="text-right">400.40</td>
-                    <td class="text-right">0.80</td>
-                    <td class="text-right">400.40</td>
-                </tr>
-                <tr>
-                    <td>Cooling System</td>
-                    <td>Flush engine/pump radiators, check water pump functionality</td>
-                    <td>500 Hours</td>
-                    <td>—</td>
-                    <td class="text-right">0.00</td>
-                    <td class="text-right">1.20</td>
-                    <td class="text-right">0.00</td>
-                </tr>
-                <tr>
-                    <td>UHP Control System</td>
-                    <td>Verify 40k electronic dump valves & calibrate pressure transducers</td>
-                    <td>500 Hours</td>
-                    <td>—</td>
-                    <td class="text-right">0.00</td>
-                    <td class="text-right">2.00</td>
-                    <td class="text-right">0.00</td>
-                </tr>
-                <tr class="subtotal-row">
-                    <td colspan="6">Semi-Annual Maintenance Subtotal (Annualized - 2.4 cycles)</td>
-                    <td class="text-right">9,522.24</td>
-                </tr>
-                <tr class="section-header">
-                    <td colspan="7">1000-1500 Hours / Annual Major Overhaul</td>
-                </tr>
-                <tr>
-                    <td>Pump Fluid End</td>
-                    <td>Replace premium 40k specialized plungers (Titanium/Coated Base)</td>
-                    <td>1000 Hours</td>
-                    <td>40k Plungers Set</td>
-                    <td class="text-right">9,464.00</td>
-                    <td class="text-right">5.00</td>
-                    <td class="text-right">9,464.00</td>
-                </tr>
-                <tr>
-                    <td>Pump Fluid End</td>
-                    <td>Inspect/re-lap manifold or replace 40k stainless fluid end block if eroded</td>
-                    <td>1000 Hours</td>
-                    <td>Manifold Seals & Target Hardware</td>
-                    <td class="text-right">3,094.00</td>
-                    <td class="text-right">4.00</td>
-                    <td class="text-right">3,094.00</td>
-                </tr>
-                <tr>
-                    <td>Pump Power End</td>
-                    <td>Deep inspection of crankshaft, connecting rods, pins, and oil pump</td>
-                    <td>1000 Hours</td>
-                    <td>Power End Overhaul Gaskets/Seals</td>
-                    <td class="text-right">1,638.00</td>
-                    <td class="text-right">6.00</td>
-                    <td class="text-right">1,638.00</td>
-                </tr>
-                <tr>
-                    <td>Diesel Engine</td>
-                    <td>Major engine service: Flush coolant, replace serpentine belts, adjust valve lash</td>
-                    <td>1000 Hours</td>
-                    <td>Engine Service Kit (Belts/Coolant)</td>
-                    <td class="text-right">2,002.00</td>
-                    <td class="text-right">6.00</td>
-                    <td class="text-right">2,002.00</td>
-                </tr>
-                <tr>
-                    <td>UHP Unloader</td>
-                    <td>Complete structural overhaul of 40k regulator / bypass valve assembly</td>
-                    <td>1000 Hours</td>
-                    <td>40k Regulator Major Repair Kit</td>
-                    <td class="text-right">4,004.00</td>
-                    <td class="text-right">3.00</td>
-                    <td class="text-right">4,004.00</td>
-                </tr>
-                <tr class="subtotal-row">
-                    <td colspan="6">Annual Major Overhaul Subtotal (1 cycle/year)</td>
-                    <td class="text-right">20,202.00</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>System</th>
+                        <th>Maintenance Task</th>
+                        <th>Frequency / Interval</th>
+                        <th>Parts Required</th>
+                        <th class="text-right">Parts Cost (QAR)</th>
+                        <th class="text-right">Labor Hours</th>
+                        <th class="text-right">Total Cost / Cycle (QAR)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="section-header">
+                        <td colspan="7">Daily / Pre-Operational (Critical UHP Inspections)</td>
+                    </tr>
+                    <tr>
+                        <td>Pump Fluid End</td>
+                        <td>Check for high-pressure weep hole leakage (early seal warning)</td>
+                        <td>Daily</td>
+                        <td>—</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">0.20</td>
+                        <td class="text-right">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Pump Power End</td>
+                        <td>Check power end oil level & clean breather cap</td>
+                        <td>Daily</td>
+                        <td>—</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">0.10</td>
+                        <td class="text-right">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Diesel Engine</td>
+                        <td>Check engine oil, coolant levels & drain fuel water separator</td>
+                        <td>Daily</td>
+                        <td>—</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">0.10</td>
+                        <td class="text-right">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>UHP Safety System</td>
+                        <td>Inspect burst discs (40k rated), bypass valves & safety shrouding</td>
+                        <td>Daily</td>
+                        <td>—</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">0.30</td>
+                        <td class="text-right">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Water Supply System</td>
+                        <td>Inspect dual-stage inlet filters (1-micron & 5-micron structural absolute)</td>
+                        <td>Daily</td>
+                        <td>Dual Filter Elements</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">0.20</td>
+                        <td class="text-right">0.00</td>
+                    </tr>
+                    <tr class="subtotal-row">
+                        <td colspan="6">Daily Subtotal (Absorbed in Routine Ops)</td>
+                        <td class="text-right">0.00</td>
+                    </tr>
+                    <tr class="section-header">
+                        <td colspan="7">25-50 Hours / Weekly UHP Maintenance</td>
+                    </tr>
+                    <tr>
+                        <td>Pump Fluid End</td>
+                        <td>Rotate or replace ultra-high pressure packing seals (40k rated)</td>
+                        <td>25-50 Hours</td>
+                        <td>40k Packing Seal Kit</td>
+                        <td class="text-right">1,383.20</td>
+                        <td class="text-right">1.50</td>
+                        <td class="text-right">1,383.20</td>
+                    </tr>
+                    <tr>
+                        <td>Pump Power End</td>
+                        <td>Grease crosshead guides & verify drive belt alignment</td>
+                        <td>25-50 Hours</td>
+                        <td>Premium Synthetic Grease</td>
+                        <td class="text-right">54.60</td>
+                        <td class="text-right">0.50</td>
+                        <td class="text-right">54.60</td>
+                    </tr>
+                    <tr>
+                        <td>Diesel Engine</td>
+                        <td>Clean engine air intake pre-cleaners & test battery charge</td>
+                        <td>25-50 Hours</td>
+                        <td>—</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">0.50</td>
+                        <td class="text-right">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>UHP Accessories</td>
+                        <td>Inspect, clean & lubricate 40k tumble box / foot pedals</td>
+                        <td>25-50 Hours</td>
+                        <td>O-rings & High-Vacuum Grease</td>
+                        <td class="text-right">163.80</td>
+                        <td class="text-right">0.60</td>
+                        <td class="text-right">163.80</td>
+                    </tr>
+                    <tr class="subtotal-row">
+                        <td colspan="6">Weekly UHP Subtotal (Annualized - 30 cycles standard over 1200 hrs)</td>
+                        <td class="text-right">48,048.00</td>
+                    </tr>
+                    <tr class="section-header">
+                        <td colspan="7">100-125 Hours / Monthly Maintenance</td>
+                    </tr>
+                    <tr>
+                        <td>Diesel Engine</td>
+                        <td>Change engine oil & replace spin-on oil filter element</td>
+                        <td>100-125 Hours</td>
+                        <td>Engine Oil & Filter</td>
+                        <td class="text-right">509.60</td>
+                        <td class="text-right">1.00</td>
+                        <td class="text-right">509.60</td>
+                    </tr>
+                    <tr>
+                        <td>Diesel Engine</td>
+                        <td>Replace primary and secondary fuel filters</td>
+                        <td>100-125 Hours</td>
+                        <td>Fuel Filters Pack</td>
+                        <td class="text-right">345.80</td>
+                        <td class="text-right">0.50</td>
+                        <td class="text-right">345.80</td>
+                    </tr>
+                    <tr>
+                        <td>Pump Fluid End</td>
+                        <td>Inspect polished solid plungers for micro-scratching or scoring</td>
+                        <td>100-125 Hours</td>
+                        <td>—</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">0.80</td>
+                        <td class="text-right">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Water Filtration</td>
+                        <td>Replace absolute 1-micron polish filter cartridges to protect 40k fluid end</td>
+                        <td>100-125 Hours</td>
+                        <td>1-Micron Core Filters (Set)</td>
+                        <td class="text-right">273.00</td>
+                        <td class="text-right">0.30</td>
+                        <td class="text-right">273.00</td>
+                    </tr>
+                    <tr class="subtotal-row">
+                        <td colspan="6">Monthly Routine Subtotal (Annualized - 10 cycles)</td>
+                        <td class="text-right">11,284.00</td>
+                    </tr>
+                    <tr class="section-header">
+                        <td colspan="7">250 Hours / Quarterly Maintenance</td>
+                    </tr>
+                    <tr>
+                        <td>Pump Fluid End</td>
+                        <td>Complete overhaul of 40k fluid end valve assemblies (Suction/Discharge)</td>
+                        <td>250 Hours</td>
+                        <td>40k Valve & Seat Rebuild Kit</td>
+                        <td class="text-right">5,278.00</td>
+                        <td class="text-right">3.50</td>
+                        <td class="text-right">5,278.00</td>
+                    </tr>
+                    <tr>
+                        <td>Pump Power End</td>
+                        <td>Change pump crankcase oil (Synthetic ISO 150 High-Load)</td>
+                        <td>250 Hours</td>
+                        <td>UHP Crankcase Synthetic Lube (4 Gal)</td>
+                        <td class="text-right">873.60</td>
+                        <td class="text-right">1.00</td>
+                        <td class="text-right">873.60</td>
+                    </tr>
+                    <tr>
+                        <td>Diesel Engine</td>
+                        <td>Inspect charge air cooler connections & engine ducting</td>
+                        <td>250 Hours</td>
+                        <td>—</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">0.50</td>
+                        <td class="text-right">0.00</td>
+                    </tr>
+                    <tr class="subtotal-row">
+                        <td colspan="6">Quarterly Maintenance Subtotal (Annualized - 4.8 cycles)</td>
+                        <td class="text-right">29,527.68</td>
+                    </tr>
+                    <tr class="section-header">
+                        <td colspan="7">500 Hours / Semi-Annual Maintenance</td>
+                    </tr>
+                    <tr>
+                        <td>Pump Fluid End</td>
+                        <td>Replace complete guide bushings, pressure rings, and backing brass</td>
+                        <td>500 Hours</td>
+                        <td>40k Stuffing Box Hardware Kit</td>
+                        <td class="text-right">3,567.20</td>
+                        <td class="text-right">2.50</td>
+                        <td class="text-right">3,567.20</td>
+                    </tr>
+                    <tr>
+                        <td>Diesel Engine</td>
+                        <td>Replace heavy duty outer air filter & check alternator / belt tensioner</td>
+                        <td>500 Hours</td>
+                        <td>Heavy Duty Air Filter Element</td>
+                        <td class="text-right">400.40</td>
+                        <td class="text-right">0.80</td>
+                        <td class="text-right">400.40</td>
+                    </tr>
+                    <tr>
+                        <td>Cooling System</td>
+                        <td>Flush engine/pump radiators, check water pump functionality</td>
+                        <td>500 Hours</td>
+                        <td>—</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">1.20</td>
+                        <td class="text-right">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>UHP Control System</td>
+                        <td>Verify 40k electronic dump valves & calibrate pressure transducers</td>
+                        <td>500 Hours</td>
+                        <td>—</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">2.00</td>
+                        <td class="text-right">0.00</td>
+                    </tr>
+                    <tr class="subtotal-row">
+                        <td colspan="6">Semi-Annual Maintenance Subtotal (Annualized - 2.4 cycles)</td>
+                        <td class="text-right">9,522.24</td>
+                    </tr>
+                    <tr class="section-header">
+                        <td colspan="7">1000-1500 Hours / Annual Major Overhaul</td>
+                    </tr>
+                    <tr>
+                        <td>Pump Fluid End</td>
+                        <td>Replace premium 40k specialized plungers (Titanium/Coated Base)</td>
+                        <td>1000 Hours</td>
+                        <td>40k Plungers Set</td>
+                        <td class="text-right">9,464.00</td>
+                        <td class="text-right">5.00</td>
+                        <td class="text-right">9,464.00</td>
+                    </tr>
+                    <tr>
+                        <td>Pump Fluid End</td>
+                        <td>Inspect/re-lap manifold or replace 40k stainless fluid end block if eroded</td>
+                        <td>1000 Hours</td>
+                        <td>Manifold Seals & Target Hardware</td>
+                        <td class="text-right">3,094.00</td>
+                        <td class="text-right">4.00</td>
+                        <td class="text-right">3,094.00</td>
+                    </tr>
+                    <tr>
+                        <td>Pump Power End</td>
+                        <td>Deep inspection of crankshaft, connecting rods, pins, and oil pump</td>
+                        <td>1000 Hours</td>
+                        <td>Power End Overhaul Gaskets/Seals</td>
+                        <td class="text-right">1,638.00</td>
+                        <td class="text-right">6.00</td>
+                        <td class="text-right">1,638.00</td>
+                    </tr>
+                    <tr>
+                        <td>Diesel Engine</td>
+                        <td>Major engine service: Flush coolant, replace serpentine belts, adjust valve lash</td>
+                        <td>1000 Hours</td>
+                        <td>Engine Service Kit (Belts/Coolant)</td>
+                        <td class="text-right">2,002.00</td>
+                        <td class="text-right">6.00</td>
+                        <td class="text-right">2,002.00</td>
+                    </tr>
+                    <tr>
+                        <td>UHP Unloader</td>
+                        <td>Complete structural overhaul of 40k regulator / bypass valve assembly</td>
+                        <td>1000 Hours</td>
+                        <td>40k Regulator Major Repair Kit</td>
+                        <td class="text-right">4,004.00</td>
+                        <td class="text-right">3.00</td>
+                        <td class="text-right">4,004.00</td>
+                    </tr>
+                    <tr class="subtotal-row">
+                        <td colspan="6">Annual Major Overhaul Subtotal (1 cycle/year)</td>
+                        <td class="text-right">20,202.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
