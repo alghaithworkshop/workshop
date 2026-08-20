@@ -600,7 +600,7 @@
                                             <th class="p-4">Event Type</th>
                                             <th class="p-4">Destination / Project</th>
                                             <th class="p-4">Date</th>
-                                            <th class="p-4 text-center w-36">Actions</th>
+                                            <th class="p-4 text-center w-48">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="rows-dispatch" class="divide-y divide-slate-100 text-slate-700"></tbody>
@@ -1415,7 +1415,7 @@
             appId: "1:143521296047:web:3f6b2b46d025ec32f36e5a"
         };
 
-        // 2. Initialize your Inventory database configuration with a custom app name ("InventoryApp")
+        // 2. Initialize your Inventory database configuration
         const inventoryConfig = {
             apiKey: "AIzaSyALduwl7WSzyPkLA4kODFbXaI3vnHRLDMg",
             authDomain: "inventory-fbd3c.firebaseapp.com",
@@ -1427,10 +1427,28 @@
             measurementId: "G-3VF8F56DFE"
         };
 
+        // 3. Initialize your Third Party Certificate database configuration
+        const thirdPartyCertConfig = {
+            apiKey: "AIzaSyA0OJiEmliVUk0GfDavmiff5v8HD3YPYAo",
+            authDomain: "thirdpartycert.firebaseapp.com",
+            projectId: "thirdpartycert",
+            storageBucket: "thirdpartycert.firebasestorage.app",
+            messagingSenderId: "388617002599",
+            appId: "1:388617002599:web:02ca2f379da1702bf3fec2",
+            measurementId: "G-WH962ZMG6P"
+            // Note: Add databaseURL here if you plan to use Realtime Database for this project
+        };
+
+        // Initialize all Apps with unique names
         const cmmsApp = firebase.initializeApp(cmmsConfig, "CMMSApp");
         const inventoryApp = firebase.initializeApp(inventoryConfig, "InventoryApp");
+        const certApp = firebase.initializeApp(thirdPartyCertConfig, "CertApp"); // New Cert App
+
+        // Initialize Database instances
         const cmmsDb = cmmsApp.database();
         const inventoryDb = inventoryApp.database();
+        const certDb = certApp.database(); // New Database reference for certificates
+
         const auth = cmmsApp.auth();
         
 
@@ -1465,8 +1483,10 @@
         window.onload = function() {
             auth.onAuthStateChanged((user) => {
                 if (user) {
-                    // Check if logged-in user is tech@gmail.com
-                    if (user.email && user.email.toLowerCase() === 'tech@gmail.com') {
+                    const userEmail = user.email ? user.email.toLowerCase() : '';
+
+                    // Check if logged-in user is tech@gmail.com or nlbtech@gmail.com
+                    if (userEmail === 'tech@gmail.com' || userEmail === 'nlbtech@gmail.com') {
                         document.body.classList.add('hide-delete');
                     } else {
                         document.body.classList.remove('hide-delete');
@@ -1538,10 +1558,14 @@
                 refreshWorkspaceView();
             });
 
-            cmmsDb.ref('certificates').on('value', (snapshot) => {
+            certDb.ref('certificates').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.certificates = [];
-                if (data) { Object.keys(data).forEach(id => { memory.certificates.push({ id, ...data[id] }); }); }
+                if (data) { 
+                    Object.keys(data).forEach(id => { 
+                        memory.certificates.push({ id, ...data[id] }); 
+                    }); 
+                }
                 updateDashboardTopCounters();
                 refreshWorkspaceView();
             });
@@ -2685,14 +2709,17 @@
                 expiryDate: document.getElementById('in-c-expiry').value,
                 certificateImage: document.getElementById('in-c-image-base64').value || ""
             };
-            cmmsDb.ref('certificates/' + id).set(payload, (error) => {
+            
+            // Changed from cmmsDb to certDb
+            certDb.ref('certificates/' + id).set(payload, (error) => {
                 if (!error) toggleModal('modal-add-cert', false);
             });
         }
 
         function dropCertificate(id) {
             if (confirm("Are you sure you want to delete this certificate record?")) {
-                cmmsDb.ref('certificates/' + id).remove();
+                // Changed from cmmsDb to certDb
+                certDb.ref('certificates/' + id).remove();
             }
         }
 
