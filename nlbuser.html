@@ -64,7 +64,7 @@
                     
                     <button onclick="setModule('fleet')" id="tab-fleet" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition bg-slate-900 text-white shadow-xs">
                         <span class="material-symbols-outlined">analytics</span>
-                        <span>Asset Registry</span>
+                        <span>Master Fleet Registry</span>
                     </button>
 
                     <button onclick="setModule('cert')" id="tab-cert" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
@@ -119,7 +119,7 @@
                     <section id="pane-fleet" class="pane-view space-y-4">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Asset Registry</h2>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Master Fleet Registry</h2>
                                 <p class="text-xs text-slate-500">Primary technical index indexed by unique hardware Asset IDs.</p>
                             </div>
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -485,7 +485,7 @@
             appId: "1:143521296047:web:3f6b2b46d025ec32f36e5a"
         };
 
-        // 2. Initialize your Inventory database configuration with a custom app name ("InventoryApp")
+        // 2. Initialize your Inventory database configuration
         const inventoryConfig = {
             apiKey: "AIzaSyALduwl7WSzyPkLA4kODFbXaI3vnHRLDMg",
             authDomain: "inventory-fbd3c.firebaseapp.com",
@@ -497,10 +497,27 @@
             measurementId: "G-3VF8F56DFE"
         };
 
+        // 3. Initialize your Third Party Certificate database configuration
+        const thirdPartyCertConfig = {
+            apiKey: "AIzaSyA0OJiEmliVUk0GfDavmiff5v8HD3YPYAo",
+            authDomain: "thirdpartycert.firebaseapp.com",
+            projectId: "thirdpartycert",
+            storageBucket: "thirdpartycert.firebasestorage.app",
+            messagingSenderId: "388617002599",
+            appId: "1:388617002599:web:02ca2f379da1702bf3fec2",
+            measurementId: "G-WH962ZMG6P"
+            // Note: Add databaseURL here if you plan to use Realtime Database for this project
+        };
+
+        // Initialize all Apps with unique names
         const cmmsApp = firebase.initializeApp(cmmsConfig, "CMMSApp");
         const inventoryApp = firebase.initializeApp(inventoryConfig, "InventoryApp");
+        const certApp = firebase.initializeApp(thirdPartyCertConfig, "CertApp"); // New Cert App
+
+        // Initialize Database instances
         const cmmsDb = cmmsApp.database();
         const inventoryDb = inventoryApp.database();
+        const certDb = certApp.database(); // New Database reference for certificates
 
         let memory = {
             assets: [],
@@ -647,7 +664,7 @@
                 refreshWorkspaceView();
             });
 
-            cmmsDb.ref('certificates').on('value', (snapshot) => {
+            certDb.ref('certificates').on('value', (snapshot) => {
                 const data = snapshot.val();
                 memory.certificates = [];
                 if (data) { Object.keys(data).forEach(id => { memory.certificates.push({ id, ...data[id] }); }); }
@@ -836,8 +853,7 @@
                     (p.id && String(p.id).toLowerCase().includes(search)) || 
                     (p.description && p.description.toLowerCase().includes(search)) ||
                     (p.equipmentType && p.equipmentType.toLowerCase().includes(search)) ||
-                    (p.category && p.category.toLowerCase().includes(search)) ||
-                    (p.machineParts && p.machineParts.toLowerCase().includes(search))
+                    (p.category && p.category.toLowerCase().includes(search))
                 );
                 
                 const html = filtered.map((p, index) => `
