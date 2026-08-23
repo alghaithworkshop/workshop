@@ -905,13 +905,7 @@
                         <td class="p-4"><span class="px-2.5 py-1 border rounded text-[10px] font-bold uppercase ${badgeClass}">${vehicle.status || 'Operational'}</span></td>
                         <td class="p-4 text-center no-print">
                             <div class="inline-flex items-center justify-center gap-1">
-                                <button 
-                                    onclick="window.printSingleVehicle('${vehicle.id}')" 
-                                    title="Print Vehicle Spec Sheet"
-                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 hover:text-blue-800 transition cursor-pointer shadow-sm">
-                                    <span class="material-symbols-outlined text-sm">print</span>
-                                    <span>Print</span>
-                                </button>
+                                
                                 <button 
                                     onclick="window.openEditModal('${vehicle.id}')" 
                                     title="Edit Vehicle"
