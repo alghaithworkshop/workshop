@@ -579,35 +579,36 @@
                     </section>
 
                     <section id="pane-dispatch" class="pane-view space-y-4 hidden">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">In/Out Dispatch Logs</h2>
-                                <p class="text-xs text-slate-500">Mobilization tracking panel.</p>
-                            </div>
-                            <button onclick="openAddDispatchModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
-                                <span class="material-symbols-outlined text-sm">local_shipping</span>
-                                <span>Record Dispatch</span>
-                            </button>
-                        </div>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-xl font-bold text-slate-900 tracking-tight">In/Out Dispatch Logs</h2>
+            <p class="text-xs text-slate-500">Mobilization tracking panel.</p>
+        </div>
+        <button onclick="openAddDispatchModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
+            <span class="material-symbols-outlined text-sm">local_shipping</span>
+            <span>Record Dispatch</span>
+        </button>
+    </div>
 
-                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
-                            <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[650px]">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Dispatch ID</th>
-                                            <th class="p-4">Equipment Asset</th>
-                                            <th class="p-4">Event Type</th>
-                                            <th class="p-4">Destination / Project</th>
-                                            <th class="p-4">Date</th>
-                                            <th class="p-4 text-center w-48">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="rows-dispatch" class="divide-y divide-slate-100 text-slate-700"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
+    <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+        <div class="overflow-x-auto w-full">
+            <table class="w-full text-left border-collapse text-xs min-w-[650px]">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
+                        <th class="p-4">Dispatch ID</th>
+                        <th class="p-4">Equipment Asset</th>
+                        <th class="p-4">Serial Number</th> <!-- NEW COLUMN ADDED HERE -->
+                        <th class="p-4">Event Type</th>
+                        <th class="p-4">Destination / Project</th>
+                        <th class="p-4">Date</th>
+                        <th class="p-4 text-center w-48">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="rows-dispatch" class="divide-y divide-slate-100 text-slate-700"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
 
                     <section id="pane-tech" class="pane-view space-y-4 hidden">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -1269,6 +1270,7 @@
                     <select id="in-d-type" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
                         <option value="Dispatch Out">Mobilize Outbound to Project Field</option>
                         <option value="Return In">De-mobilize Return Inbound to Workshop Base</option>
+                        <option value="Site Transfer">Site to Site Transfer</option>
                     </select>
                 </div>
                 <div>
@@ -1616,11 +1618,29 @@
             });
 
             cmmsDb.ref('dispatches').on('value', (snapshot) => {
-                const data = snapshot.val();
-                memory.dispatches = [];
-                if (data) { Object.keys(data).forEach(id => { memory.dispatches.push({ id, ...data[id] }); }); }
+                const data = snapshot.val() || {};
+                
+                memory.dispatches = Object.entries(data)
+                    .map(([id, item]) => ({ id, ...item }))
+                    .sort((a, b) => {
+                        // Check if the item is an active dispatch (has Transfer/Return buttons)
+                        const aHasButtons = (a.type === 'Dispatch Out' || a.status === 'Dispatch Out') && !a.isReturned && !a.returned && !a.returnDate;
+                        const bHasButtons = (b.type === 'Dispatch Out' || b.status === 'Dispatch Out') && !b.isReturned && !b.returned && !b.returnDate;
+
+                        // 1. Force rows WITH active buttons to the top
+                        if (aHasButtons && !bHasButtons) return -1;
+                        if (!aHasButtons && bHasButtons) return 1;
+
+                        // 2. Secondary sort: Newest entries first within each group
+                        const dateA = a.date || a.timestamp || '';
+                        const dateB = b.date || b.timestamp || '';
+                        return dateB.localeCompare(dateA);
+                    });
+
                 updateDashboardTopCounters();
                 refreshWorkspaceView();
+            }, (error) => {
+                console.error("Firebase dispatch synchronization failed:", error);
             });
 
             cmmsDb.ref('technicians').on('value', (snapshot) => {
@@ -3619,13 +3639,13 @@
             toggleModal('modal-add-dispatch', true);
         }
 
-        // 1. Dispatch Submission & Firebase Update Logic
+        // 1. Dispatch Submission & Firebase Update Logic (Updated for Site Transfer)
         function executeDispatchSubmission(e) {
             e.preventDefault();
             
             const id = document.getElementById('in-d-id').value.trim();
             const assetId = document.getElementById('in-d-asset').value;
-            const type = document.getElementById('in-d-type').value; // Reads "Dispatch Out" or "Return In"
+            const type = document.getElementById('in-d-type').value; // "Dispatch Out", "Return In", or "Site Transfer"
             const destination = document.getElementById('in-d-destination').value.trim();
             const date = document.getElementById('in-d-date').value;
 
@@ -3634,16 +3654,19 @@
                 return;
             }
 
-            // --- NEW VALIDATION LOGIC ---
-            // Look up the selected asset in the local memory cache
+            // --- VALIDATION LOGIC ---
             const selectedAsset = memory.assets.find(asset => asset.id === assetId);
             
-            // Check if it's an outbound dispatch and the equipment is not operational
             if (type === 'Dispatch Out' && selectedAsset && selectedAsset.status !== 'Operational') {
                 alert("Cannot dispatch: The selected equipment is not in 'Operational' status.");
                 return; 
             }
-            // ----------------------------
+
+            if (type === 'Site Transfer' && selectedAsset && selectedAsset.status !== 'Dispatched') {
+                alert("Cannot transfer: Only currently dispatched equipment can perform a Site Transfer.");
+                return;
+            }
+            // ------------------------
 
             const dispatchLog = {
                 assetId,
@@ -3656,21 +3679,22 @@
             // Save the dispatch log event
             cmmsDb.ref('dispatches/' + id).set(dispatchLog).then(() => {
                 
-                if (type === 'Dispatch Out') {
+                if (type === 'Dispatch Out' || type === 'Site Transfer') {
+                    // Both outbound dispatch and site transfers keep status as 'Dispatched' while updating location
                     let assetUpdates = {
                         status: 'Dispatched',
                         location: destination.toUpperCase()
                     };
-                    return cmmsDb.ref('assets/' + assetId).update(assetUpdates); // Updates the asset status in Firebase
+                    return cmmsDb.ref('assets/' + assetId).update(assetUpdates);
                     
                 } else if (type === 'Return In') {
                     let assetUpdates = {
-                        status: 'Maintenance', // Puts the machine in maintenance status upon return
-                        location: 'WORKSHOP'  // Default base return location[cite: 1]
+                        status: 'Maintenance', // Puts machine in maintenance status upon return
+                        location: 'WORKSHOP'   // Default base return location
                     };
                     
-                    // Automatically generate a Work Order for Checkup/Inspection[cite: 1]
-                    const autoWoId = 'WO-RET-' + Date.now(); // Unique ID based on timestamp[cite: 1]
+                    // Automatically generate a Work Order for Checkup/Inspection
+                    const autoWoId = 'WO-RET-' + Date.now();
                     const autoWorkOrder = {
                         id: autoWoId,
                         assetId: assetId,
@@ -3681,7 +3705,6 @@
                         timestamp: Date.now()
                     };
 
-                    // Use Promise.all to execute both updates to Firebase simultaneously[cite: 1]
                     return Promise.all([
                         cmmsDb.ref('assets/' + assetId).update(assetUpdates),
                         cmmsDb.ref('workOrders/' + autoWoId).set(autoWorkOrder)
@@ -3699,35 +3722,23 @@
         function openReturnDispatch(assetId) {
             document.getElementById('form-dispatch').reset();
             
-            // CRITICAL FIX: Populate the dropdown options BEFORE trying to select one
             if (typeof populateEquipmentDropdown === 'function') {
                 populateEquipmentDropdown('in-d-asset');
             }
             
-            // Clear the search filter box so it doesn't hide our selection
             const searchBox = document.getElementById('in-d-search-asset');
             if (searchBox) searchBox.value = '';
 
-            // Auto-generate a new Dispatch ID
             document.getElementById('in-d-id').value = 'DSP-' + Math.floor(1000 + Math.random() * 9000);
-            
-            // Set Asset ID now that the options actually exist in the dropdown
             document.getElementById('in-d-asset').value = assetId;
-            
-            // Lock type to "Return In"
             document.getElementById('in-d-type').value = 'Return In';
             
-            // Lookup the asset's current location from memory
             const asset = memory.assets.find(a => a.id === assetId);
             const currentLocation = asset && asset.location ? asset.location : 'Unknown Site';
             
-            // Set the destination input
             document.getElementById('in-d-destination').value = `WORKSHOP (Coming from ${currentLocation})`;
-            
-            // Default to today's date
             document.getElementById('in-d-date').value = new Date().toISOString().split('T')[0];
             
-            // Ensure the dynamic label updates correctly
             if (typeof updateDispatchDestinationLabel === 'function') {
                 updateDispatchDestinationLabel();
             }
@@ -3735,51 +3746,96 @@
             toggleModal('modal-add-dispatch', true);
         }
 
-        // 3. Render Dispatch Table with the "Return" Button AND Warnings
-        // Note: Ensure you call renderDispatches() inside your refreshWorkspaceView() function.
+        // 3. Quick-Action Helper for Site-to-Site Transfer
+        function openTransferDispatch(assetId) {
+            document.getElementById('form-dispatch').reset();
+            
+            if (typeof populateEquipmentDropdown === 'function') {
+                populateEquipmentDropdown('in-d-asset');
+            }
+            
+            const searchBox = document.getElementById('in-d-search-asset');
+            if (searchBox) searchBox.value = '';
+
+            document.getElementById('in-d-id').value = 'DSP-' + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('in-d-asset').value = assetId;
+            document.getElementById('in-d-type').value = 'Site Transfer';
+            
+            const asset = memory.assets.find(a => a.id === assetId);
+            const currentLocation = asset && asset.location ? asset.location : 'Current Site';
+            
+            const destInput = document.getElementById('in-d-destination');
+            destInput.value = '';
+            destInput.placeholder = `Transferring from ${currentLocation} to...`;
+            document.getElementById('in-d-date').value = new Date().toISOString().split('T')[0];
+            
+            if (typeof updateDispatchDestinationLabel === 'function') {
+                updateDispatchDestinationLabel();
+            }
+            
+            toggleModal('modal-add-dispatch', true);
+        }
+
+        // 4. Render Dispatch Table with "Transfer" & "Return" Buttons
         function renderDispatches() {
             const tbody = document.getElementById('rows-dispatch');
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            // Sort logs so the newest events appear at the top
+            const activeAssetsHandled = new Set();
             const sortedLogs = [...memory.dispatches].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            const activeRows = [];
+            const historyRows = [];
 
             sortedLogs.forEach(d => {
                 const tr = document.createElement('tr');
                 
-                // Validate if this specific log is a 'Dispatch Out' AND the asset hasn't been returned yet
                 const asset = memory.assets.find(a => a.id === d.assetId);
-                const isCurrentlyDispatched = asset && asset.status === 'Dispatched' && d.type === 'Dispatch Out';
+                const isDispatchType = (d.type === 'Dispatch Out' || d.type === 'Site Transfer');
 
-                // Base delete action WITH Protection Warning Popup
+                // Extract the Serial Number (Fallback to 'N/A' if the asset or serial doesn't exist)
+                const serialNumber = asset ? (asset.serialNumber || asset.serial || asset.serial_no || asset.sn || asset.serialNo || 'N/A') : 'N/A';
+
+                let isLatestActiveRecord = false;
+                if (asset && asset.status === 'Dispatched' && isDispatchType && !activeAssetsHandled.has(d.assetId)) {
+                    isLatestActiveRecord = true;
+                    activeAssetsHandled.add(d.assetId);
+                }
+
                 let actionButtons = `
                     <button onclick="if(confirm('⚠️ WARNING: Are you sure you want to delete this dispatch log?')) cmmsDb.ref('dispatches/${d.id}').remove()" class="text-rose-500 hover:text-rose-700 p-1 bg-rose-50 rounded border border-rose-100 transition" title="Delete Log">
                         <span class="material-symbols-outlined text-sm">delete</span>
                     </button>
                 `;
 
-                // Inject the "Return" quick-action button if the equipment is still on the project field
-                if (isCurrentlyDispatched) {
+                if (isLatestActiveRecord) {
                     actionButtons = `
+                        <button onclick="openTransferDispatch('${d.assetId}')" class="bg-sky-600 hover:bg-sky-700 text-white px-2 py-1.5 rounded text-[10px] uppercase tracking-wider font-bold mr-1 transition shadow-sm" title="Site Transfer">
+                            <span class="material-symbols-outlined text-[12px] align-middle mr-1">swap_horiz</span>Transfer
+                        </button>
                         <button onclick="openReturnDispatch('${d.assetId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1.5 rounded text-[10px] uppercase tracking-wider font-bold mr-2 transition shadow-sm" title="Process Return">
                             <span class="material-symbols-outlined text-[12px] align-middle mr-1">keyboard_return</span>Return
                         </button>
                     ` + actionButtons;
                 }
 
-                // Visual Warning Status Badge Logic
-                const badgeClass = d.type === 'Dispatch Out' 
-                    ? 'bg-amber-100 text-amber-800 border-amber-300' 
-                    : 'bg-emerald-100 text-emerald-700 border-emerald-200';
-                    
-                const warningIcon = d.type === 'Dispatch Out' 
-                    ? '<span class="material-symbols-outlined text-[12px] align-middle mr-1 text-amber-600">warning</span>' 
-                    : '';
+                let badgeClass = 'bg-emerald-100 text-emerald-700 border-emerald-200';
+                let warningIcon = '';
 
+                if (d.type === 'Dispatch Out') {
+                    badgeClass = 'bg-amber-100 text-amber-800 border-amber-300';
+                    warningIcon = '<span class="material-symbols-outlined text-[12px] align-middle mr-1 text-amber-600">warning</span>';
+                } else if (d.type === 'Site Transfer') {
+                    badgeClass = 'bg-sky-100 text-sky-800 border-sky-300';
+                    warningIcon = '<span class="material-symbols-outlined text-[12px] align-middle mr-1 text-sky-600">swap_horiz</span>';
+                }
+
+                // Added the Serial Number <td> right after the Asset ID
                 tr.innerHTML = `
                     <td class="p-4 font-code font-bold text-slate-800">${d.id}</td>
                     <td class="p-4 font-medium text-slate-700">${d.assetId}</td>
+                    <td class="p-4 text-slate-600 font-medium">${serialNumber}</td>
                     <td class="p-4">
                         <span class="px-2 py-1 rounded text-[11px] font-bold border flex items-center w-max ${badgeClass}">
                             ${warningIcon} ${d.type}
@@ -3789,8 +3845,16 @@
                     <td class="p-4 text-slate-500">${d.date}</td>
                     <td class="p-4 text-center whitespace-nowrap flex items-center justify-center">${actionButtons}</td>
                 `;
-                tbody.appendChild(tr);
+                
+                if (isLatestActiveRecord) {
+                    activeRows.push(tr);
+                } else {
+                    historyRows.push(tr);
+                }
             });
+
+            activeRows.forEach(row => tbody.appendChild(row));
+            historyRows.forEach(row => tbody.appendChild(row));
         }
 
         function dropDispatchEvent(id) {
@@ -4051,24 +4115,52 @@
 
             // Expiring Certificates Widget
             const certList = document.getElementById('dash-recent-certs');
+
             if (certList) {
-                const certs = [...memory.certificates]
-                    .sort((a, b) => new Date(a.expiryDate || a.expiry || 0) - new Date(b.expiryDate || b.expiry || 0))
-                    .slice(0, 5);
-                    
-                if (certs.length === 0) {
-                    certList.innerHTML = '<li class="py-3 text-slate-400 italic text-center">No certificates filed.</li>';
-                } else {
-                    certList.innerHTML = certs.map(c => `
-                        <li class="py-3 flex justify-between items-center hover:bg-slate-50 transition px-2 rounded -mx-2">
-                            <div>
-                                <p class="font-bold text-slate-800 font-code text-[11px]">${c.asset || c.assetId || 'Unknown Asset'}</p>
-                                <p class="text-[10px] text-slate-500 mt-0.5">Expires: <span class="font-bold text-rose-600">${c.expiryDate || c.expiry || 'N/A'}</span></p>
-                            </div>
-                            <span class="material-symbols-outlined text-slate-300 text-lg">description</span>
-                        </li>
-                    `).join('');
-                }
+                certDb.ref('certificates').on('value', (snapshot) => {
+                    const data = snapshot.val() || {};
+                    const now = new Date();
+
+                    const certs = Object.keys(data)
+                        .map(key => ({ id: key, ...data[key] }))
+                        .map(c => {
+                            const expDate = new Date(c.expiryDate || c.expiry);
+                            // Difference in days (negative = expired, positive = upcoming)
+                            const diffDays = Math.ceil((expDate - now) / (1000 * 60 * 60 * 24));
+                            return { ...c, expDate, diffDays };
+                        })
+                        .filter(c => !isNaN(c.expDate) && c.diffDays <= 30) // Only expired OR expiring within 30 days
+                        .sort((a, b) => a.expDate - b.expDate); // Most urgent (expired) first
+
+                    if (certs.length === 0) {
+                        certList.innerHTML = '<li class="py-3 text-slate-400 italic text-center">No expired or critical certificates within 30 days.</li>';
+                    } else {
+                        certList.innerHTML = certs.map(c => {
+                            const isExpired = c.diffDays < 0;
+                            
+                            // Status Badge Logic
+                            let statusBadge = '';
+                            if (isExpired) {
+                                statusBadge = `<span class="bg-rose-100 text-rose-700 text-[9px] font-bold px-1.5 py-0.5 rounded">EXPIRED (${Math.abs(c.diffDays)}d ago)</span>`;
+                            } else {
+                                statusBadge = `<span class="bg-amber-100 text-amber-700 text-[9px] font-bold px-1.5 py-0.5 rounded">Expires in ${c.diffDays === 0 ? 'Today' : c.diffDays + 'd'}</span>`;
+                            }
+
+                            return `
+                                <li class="py-2.5 flex justify-between items-center hover:bg-slate-50 transition px-2 rounded -mx-2 border-b border-slate-100 last:border-b-0">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <p class="font-bold text-slate-800 font-code text-[11px]">${c.asset || c.assetId || 'Unknown Asset'}</p>
+                                            ${statusBadge}
+                                        </div>
+                                        <p class="text-[10px] text-slate-500 mt-0.5">Expiry Date: <span class="font-medium text-slate-700">${c.expiryDate || c.expiry}</span></p>
+                                    </div>
+                                    <span class="material-symbols-outlined ${isExpired ? 'text-rose-500' : 'text-amber-500'} text-lg">warning</span>
+                                </li>
+                            `;
+                        }).join('');
+                    }
+                });
             }
 
             // Expenses Per Asset Widget (with Month/Year filtering)
