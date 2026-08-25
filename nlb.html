@@ -4214,21 +4214,39 @@
                 if (recentWOs.length === 0) {
                     woList.innerHTML = '<li class="py-3 text-slate-400 italic text-center">All caught up! No pending work orders.</li>';
                 } else {
-                    woList.innerHTML = recentWOs.map(w => `
-                        <li class="py-3 flex justify-between items-center hover:bg-slate-50 transition px-2 rounded -mx-2">
-                            <div>
-                                <p class="font-bold text-slate-800 font-code text-[11px]">${w.id}</p>
-                                <p class="text-[10px] text-slate-500 mt-0.5">${w.asset || w.assetId || 'Unknown Asset'} - ${w.reason || ''}</p>
-                            </div>
-                            <span class="px-2 py-1 rounded text-[9px] font-bold bg-amber-50 border border-amber-200 text-amber-700 uppercase tracking-wider">${w.status || 'Pending'}</span>
-                        </li>
-                    `).join('');
+                    woList.innerHTML = recentWOs.map(w => {
+                        // Find the matching asset in memory.assets
+                        const asset = (memory.assets || []).find(a => a.id === w.assetId || a.id === w.asset);
+                        
+                        // Extract asset metadata
+                        const serialNumber = asset && asset.serial ? asset.serial : '';
+                        const equipmentDesc = asset && (asset.description || asset.name || asset.desc) ? (asset.description || asset.name || asset.desc) : '';
+
+                        // Extract work order reason/description
+                        const woReason = w.reason || w.description || w.desc || '';
+
+                        // Asset display name/ID
+                        const assetDisplayName = w.assetId || w.asset || 'Unknown Asset';
+
+                        return `
+                            <li class="py-3 flex justify-between items-center hover:bg-slate-50 transition px-2 rounded -mx-2">
+                                <div>
+                                    <p class="font-bold text-slate-800 font-code text-[11px]">${equipmentDesc}</p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">
+                                        <span class="font-semibold text-slate-700">${assetDisplayName}</span> 
+                                        ${serialNumber ? `<span class="font-code text-slate-400 font-semibold">(${serialNumber})</span>` : ''} 
+                                        ${woReason ? `- ${woReason}` : ''}
+                                    </p>
+                                </div>
+                                <span class="px-2 py-1 rounded text-[9px] font-bold bg-amber-50 border border-amber-200 text-amber-700 uppercase tracking-wider">${w.status || 'Pending'}</span>
+                            </li>
+                        `;
+                    }).join('');
                 }
             }
 
             // Expiring Certificates Widget
             const certList = document.getElementById('dash-recent-certs');
-
             if (certList) {
                 certDb.ref('certificates').on('value', (snapshot) => {
                     const data = snapshot.val() || {};
@@ -4250,6 +4268,16 @@
                     } else {
                         certList.innerHTML = certs.map(c => {
                             const isExpired = c.diffDays < 0;
+
+                            // 1. Asset ID/Code
+                            const assetDisplayName = c.asset || c.assetId || 'Unknown Asset';
+
+                            // 2. Cross-reference lookup in memory.assets
+                            const asset = (memory.assets || []).find(a => a.id === assetDisplayName || a.id === c.assetId);
+
+                            // 3. Extract Serial Number & Equipment Description
+                            const serialNumber = asset && asset.serial ? asset.serial : '';
+                            const equipmentDesc = asset && (asset.description || asset.name || asset.desc) ? (asset.description || asset.name || asset.desc) : '';
                             
                             // Status Badge Logic
                             let statusBadge = '';
@@ -4263,10 +4291,14 @@
                                 <li class="py-2.5 flex justify-between items-center hover:bg-slate-50 transition px-2 rounded -mx-2 border-b border-slate-100 last:border-b-0">
                                     <div>
                                         <div class="flex items-center gap-2">
-                                            <p class="font-bold text-slate-800 font-code text-[11px]">${c.asset || c.assetId || 'Unknown Asset'}</p>
+                                            <p class="font-bold text-slate-800 font-code text-[11px]">${assetDisplayName}</p>
                                             ${statusBadge}
                                         </div>
-                                        <p class="text-[10px] text-slate-500 mt-0.5">Expiry Date: <span class="font-medium text-slate-700">${c.expiryDate || c.expiry}</span></p>
+                                        <p class="text-[10px] text-slate-500 mt-0.5">
+                                            ${serialNumber ? `<span class="font-code text-slate-400 font-semibold">(${serialNumber})</span>` : ''} 
+                                            ${equipmentDesc ? `<span class="italic text-slate-500">[${equipmentDesc}]</span>` : ''}
+                                            Expiry Date: <span class="font-medium text-slate-700">${c.expiryDate || c.expiry}</span>
+                                        </p>
                                     </div>
                                     <span class="material-symbols-outlined ${isExpired ? 'text-rose-500' : 'text-amber-500'} text-lg">warning</span>
                                 </li>
@@ -4288,8 +4320,9 @@
                     const latestLogPerAsset = {};
                     rawList.forEach(d => {
                         const time = d.timestamp || (d.date ? new Date(d.date).getTime() : 0);
-                        if (!latestLogPerAsset[d.assetId] || time > latestLogPerAsset[d.assetId].time) {
-                            latestLogPerAsset[d.assetId] = { id: d.id, time: time };
+                        const assetKey = d.assetId || d.asset;
+                        if (assetKey && (!latestLogPerAsset[assetKey] || time > latestLogPerAsset[assetKey].time)) {
+                            latestLogPerAsset[assetKey] = { id: d.id, time: time };
                         }
                     });
 
@@ -4297,8 +4330,9 @@
                     const activeDispatches = rawList.filter(d => {
                         const status = (d.status || d.type || '').trim().toLowerCase();
                         const location = (d.location || d.site || d.destination || '').toUpperCase();
+                        const assetKey = d.assetId || d.asset;
                         
-                        const isLatestForAsset = latestLogPerAsset[d.assetId] && latestLogPerAsset[d.assetId].id === d.id;
+                        const isLatestForAsset = assetKey && latestLogPerAsset[assetKey] && latestLogPerAsset[assetKey].id === d.id;
                         const isOutboundType = status === 'dispatch out' || status === 'site transfer';
                         const isWorkshop = location.includes('WORKSHOP');
 
@@ -4313,11 +4347,15 @@
                         dispatchList.innerHTML = '<li class="py-3 text-slate-400 italic text-center text-xs">No active dispatches on site.</li>';
                     } else {
                         dispatchList.innerHTML = activeDispatches.map(d => {
-                            const foundAsset = memory && memory.assets ? memory.assets.find(a => a.id === d.assetId) : null;
+                            // Cross-reference lookup in memory.assets
+                            const assetKey = d.assetId || d.asset;
+                            const foundAsset = memory && memory.assets ? memory.assets.find(a => a.id === assetKey || a.code === assetKey) : null;
                             
-                            const assetName = foundAsset ? (foundAsset.name || foundAsset.asset || foundAsset.id) : (d.asset || d.assetName || d.assetId || 'Unknown Asset');
-                            const serialNo = foundAsset ? (foundAsset.serial || foundAsset.code || '') : (d.serial || d.serialNo || '');
-                            
+                            // Extract Asset Name, Serial Number, and Equipment Description
+                            const assetName = foundAsset ? (foundAsset.id || foundAsset.code || foundAsset.asset) : (d.assetId || d.asset || 'Unknown Asset');
+                            const serialNo = foundAsset ? (foundAsset.serial || '') : (d.serial || d.serialNo || '');
+                            const equipmentDesc = foundAsset && (foundAsset.description || foundAsset.name || foundAsset.desc) ? (foundAsset.description || foundAsset.name || foundAsset.desc) : '';
+
                             const dispatchId = d.dispatchNo || d.ticketNo || d.id;
                             const locationName = d.destination || d.location || d.site || 'On Site';
 
@@ -4329,7 +4367,9 @@
                                             <span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-200">${d.type || 'Dispatch Out'}</span>
                                         </div>
                                         <p class="text-[10px] text-slate-500 mt-0.5">
-                                            Asset: <span class="font-bold text-slate-800">${assetName}</span> ${serialNo ? `(${serialNo})` : ''} 
+                                            Asset: <span class="font-bold text-slate-800">${assetName}</span> 
+                                            ${serialNo ? `<span class="font-code text-slate-400 font-semibold">(${serialNo})</span>` : ''} 
+                                            ${equipmentDesc ? `<span class="italic text-slate-500">[${equipmentDesc}]</span>` : ''} 
                                             • Location: <span class="font-semibold text-slate-700">${locationName}</span>
                                         </p>
                                     </div>
