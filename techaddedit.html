@@ -305,6 +305,24 @@
                                 </div>
                             </div>
 
+                            <!-- Dispatch Widget Card -->
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                <div class="flex justify-between items-center mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-indigo-600">local_shipping</span>
+                                        <h3 class="font-bold text-slate-800 text-sm">Active Dispatches</h3>
+                                    </div>
+                                    <span id="dash-dispatch-count" class="bg-indigo-50 text-indigo-700 font-bold text-xs px-2 py-0.5 rounded-full">0 Active</span>
+                                </div>
+
+                                <!-- Scrollable List -->
+                                <div class="max-h-64 overflow-y-auto pr-1">
+                                    <ul id="dash-dispatch-list" class="divide-y divide-slate-100">
+                                        <!-- Dynamic dispatch items will render here -->
+                                    </ul>
+                                </div>
+                            </div>
+
                             <!-- Expenses Per Asset -->
                             <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden flex flex-col">
                                 <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
@@ -1620,22 +1638,43 @@
             cmmsDb.ref('dispatches').on('value', (snapshot) => {
                 const data = snapshot.val() || {};
                 
-                memory.dispatches = Object.entries(data)
-                    .map(([id, item]) => ({ id, ...item }))
-                    .sort((a, b) => {
-                        // Check if the item is an active dispatch (has Transfer/Return buttons)
-                        const aHasButtons = (a.type === 'Dispatch Out' || a.status === 'Dispatch Out') && !a.isReturned && !a.returned && !a.returnDate;
-                        const bHasButtons = (b.type === 'Dispatch Out' || b.status === 'Dispatch Out') && !b.isReturned && !b.returned && !b.returnDate;
+                // Convert object to array
+                const rawList = Object.entries(data).map(([id, item]) => ({ id, ...item }));
 
-                        // 1. Force rows WITH active buttons to the top
-                        if (aHasButtons && !bHasButtons) return -1;
-                        if (!aHasButtons && bHasButtons) return 1;
+                // 1. Determine the latest log for each assetId to verify true active state
+                const latestLogPerAsset = {};
+                rawList.forEach(item => {
+                    const time = item.timestamp || (item.date ? new Date(item.date).getTime() : 0);
+                    const currentLatestTime = latestLogPerAsset[item.assetId] 
+                        ? (latestLogPerAsset[item.assetId].timestamp || (latestLogPerAsset[item.assetId].date ? new Date(latestLogPerAsset[item.assetId].date).getTime() : 0))
+                        : -1;
 
-                        // 2. Secondary sort: Newest entries first within each group
-                        const dateA = a.date || a.timestamp || '';
-                        const dateB = b.date || b.timestamp || '';
-                        return dateB.localeCompare(dateA);
-                    });
+                    if (time >= currentLatestTime) {
+                        latestLogPerAsset[item.assetId] = item;
+                    }
+                });
+
+                // 2. Sort logs
+                memory.dispatches = rawList.sort((a, b) => {
+                    // A row is ONLY considered active if:
+                    // - Its explicit 'active' property is not false
+                    // - AND it is the ABSOLUTE LATEST record for that asset
+                    // - AND its type is 'Dispatch Out' or 'Site Transfer'
+                    const aIsLatest = latestLogPerAsset[a.assetId] && latestLogPerAsset[a.assetId].id === a.id;
+                    const bIsLatest = latestLogPerAsset[b.assetId] && latestLogPerAsset[b.assetId].id === b.id;
+
+                    const aHasButtons = a.active !== false && aIsLatest && (a.type === 'Dispatch Out' || a.type === 'Site Transfer');
+                    const bHasButtons = b.active !== false && bIsLatest && (b.type === 'Dispatch Out' || b.type === 'Site Transfer');
+
+                    // Force rows WITH active buttons to the top
+                    if (aHasButtons && !bHasButtons) return -1;
+                    if (!aHasButtons && bHasButtons) return 1;
+
+                    // Secondary sort: Newest entries first within each group
+                    const dateA = a.timestamp || (a.date ? new Date(a.date).getTime() : 0);
+                    const dateB = b.timestamp || (b.date ? new Date(b.date).getTime() : 0);
+                    return dateB - dateA;
+                });
 
                 updateDashboardTopCounters();
                 refreshWorkspaceView();
@@ -3026,12 +3065,17 @@
         function openEditLogModal(id) {
             const log = memory.maintenanceLogs.find(l => l.id === id);
             if (!log) return;
+            
             document.getElementById('in-l-mode').value = "edit";
             document.getElementById('in-l-id').value = log.id;
             document.getElementById('in-l-date').value = log.date;
             
             const woSelect = document.getElementById('in-l-wo');
-            woSelect.innerHTML = memory.workOrders.map(w => `<option value="${w.id}">${w.id} (${w.assetId})</option>`).join('');
+            woSelect.innerHTML = memory.workOrders.map(w => {
+                const asset = memory.assets.find(a => a.id === w.assetId);
+                const serialText = w.serial || (asset ? asset.serial : 'N/A');
+                return `<option value="${w.id}">${w.id} (${w.assetId} (${serialText}))</option>`;
+            }).join('');
             woSelect.value = log.workOrderId || "";
             
             const techSelect = document.getElementById('in-l-tech');
@@ -3042,14 +3086,39 @@
                 opt.selected = savedTechs.includes(opt.value);
             });
             
-            document.getElementById('in-l-current').value = log.currentMetric;
-            document.getElementById('in-l-current-target').value = log.targetMetric;
-            document.getElementById('in-l-remaining').value = log.remainingHours;
+            const currentInput = document.getElementById('in-l-current');
+            const targetInput = document.getElementById('in-l-current-target');
+            const remainingInput = document.getElementById('in-l-remaining');
+
+            currentInput.value = log.currentMetric || 0;
+            targetInput.value = log.targetMetric || 0;
+
+            currentInput.removeAttribute('readonly');
+            targetInput.removeAttribute('readonly');
+            
+            // Auto-calculate remaining hours
+            const calcRemaining = () => {
+                const current = parseFloat(currentInput.value) || 0;
+                const target = parseFloat(targetInput.value) || 0;
+                const remaining = Math.max(0, target - current);
+                
+                // Set formatted text (e.g., "15 Hrs")
+                remainingInput.value = `${remaining} Hrs`;
+            };
+
+            // Attach listeners for live calculation
+            currentInput.oninput = calcRemaining;
+            targetInput.oninput = calcRemaining;
+            
+            // Calculate initial value on load
+            calcRemaining();
+
             document.getElementById('in-l-fault').value = log.fault;
             document.getElementById('in-l-action').value = log.action;
             document.getElementById('in-l-parts').value = log.parts;
             document.getElementById('in-l-status').value = log.status;
             document.getElementById('in-l-remarks').value = log.remarks || "";
+            
             toggleModal('modal-add-log', true);
         }
 
@@ -3106,7 +3175,13 @@
                     if (opStatus === "Operational") {
                         cmmsDb.ref('workOrders/' + woId + '/status').set('Completed');
                     }
-                    cmmsDb.ref('assets/' + wo.assetId + '/status').set(opStatus);
+                    
+                    // Check current asset status; skip update if it is "Dispatched"
+                    const currentAsset = memory.assets?.find(a => a.id === wo.assetId);
+                    if (!currentAsset || currentAsset.status !== "Dispatched") {
+                        cmmsDb.ref('assets/' + wo.assetId + '/status').set(opStatus);
+                    }
+
                     toggleModal('modal-add-log', false);
                 }
             });
@@ -3645,7 +3720,7 @@
             
             const id = document.getElementById('in-d-id').value.trim();
             const assetId = document.getElementById('in-d-asset').value;
-            const type = document.getElementById('in-d-type').value; // "Dispatch Out", "Return In", or "Site Transfer"
+            const type = document.getElementById('in-d-type').value; 
             const destination = document.getElementById('in-d-destination').value.trim();
             const date = document.getElementById('in-d-date').value;
 
@@ -3655,7 +3730,7 @@
             }
 
             // --- VALIDATION LOGIC ---
-            const selectedAsset = memory.assets.find(asset => asset.id === assetId);
+            const selectedAsset = memory.assets ? memory.assets.find(asset => asset.id === assetId) : null;
             
             if (type === 'Dispatch Out' && selectedAsset && selectedAsset.status !== 'Operational') {
                 alert("Cannot dispatch: The selected equipment is not in 'Operational' status.");
@@ -3668,32 +3743,52 @@
             }
             // ------------------------
 
+            const isOutbound = type !== 'Return In';
+
             const dispatchLog = {
+                id,
                 assetId,
                 type,
                 destination,
                 date,
+                active: true, // Keep the new entry active
                 timestamp: Date.now()
             };
 
-            // Save the dispatch log event
+            // 1. Save new dispatch event record
             cmmsDb.ref('dispatches/' + id).set(dispatchLog).then(() => {
                 
-                if (type === 'Dispatch Out' || type === 'Site Transfer') {
-                    // Both outbound dispatch and site transfers keep status as 'Dispatched' while updating location
+                if (isOutbound) {
                     let assetUpdates = {
                         status: 'Dispatched',
                         location: destination.toUpperCase()
                     };
-                    return cmmsDb.ref('assets/' + assetId).update(assetUpdates);
+
+                    // When dispatching or transferring, deactivate older outbound entries for this asset
+                    return cmmsDb.ref('dispatches').orderByChild('assetId').equalTo(assetId).once('value').then(snapshot => {
+                        const updates = {};
+                        const dispatches = snapshot.val() || {};
+                        
+                        Object.keys(dispatches).forEach(dispatchKey => {
+                            if (dispatchKey !== id) {
+                                updates[`dispatches/${dispatchKey}/active`] = false;
+                            }
+                        });
+
+                        return Promise.all([
+                            cmmsDb.ref('assets/' + assetId).update(assetUpdates),
+                            cmmsDb.ref().update(updates)
+                        ]);
+                    });
                     
-                } else if (type === 'Return In') {
+                } else {
+                    // IF RETURN IN TO WORKSHOP:
                     let assetUpdates = {
-                        status: 'Maintenance', // Puts machine in maintenance status upon return
-                        location: 'WORKSHOP'   // Default base return location
+                        status: 'Maintenance',
+                        location: 'WORKSHOP'
                     };
                     
-                    // Automatically generate a Work Order for Checkup/Inspection
+                    // Auto Work Order for inspection
                     const autoWoId = 'WO-RET-' + Date.now();
                     const autoWorkOrder = {
                         id: autoWoId,
@@ -3705,10 +3800,23 @@
                         timestamp: Date.now()
                     };
 
-                    return Promise.all([
-                        cmmsDb.ref('assets/' + assetId).update(assetUpdates),
-                        cmmsDb.ref('workOrders/' + autoWoId).set(autoWorkOrder)
-                    ]);
+                    // Deactivate ONLY PREVIOUS dispatches (skip current new return entry ID)
+                    return cmmsDb.ref('dispatches').orderByChild('assetId').equalTo(assetId).once('value').then(snapshot => {
+                        const updates = {};
+                        const dispatches = snapshot.val() || {};
+                        
+                        Object.keys(dispatches).forEach(dispatchKey => {
+                            if (dispatchKey !== id) { // CRITICAL FIX: EXCLUDE CURRENT ID
+                                updates[`dispatches/${dispatchKey}/active`] = false;
+                            }
+                        });
+
+                        return Promise.all([
+                            cmmsDb.ref('assets/' + assetId).update(assetUpdates),
+                            cmmsDb.ref('workOrders/' + autoWoId).set(autoWorkOrder),
+                            cmmsDb.ref().update(updates)
+                        ]);
+                    });
                 }
             }).then(() => {
                 toggleModal('modal-add-dispatch', false);
@@ -3782,8 +3890,16 @@
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            const activeAssetsHandled = new Set();
+            // 1. Sort logs newest to oldest
             const sortedLogs = [...memory.dispatches].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            // 2. Map the ABSOLUTE LATEST log ID for each assetId
+            const latestLogIdPerAsset = {};
+            sortedLogs.forEach(d => {
+                if (!latestLogIdPerAsset[d.assetId]) {
+                    latestLogIdPerAsset[d.assetId] = d.id;
+                }
+            });
 
             const activeRows = [];
             const historyRows = [];
@@ -3791,24 +3907,22 @@
             sortedLogs.forEach(d => {
                 const tr = document.createElement('tr');
                 
-                const asset = memory.assets.find(a => a.id === d.assetId);
+                const asset = memory.assets ? memory.assets.find(a => a.id === d.assetId) : null;
                 const isDispatchType = (d.type === 'Dispatch Out' || d.type === 'Site Transfer');
-
-                // Extract the Serial Number (Fallback to 'N/A' if the asset or serial doesn't exist)
                 const serialNumber = asset ? (asset.serialNumber || asset.serial || asset.serial_no || asset.sn || asset.serialNo || 'N/A') : 'N/A';
 
-                let isLatestActiveRecord = false;
-                if (asset && asset.status === 'Dispatched' && isDispatchType && !activeAssetsHandled.has(d.assetId)) {
-                    isLatestActiveRecord = true;
-                    activeAssetsHandled.add(d.assetId);
-                }
+                // 3. THIS LOG IS ONLY ACTIVE IF IT IS THE MOST RECENT LOG FOR THE ASSET AND AN OUTBOUND TYPE
+                const isLatestForThisAsset = (latestLogIdPerAsset[d.assetId] === d.id);
+                const isLatestActiveRecord = isLatestForThisAsset && isDispatchType && d.active !== false;
 
+                // Base action: Only delete button by default
                 let actionButtons = `
                     <button onclick="if(confirm('⚠️ WARNING: Are you sure you want to delete this dispatch log?')) cmmsDb.ref('dispatches/${d.id}').remove()" class="text-rose-500 hover:text-rose-700 p-1 bg-rose-50 rounded border border-rose-100 transition" title="Delete Log">
                         <span class="material-symbols-outlined text-sm">delete</span>
                     </button>
                 `;
 
+                // Attach Transfer & Return buttons ONLY if it is truly the active outbound log
                 if (isLatestActiveRecord) {
                     actionButtons = `
                         <button onclick="openTransferDispatch('${d.assetId}')" class="bg-sky-600 hover:bg-sky-700 text-white px-2 py-1.5 rounded text-[10px] uppercase tracking-wider font-bold mr-1 transition shadow-sm" title="Site Transfer">
@@ -3831,7 +3945,6 @@
                     warningIcon = '<span class="material-symbols-outlined text-[12px] align-middle mr-1 text-sky-600">swap_horiz</span>';
                 }
 
-                // Added the Serial Number <td> right after the Asset ID
                 tr.innerHTML = `
                     <td class="p-4 font-code font-bold text-slate-800">${d.id}</td>
                     <td class="p-4 font-medium text-slate-700">${d.assetId}</td>
@@ -4156,6 +4269,71 @@
                                         <p class="text-[10px] text-slate-500 mt-0.5">Expiry Date: <span class="font-medium text-slate-700">${c.expiryDate || c.expiry}</span></p>
                                     </div>
                                     <span class="material-symbols-outlined ${isExpired ? 'text-rose-500' : 'text-amber-500'} text-lg">warning</span>
+                                </li>
+                            `;
+                        }).join('');
+                    }
+                });
+            }
+
+            const dispatchList = document.getElementById('dash-dispatch-list');
+            const dispatchCount = document.getElementById('dash-dispatch-count');
+
+            if (dispatchList) {
+                cmmsDb.ref('dispatches').on('value', (snapshot) => {
+                    const data = snapshot.val() || {};
+                    const rawList = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+
+                    // 1. Identify the single LATEST dispatch log for each asset
+                    const latestLogPerAsset = {};
+                    rawList.forEach(d => {
+                        const time = d.timestamp || (d.date ? new Date(d.date).getTime() : 0);
+                        if (!latestLogPerAsset[d.assetId] || time > latestLogPerAsset[d.assetId].time) {
+                            latestLogPerAsset[d.assetId] = { id: d.id, time: time };
+                        }
+                    });
+
+                    // 2. Filter: Asset's absolute latest log must match this entry AND be active/outbound
+                    const activeDispatches = rawList.filter(d => {
+                        const status = (d.status || d.type || '').trim().toLowerCase();
+                        const location = (d.location || d.site || d.destination || '').toUpperCase();
+                        
+                        const isLatestForAsset = latestLogPerAsset[d.assetId] && latestLogPerAsset[d.assetId].id === d.id;
+                        const isOutboundType = status === 'dispatch out' || status === 'site transfer';
+                        const isWorkshop = location.includes('WORKSHOP');
+
+                        return isLatestForAsset && isOutboundType && !isWorkshop && d.active !== false;
+                    }).sort((a, b) => new Date(b.date || b.createdAt || 0) - new Date(a.date || a.createdAt || 0));
+
+                    if (dispatchCount) {
+                        dispatchCount.innerText = `${activeDispatches.length} On Site`;
+                    }
+
+                    if (activeDispatches.length === 0) {
+                        dispatchList.innerHTML = '<li class="py-3 text-slate-400 italic text-center text-xs">No active dispatches on site.</li>';
+                    } else {
+                        dispatchList.innerHTML = activeDispatches.map(d => {
+                            const foundAsset = memory && memory.assets ? memory.assets.find(a => a.id === d.assetId) : null;
+                            
+                            const assetName = foundAsset ? (foundAsset.name || foundAsset.asset || foundAsset.id) : (d.asset || d.assetName || d.assetId || 'Unknown Asset');
+                            const serialNo = foundAsset ? (foundAsset.serial || foundAsset.code || '') : (d.serial || d.serialNo || '');
+                            
+                            const dispatchId = d.dispatchNo || d.ticketNo || d.id;
+                            const locationName = d.destination || d.location || d.site || 'On Site';
+
+                            return `
+                                <li class="py-2.5 flex justify-between items-center hover:bg-slate-50 transition px-2 rounded -mx-2 border-b border-slate-100 last:border-b-0">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <p class="font-bold text-slate-800 font-code text-[11px]">${dispatchId}</p>
+                                            <span class="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-200">${d.type || 'Dispatch Out'}</span>
+                                        </div>
+                                        <p class="text-[10px] text-slate-500 mt-0.5">
+                                            Asset: <span class="font-bold text-slate-800">${assetName}</span> ${serialNo ? `(${serialNo})` : ''} 
+                                            • Location: <span class="font-semibold text-slate-700">${locationName}</span>
+                                        </p>
+                                    </div>
+                                    <span class="material-symbols-outlined text-amber-600 text-lg">output</span>
                                 </li>
                             `;
                         }).join('');
