@@ -1664,27 +1664,7 @@
                 refreshWorkspaceView();
             });
 
-            cmmsDb.ref('maintenanceLogs').on('value', (snapshot) => {
-                const data = snapshot.val();
-                memory.maintenanceLogs = [];
-                if (data) { 
-                    Object.keys(data).forEach(id => { memory.maintenanceLogs.push({ id, ...data[id] }); }); 
-                    
-                    // Add this line to sort the logs so the newest date appears at the top
-                    memory.maintenanceLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
-                }
-                updateDashboardTopCounters();
-                refreshWorkspaceView();
-            });
-
-            cmmsDb.ref('expenses').on('value', (snapshot) => {
-                const data = snapshot.val();
-                memory.expenses = [];
-                if (data) { Object.keys(data).forEach(id => { memory.expenses.push({ id, ...data[id] }); }); }
-                updateDashboardTopCounters();
-                refreshWorkspaceView();
-            });
-
+            
             cmmsDb.ref('dispatches').on('value', (snapshot) => {
                 const data = snapshot.val() || {};
                 
@@ -1732,29 +1712,7 @@
                 console.error("Firebase dispatch synchronization failed:", error);
             });
 
-            cmmsDb.ref('technicians').on('value', (snapshot) => {
-                const data = snapshot.val();
-                memory.technicians = [];
-                if (data) { Object.keys(data).forEach(id => { memory.technicians.push({ id, ...data[id] }); }); }
-                updateDashboardTopCounters();
-                refreshWorkspaceView();
-            });
-            cmmsDb.ref('preops').on('value', (snapshot) => {
-                const data = snapshot.val();
-                memory.preops = [];
-                if (data) { Object.keys(data).forEach(id => { memory.preops.push({ id, ...data[id] }); }); }
-                refreshWorkspaceView();
-            });
-            cmmsDb.ref('parts').on('value', snapshot => {
-                const data = snapshot.val() || {};
-                memory.parts = Object.entries(data).map(([key, val]) => ({
-                    id: key,
-                    itemNumber: val.itemNumber || key,
-                    partNumber: val.partNumber || key, // Ensures exact Part Number is read from Firebase
-                    ...val
-                }));
-                renderParts();
-            });
+            
         }
 
         function openAddPartModal() {
