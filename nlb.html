@@ -3299,7 +3299,7 @@
                             <td class="p-4 font-code">${asset.model || 'N/A'}</td>
                             <td class="p-4 max-w-xs truncate">${asset.description || 'N/A'}</td>
                             <td class="p-4 font-code text-slate-500">${asset.serial || 'N/A'}</td>
-                            <td class="p-4 font-code">${c.expiryDate || 'N/A'}</td>
+                            <td class="p-4 font-code">${c.expiryDate ? formatDate(c.expiryDate) : 'N/A'}</td>
                             <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${statusCheck.class}">${statusCheck.text}</span></td>
                             <td class="p-4 text-center space-x-2">
                                 ${attachmentButtonHtml}
@@ -3934,22 +3934,32 @@
         function openEditWoModal(id) {
             const wo = memory.workOrders.find(w => w.id === id);
             if (!wo) return;
+            
             document.getElementById('in-w-mode').value = "edit";
             document.getElementById('in-w-id').value = wo.id;
             document.getElementById('in-w-id').disabled = true;
+            
+            // Autofill Work Order Creation/Logged Date (Fallback to Today's Date if empty)
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('in-w-date').value = wo.date || today;
+
             populateEquipmentDropdown('in-w-asset');
             document.getElementById('in-w-asset').value = wo.assetId;
             document.getElementById('in-w-type').value = wo.type;
+            
             toggleMetricInputs(wo.type);
-            if(wo.type === 'hours') {
+            
+            if (wo.type === 'hours') {
                 document.getElementById('in-w-current-hours').value = wo.currentHours || "";
                 document.getElementById('in-w-target-hours').value = wo.targetHours || "";
-            } else if(wo.type === 'date') {
+            } else if (wo.type === 'date') {
                 document.getElementById('in-w-current-date').value = wo.currentDate || "";
                 document.getElementById('in-w-target-date').value = wo.targetDate || "";
             }
-	    document.getElementById('in-w-reason').value = wo.reason;
+
+            document.getElementById('in-w-reason').value = wo.reason;
             document.getElementById('in-w-status').value = wo.status;
+            
             toggleModal('modal-add-wo', true);
         }
 
@@ -3959,6 +3969,7 @@
             const id = document.getElementById('in-w-id').value.trim().toUpperCase();
             const type = document.getElementById('in-w-type').value;
             const assetId = document.getElementById('in-w-asset').value; 
+            const woStatus = document.getElementById('in-w-status').value || "";
 
             // 1. Guard check: Ensure IDs exist before attempting a database write
             if (!id || !assetId) {
@@ -3980,21 +3991,25 @@
                 date: document.getElementById('in-w-date').value || "",
                 type: type || "",
                 reason: document.getElementById('in-w-reason').value || "",
-                status: document.getElementById('in-w-status').value || "",
+                status: woStatus,
                 currentHours: type === 'hours' ? (parseInt(document.getElementById('in-w-current-hours').value) || 0) : "",
                 targetHours: type === 'hours' ? (parseInt(document.getElementById('in-w-target-hours').value) || 0) : "",
                 currentDate: type === 'date' ? (document.getElementById('in-w-current-date').value || "") : "",
                 targetDate: type === 'date' ? (document.getElementById('in-w-target-date').value || "") : ""
             };
 
+            // Determine the dynamic asset status and color based on work order completion
+            const isCompleted = woStatus === "Completed";
+            const assetUpdates = {
+                status: isCompleted ? "Operational" : "In Maintenance",
+                statusColor: isCompleted ? "#4CAF50" : "#FF9800" // Green for Operational, Orange for In Maintenance
+            };
+
             // 4. Use Promises instead of callbacks for better error catching
             cmmsDb.ref('workOrders/' + id).set(payload)
                 .then(() => {
-                    // If the first write succeeds, update the asset status
-                    return cmmsDb.ref('assets/' + assetId).update({ 
-                        status: "In Maintenance",
-                        statusColor: "#FF9800" 
-                    });
+                    // If the first write succeeds, update the asset status dynamically
+                    return cmmsDb.ref('assets/' + assetId).update(assetUpdates);
                 })
                 .then(() => {
                     // Both database writes succeeded
@@ -6472,7 +6487,7 @@
         function dropEpmChecklist(id) {
             if (!confirm('Are you sure you want to delete this PM checklist record?')) return;
 
-            // 1. Remove from local memory
+            // 1. Remove from local memory  
             if (typeof memory !== 'undefined' && memory.epmLogs) {
                 memory.epmLogs = memory.epmLogs.filter(p => String(p.id) !== String(id) && String(p.pmId) !== String(id));
             }
@@ -6486,6 +6501,18 @@
 
             // 3. Re-render UI table
             renderEpmTable();
+        }
+
+        function formatDate(dateValue) {
+            if (!dateValue) return '';
+            const date = new Date(dateValue);
+            if (isNaN(date)) return dateValue; // Fallback if invalid date
+
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = date.toLocaleDateString('en-US', { month: 'short' });
+            const year = date.getFullYear();
+
+            return `${day}-${month}-${year}`;
         }
 
                 
