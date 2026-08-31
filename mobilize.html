@@ -2601,7 +2601,7 @@
                             <td class="p-4 font-code">${asset.model || 'N/A'}</td>
                             <td class="p-4 max-w-xs truncate">${asset.description || 'N/A'}</td>
                             <td class="p-4 font-code text-slate-500">${asset.serial || 'N/A'}</td>
-                            <td class="p-4 font-code">${c.expiryDate || 'N/A'}</td>
+                            <td class="p-4 font-code">${c.expiryDate ? formatDate(c.expiryDate) : 'N/A'}</td>
                             <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${statusCheck.class}">${statusCheck.text}</span></td>
                             <td class="p-4 align-middle text-right">
                                 <div class="inline-flex items-center justify-end gap-3">
