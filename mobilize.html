@@ -650,10 +650,16 @@
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">In/Out Dispatch Logs</h2>
                                 <p class="text-xs text-slate-500">Mobilization tracking panel.</p>
                             </div>
-                            <button onclick="openAddDispatchModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
-                                <span class="material-symbols-outlined text-sm">local_shipping</span>
-                                <span>Record Dispatch</span>
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <button onclick="openPrintDispatchModal()" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
+                                    <span class="material-symbols-outlined text-sm">print</span>
+                                    <span>Print Logs</span>
+                                </button>
+                                <button onclick="openAddDispatchModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
+                                    <span class="material-symbols-outlined text-sm">local_shipping</span>
+                                    <span>Record Dispatch</span>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
@@ -1048,6 +1054,33 @@
                 <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
                     <button type="button" onclick="toggleModal('modal-add-expense', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
                     <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Save Expense File</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-print-dispatch" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-sm p-6 space-y-4 shadow-xl">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-slate-700">print</span> Print Dispatch Logs
+                </h3>
+                <button onclick="toggleModal('modal-print-dispatch', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
+            </div>
+            <form onsubmit="executeDispatchPrint(event)" class="space-y-3.5 text-xs">
+                <div>
+                    <label class="block text-slate-600 font-medium mb-1">Start Date *</label>
+                    <input type="date" id="print-d-start" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-medium mb-1">End Date *</label>
+                    <input type="date" id="print-d-end" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
+                </div>
+                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="toggleModal('modal-print-dispatch', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
+                    <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">print</span> Print Report
+                    </button>
                 </div>
             </form>
         </div>
@@ -4997,6 +5030,141 @@
                     console.error("Error accepting Work Order:", err);
                     alert("Database Error: Could not accept work order.");
                 });
+        }
+
+        // Function to open the dispatch print selection popup
+        function openPrintDispatchModal() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('print-d-start').value = today;
+            document.getElementById('print-d-end').value = today;
+            toggleModal('modal-print-dispatch', true);
+        }
+
+        // Function to handle the print submission filtered by chosen date range
+        function executeDispatchPrint(e) {
+            e.preventDefault();
+            const startDate = document.getElementById('print-d-start').value;
+            const endDate = document.getElementById('print-d-end').value;
+
+            if (!startDate || !endDate) {
+                alert("Please select both start and end dates.");
+                return;
+            }
+
+            // Helper to reformat YYYY-MM-DD into DD-MM-YYYY
+            const formatDate = (dateStr) => {
+                if (!dateStr) return '-';
+                const parts = dateStr.trim().split('-');
+                if (parts.length === 3) {
+                    // If format is YYYY-MM-DD
+                    if (parts[0].length === 4) {
+                        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    }
+                }
+                return dateStr;
+            };
+
+            const startNum = parseInt(startDate.replace(/-/g, ''), 10);
+            const endNum = parseInt(endDate.replace(/-/g, ''), 10);
+
+            // Get asset list from memory.assets
+            const assetsList = (typeof memory !== 'undefined' && Array.isArray(memory.assets)) ? memory.assets : [];
+
+            // Helper function to resolve description from memory.assets
+            const resolveDescription = (assetCode, serialNo) => {
+                const found = assetsList.find(a => 
+                    (a.id && a.id.trim().toLowerCase() === assetCode.trim().toLowerCase()) ||
+                    (a.asset && a.asset.trim().toLowerCase() === assetCode.trim().toLowerCase()) ||
+                    (a.serial && serialNo && a.serial.trim().toLowerCase() === serialNo.trim().toLowerCase())
+                );
+
+                return (found && found.description) ? found.description : '-';
+            };
+
+            // Scrape records directly from HTML table
+            const rows = document.querySelectorAll('#pane-dispatch tbody tr, table tbody tr');
+            let filteredRows = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 6) {
+                    const eventType = cells[3].innerText.trim();
+                    const rawDateText = cells[5].innerText.trim();
+
+                    if (eventType.toLowerCase().includes('dispatch out') && rawDateText) {
+                        const rowDateNum = parseInt(rawDateText.replace(/-/g, ''), 10);
+                        
+                        if (rowDateNum >= startNum && rowDateNum <= endNum) {
+                            const assetCode = cells[1].innerText.trim();
+                            const serialNo = cells[2].innerText.trim();
+
+                            filteredRows.push({
+                                asset: assetCode,
+                                serial: serialNo,
+                                description: resolveDescription(assetCode, serialNo),
+                                destination: cells[4].innerText.trim(),
+                                date: formatDate(rawDateText) // Formats row date to DD-MM-YYYY
+                            });
+                        }
+                    }
+                }
+            });
+
+            if (filteredRows.length === 0) {
+                alert("No 'Dispatch Out' records found for the selected date range.");
+                return;
+            }
+
+            // Generate Printable Output
+            let printHTML = `
+                <div style="font-family: Arial, sans-serif; padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+                        <div>
+                            <h2 style="margin: 0; font-size: 20px; font-weight: bold;">AL GHAITH TRADING & INDUSTRIAL SERVICES</h2>
+                            <h4 style="margin: 5px 0 0 0; color: #555;">Dispatch Out Report</h4>
+                        </div>
+                        <div style="text-align: right; font-size: 12px;">
+                            <p style="margin: 0;"><strong>Period:</strong> ${formatDate(startDate)} to ${formatDate(endDate)}</p>
+                            <p style="margin: 0;"><strong>Generated:</strong> ${new Date().toLocaleDateString('en-GB').replace(/\//g, '-')}</p>
+                        </div>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 8px; border: 1px solid #ddd;">Equipment Asset</th>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Serial Number</th>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Description</th>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Destination / Project</th>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            filteredRows.forEach(item => {
+                printHTML += `
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">${item.asset}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${item.serial}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${item.description}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${item.destination}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${item.date}</td>
+                    </tr>
+                `;
+            });
+
+            printHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            const printSection = document.getElementById('print-section');
+            printSection.innerHTML = printHTML;
+            toggleModal('modal-print-dispatch', false);
+            
+            window.print();
         }
         
     </script>
