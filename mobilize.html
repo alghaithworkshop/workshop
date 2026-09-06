@@ -650,15 +650,21 @@
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">In/Out Dispatch Logs</h2>
                                 <p class="text-xs text-slate-500">Mobilization tracking panel.</p>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <button onclick="openPrintDispatchModal()" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
-                                    <span class="material-symbols-outlined text-sm">print</span>
-                                    <span>Print Logs</span>
-                                </button>
-                                <button onclick="openAddDispatchModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
-                                    <span class="material-symbols-outlined text-sm">local_shipping</span>
-                                    <span>Record Dispatch</span>
-                                </button>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <div class="relative flex items-center flex-1">
+                                    <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
+                                    <input type="text" id="in-d-search" oninput="refreshWorkspaceView()" placeholder="Search dispatch ID, asset, serial, project..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="openPrintDispatchModal()" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
+                                        <span class="material-symbols-outlined text-sm">print</span>
+                                        <span>Print Logs</span>
+                                    </button>
+                                    <button onclick="openAddDispatchModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
+                                        <span class="material-symbols-outlined text-sm">local_shipping</span>
+                                        <span>Record Dispatch</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -669,7 +675,7 @@
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Dispatch ID</th>
                                             <th class="p-4">Equipment Asset</th>
-                                            <th class="p-4">Serial Number</th> <!-- NEW COLUMN ADDED HERE -->
+                                            <th class="p-4">Serial Number</th>
                                             <th class="p-4">Event Type</th>
                                             <th class="p-4">Destination / Project</th>
                                             <th class="p-4">Date</th>
@@ -4334,6 +4340,10 @@
             if (!tbody) return;
             tbody.innerHTML = '';
 
+            // Retrieve search input query
+            const searchInput = document.getElementById('in-d-search');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
             // 1. Sort logs newest to oldest
             const sortedLogs = [...memory.dispatches].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
@@ -4349,13 +4359,32 @@
             const historyRows = [];
 
             sortedLogs.forEach(d => {
-                const tr = document.createElement('tr');
-                
                 const asset = memory.assets ? memory.assets.find(a => a.id === d.assetId) : null;
-                const isDispatchType = (d.type === 'Dispatch Out' || d.type === 'Site Transfer');
                 const serialNumber = asset ? (asset.serialNumber || asset.serial || asset.serial_no || asset.sn || asset.serialNo || 'N/A') : 'N/A';
 
-                // 3. THIS LOG IS ONLY ACTIVE IF IT IS THE MOST RECENT LOG FOR THE ASSET AND AN OUTBOUND TYPE
+                // 3. Search filter matching check
+                if (filterText) {
+                    const id = (d.id || '').toLowerCase();
+                    const assetId = (d.assetId || '').toLowerCase();
+                    const serial = (serialNumber || '').toLowerCase();
+                    const type = (d.type || '').toLowerCase();
+                    const destination = (d.destination || '').toLowerCase();
+                    const date = (d.date || '').toLowerCase();
+
+                    const isMatch = id.includes(filterText) || 
+                                    assetId.includes(filterText) || 
+                                    serial.includes(filterText) || 
+                                    type.includes(filterText) || 
+                                    destination.includes(filterText) ||
+                                    date.includes(filterText);
+
+                    if (!isMatch) return; // Skip non-matching entries
+                }
+
+                const tr = document.createElement('tr');
+                const isDispatchType = (d.type === 'Dispatch Out' || d.type === 'Site Transfer');
+
+                // 4. THIS LOG IS ONLY ACTIVE IF IT IS THE MOST RECENT LOG FOR THE ASSET AND AN OUTBOUND TYPE
                 const isLatestForThisAsset = (latestLogIdPerAsset[d.assetId] === d.id);
                 const isLatestActiveRecord = isLatestForThisAsset && isDispatchType && d.active !== false;
 
@@ -4409,6 +4438,15 @@
                     historyRows.push(tr);
                 }
             });
+
+            // Handle empty table result when search returns no matches
+            if (activeRows.length === 0 && historyRows.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="p-4 text-center text-slate-400 italic">No matching dispatch records found.</td>
+                    </tr>`;
+                return;
+            }
 
             activeRows.forEach(row => tbody.appendChild(row));
             historyRows.forEach(row => tbody.appendChild(row));
