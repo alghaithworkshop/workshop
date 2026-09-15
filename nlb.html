@@ -3480,9 +3480,18 @@
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('in-c-image-base64').value = e.target.result;
-                document.getElementById('img-c-preview').src = e.target.result;
-                document.getElementById('wrapper-c-image-preview').classList.remove('hidden');
+                const result = e.target.result;
+                document.getElementById('in-c-image-base64').value = result;
+                
+                const previewContainer = document.getElementById('wrapper-c-image-preview');
+                
+                if (file.type === 'application/pdf') {
+                    previewContainer.innerHTML = `<iframe src="${result}" style="width:100%; height:300px; border:1px solid #ccc;"></iframe>`;
+                } else {
+                    previewContainer.innerHTML = `<img id="img-c-preview" src="${result}" style="max-width:100%; max-height:300px; object-fit:contain;" />`;
+                }
+                
+                previewContainer.classList.remove('hidden');
             };
             reader.readAsDataURL(file);
         }
@@ -3493,8 +3502,18 @@
                 alert("No image document attachment linked with this certificate record.");
                 return;
             }
+
             document.getElementById('view-cert-image-title').innerText = `Document File Attachment Preview [${cert.id}]`;
-            document.getElementById('img-view-cert-expanded').src = cert.certificateImage;
+
+            const container = document.getElementById('img-view-cert-expanded').parentElement;
+            const isPdf = cert.certificateImage.startsWith('data:application/pdf');
+
+            if (isPdf) {
+                container.innerHTML = `<iframe src="${cert.certificateImage}" style="width:100%; height:75vh; border:none;"></iframe>`;
+            } else {
+                container.innerHTML = `<img id="img-view-cert-expanded" src="${cert.certificateImage}" style="max-width:100%; max-height:75vh; object-fit:contain;" alt="Certificate Preview" />`;
+            }
+
             toggleModal('modal-view-cert-image', true);
         }
 
@@ -3505,17 +3524,40 @@
                 return;
             }
 
-            const pSec = document.getElementById('print-section');
-            pSec.innerHTML = `
-                <div style="text-align:center; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:white; padding:15px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:15px;">
-                        <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" style="height:35px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
-                        <span style="font-size:11px; font-weight:bold; color:#475569;">Certificate ID Scan Attachment Reference: ${cert.id}</span>
+            const isPdf = cert.certificateImage.startsWith('data:application/pdf');
+
+            if (isPdf) {
+                // Open PDF in a temporary hidden iframe and call print on it
+                const printFrame = document.createElement('iframe');
+                printFrame.style.position = 'fixed';
+                printFrame.style.right = '0';
+                printFrame.style.bottom = '0';
+                printFrame.style.width = '0';
+                printFrame.style.height = '0';
+                printFrame.style.border = '0';
+                printFrame.src = cert.certificateImage;
+
+                document.body.appendChild(printFrame);
+
+                printFrame.onload = function() {
+                    printFrame.contentWindow.focus();
+                    printFrame.contentWindow.print();
+                    setTimeout(() => document.body.removeChild(printFrame), 2000);
+                };
+            } else {
+                // Standard HTML printing for images
+                const pSec = document.getElementById('print-section');
+                pSec.innerHTML = `
+                    <div style="text-align:center; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:white; padding:15px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:15px;">
+                            <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" style="height:35px;" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
+                            <span style="font-size:11px; font-weight:bold; color:#475569;">Certificate ID Scan Attachment Reference: ${cert.id}</span>
+                        </div>
+                        <img src="${cert.certificateImage}" style="max-width:100%; max-height:90vh; object-fit:contain; border:none;" alt="Third Party Certificate Attachment Scan" />
                     </div>
-                    <img src="${cert.certificateImage}" style="max-width:100%; max-height:90vh; object-fit:contain; border:none;" alt="Third Party Certificate Attachment Scan" />
-                </div>
-            `;
-            window.print();
+                `;
+                window.print();
+            }
         }
 
         function printCertificateList() {
