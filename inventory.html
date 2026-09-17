@@ -25,38 +25,78 @@
             }
         }
     </style>
+        <link rel="stylesheet" href="main.css">
+        <style>
+            body { background: var(--bs-body-bg) !important; color: var(--text-main) !important; font-family: var(--bs-body-font-family) !important; }
+            #login-screen { background-color: #EEF3F0 !important; background-image: linear-gradient(135deg, rgba(180,241,5,.08), transparent 42%), linear-gradient(315deg, rgba(5,28,18,.08), transparent 56%); }
+            .inventory-login-shell { width: min(100%, 980px); display: grid; grid-template-columns: .92fr 1.08fr; overflow: hidden; border: 1px solid rgba(5,28,18,.12); border-radius: 18px; background: var(--card-background); box-shadow: 0 24px 70px rgba(5,28,18,.14); }
+            .inventory-login-identity { display: flex; flex-direction: column; justify-content: space-between; min-height: 560px; padding: 3rem; color: #FFF; background: var(--brand-forest-dark); background-image: linear-gradient(145deg, rgba(26,62,48,.9), transparent 56%); }
+            .inventory-brand-mark { width: 86px; height: 86px; display: grid; place-items: center; border: 1px solid rgba(180,241,5,.35); border-radius: 12px; background: rgba(255,255,255,.08); }
+            .inventory-brand-mark img { width: 66px; height: 66px; object-fit: contain; border-radius: 8px; }
+            .inventory-login-identity h1 { margin: auto 0 1rem; color: #FFF; font-size: 3rem; line-height: 1.02; letter-spacing: -.04em; }
+            .inventory-login-identity h1 span { color: var(--brand-lime); }
+            .inventory-login-kicker { margin: 0 0 .75rem; color: var(--brand-lime); font-size: .68rem; font-weight: 800; letter-spacing: .14em; }
+            .inventory-login-copy { max-width: 330px; margin: 0; color: #B8C8C0; font-size: .88rem; line-height: 1.7; }
+            .inventory-login-status { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.13); color: #B8C8C0; font: .62rem 'JetBrains Mono', monospace; letter-spacing: .08em; }
+            .inventory-login-status i { width: 7px; height: 7px; display: inline-block; margin-right: .45rem; border-radius: 50%; background: var(--brand-lime); animation: inventoryPulse 2s infinite; }
+            .inventory-login-card { display: flex; flex-direction: column; justify-content: center; padding: 3.25rem; background: var(--card-background); }
+            .inventory-login-card h2 { margin: 0; color: var(--text-main); font-size: 2rem; letter-spacing: -.04em; }
+            .inventory-login-form { display: grid; gap: 1.2rem; margin-top: 2.25rem; }
+            .inventory-login-field { display: grid; gap: .45rem; }
+            .inventory-login-field label { color: var(--text-main); font-size: .74rem; font-weight: 700; }
+            .inventory-login-field input { width: 100%; box-sizing: border-box; padding: .85rem .95rem; border: 1px solid var(--border-light); border-radius: 8px; color: var(--text-main); background: #F8FAF9; font: inherit; font-size: .82rem; }
+            .inventory-login-submit { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: .9rem 1rem; border: 0; border-radius: 8px; color: #FFF; background: var(--brand-forest-medium); font: inherit; font-size: .78rem; font-weight: 800; cursor: pointer; transition: background .2s ease, transform .2s ease; }
+            .inventory-login-submit:hover { background: var(--brand-forest-dark); transform: translateY(-1px); }
+            #app-dashboard { height: 100vh; min-height: 0; background: var(--bs-body-bg); }
+            #app-dashboard > aside { position: relative; width: var(--sidebar-width) !important; background: var(--brand-forest-dark) !important; border-right: 1px solid var(--border-dark-green) !important; border-color: var(--border-dark-green) !important; color: var(--text-sidebar-muted) !important; }
+            #app-dashboard > aside > div:first-child { padding: 1.5rem !important; background: var(--brand-forest-dark) !important; border-color: var(--border-dark-green) !important; }
+            #app-dashboard > aside nav { padding: 1rem 1.5rem !important; }
+            #app-dashboard > aside nav button { color: var(--text-sidebar-muted) !important; border: 0 !important; border-radius: var(--radius-md) !important; background: transparent !important; }
+            #app-dashboard > aside nav button:hover, #app-dashboard > aside nav button.bg-emerald-500\/10 { color: var(--brand-lime) !important; background: var(--brand-forest-light) !important; }
+            #app-dashboard > aside nav button.bg-emerald-500\/10 { box-shadow: inset 3px 0 0 var(--brand-lime); }
+            #app-dashboard > aside nav hr { border-color: var(--border-dark-green) !important; }
+            #app-dashboard > aside nav > div { background: rgba(255,255,255,.05) !important; border-color: var(--border-dark-green) !important; }
+            #app-dashboard > aside nav > button:last-child { color: #FCA5A5 !important; }
+            #app-dashboard > aside nav > button:last-child:hover { color: #FFF !important; background: rgba(127,29,29,.6) !important; }
+            #app-dashboard > div { min-width: 0; min-height: 0; }
+            #app-dashboard header { min-height: 82px; height: auto; padding: .8rem 1.5rem; border-bottom-color: var(--border-light); background: linear-gradient(110deg,#FFF 0%,#FFF 62%,#F3F8F4 100%); box-shadow: 0 5px 20px rgba(11,19,15,.05); }
+            #app-dashboard header::after { content: ''; position: absolute; left: 0; bottom: -1px; width: 120px; height: 3px; background: var(--brand-lime); }
+            #app-dashboard main { min-width: 0; min-height: 0; background: var(--bs-body-bg); }
+            #filter-strip { border-bottom-color: var(--border-light) !important; background: var(--card-background) !important; }
+            @keyframes inventoryPulse { 0%,100% { box-shadow: 0 0 0 3px rgba(180,241,5,.12); } 50% { box-shadow: 0 0 0 7px rgba(180,241,5,.03); } }
+            @media (max-width: 700px) { .inventory-login-shell { grid-template-columns: 1fr; border-radius: 14px; } .inventory-login-identity { min-height: auto; padding: 2rem; } .inventory-login-card { padding: 2rem; } }
+        </style>
+
 </head>
 <body class="bg-[#F8FAFC] text-slate-800 font-sans antialiased h-screen flex overflow-hidden">
 
     <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="fixed inset-0 bg-[#0F172A] z-[100] flex items-center justify-center transition-opacity duration-300">
-        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border border-slate-200">
-            <div class="flex items-center justify-center gap-3 mb-8">
-                <div class="w-12 h-12 rounded overflow-hidden bg-slate-800 flex-shrink-0 border border-slate-700 shadow-md">
-                    <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="w-full h-full object-cover">
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-lg font-black uppercase tracking-wider text-slate-900 leading-tight">Al Ghaith</span>
-                    <span class="text-xs text-emerald-600 font-bold tracking-wide">Logistics Hub</span>
-                </div>
-            </div>
-            
-            <form id="login-form" onsubmit="executeLogin(event)" class="space-y-5">
+    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="inventory-login-shell">
+            <section class="inventory-login-identity">
                 <div>
-                    <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1 text-xs">Email Address</label>
-                    <input type="email" id="auth-email" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-mono text-sm" placeholder="admin@alghaith.com">
+                    <div class="inventory-brand-mark"><img src="alghaithlogo.jpg" alt="Al Ghaith Logo"></div>
+                    <p style="max-width:330px; margin:1rem 0 0; color:#FFF; font-size:1rem; font-weight:800; line-height:1.4;">Al Ghaith Trading &amp; Industrial Services</p>
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1 text-xs">Password</label>
-                    <input type="password" id="auth-password" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all font-mono text-sm" placeholder="••••••••">
+                    <p class="inventory-login-kicker">INVENTORY OPERATIONS</p>
+                    <h1>Logistics<br><span>Hub</span></h1>
+                    <p class="inventory-login-copy">Secure control for warehouse stock, material requests, inward receipts, outward dispatches, and logistics reporting.</p>
+                    <div class="inventory-login-status"><span><i></i>SYSTEM ONLINE</span><span>LOGISTICS / 01</span></div>
                 </div>
-                
-                <div id="login-error" class="hidden text-rose-600 text-[11px] font-bold text-center bg-rose-50 p-2 rounded border border-rose-100"></div>
-                
-                <button type="submit" id="login-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg uppercase tracking-wider text-xs transition-all shadow-lg shadow-emerald-600/20 flex justify-center items-center gap-2">
-                    <i data-lucide="lock" class="w-4 h-4"></i> Authenticate Session
-                </button>
-            </form>
+            </section>
+            <section class="inventory-login-card">
+                <p class="inventory-login-kicker">AUTHORIZED ACCESS</p>
+                <h2>Welcome back</h2>
+                <p class="text-xs text-slate-500 mt-2">Sign in to continue to the logistics console.</p>
+                <form id="login-form" onsubmit="executeLogin(event)" class="inventory-login-form">
+                    <div class="inventory-login-field"><label for="auth-email">Email address</label><input type="email" id="auth-email" required autocomplete="username" placeholder="name@email.com"></div>
+                    <div class="inventory-login-field"><label for="auth-password">Password</label><input type="password" id="auth-password" required autocomplete="current-password" placeholder="Enter your password"></div>
+                    <div id="login-error" class="hidden text-rose-600 text-[11px] font-bold text-center bg-rose-50 p-2 rounded border border-rose-100"></div>
+                    <button type="submit" id="login-btn" class="inventory-login-submit"><span>Sign in to portal</span><span class="material-symbols-outlined">arrow_forward</span></button>
+                </form>
+                <p class="text-[11px] text-slate-500 mt-9">Protected operations environment <span class="text-lime-600 px-1">•</span> Authorized users only</p>
+            </section>
         </div>
     </div>
 
@@ -77,10 +117,12 @@
             </div>
 
             <nav class="flex-1 px-4 py-4 space-y-1 text-xs font-semibold overflow-y-auto">
+                <p class="px-3 pt-1 pb-1 text-[9px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Warehouse Overview</p>
                 <button onclick="switchView('inventory')" id="nav-inventory" class="w-full flex items-center gap-3 px-3 py-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg transition-all text-left">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                     Warehouse Management
                 </button>
+                <p class="px-3 pt-4 pb-1 text-[9px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Inventory Movement</p>
                 <button onclick="switchView('stockin')" id="nav-stockin" class="w-full flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-slate-800/60 rounded-lg transition-all text-left">
                     <i data-lucide="package-plus" class="w-4 h-4"></i>
                     Stock In Ledger
@@ -89,6 +131,7 @@
                     <i data-lucide="package-minus" class="w-4 h-4"></i>
                     Stock Out Ledger
                 </button>
+                <p class="px-3 pt-4 pb-1 text-[9px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Requests &amp; Reporting</p>
                 <button onclick="switchView('requests')" id="nav-requests" class="w-full flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-slate-800/60 rounded-lg transition-all text-left">
                     <i data-lucide="clipboard-list" class="w-4 h-4"></i>
                     Requests
@@ -118,7 +161,7 @@
 
         <div class="flex-1 flex flex-col overflow-hidden h-full relative">
             
-            <header class="h-16 bg-white border-b border-slate-200/80 px-8 flex items-center justify-between flex-shrink-0">
+            <header class="relative bg-white border-b border-slate-200/80 px-6 flex items-center justify-between flex-shrink-0">
                 <div>
                     <h2 id="view-title" class="text-sm font-bold text-slate-900 tracking-tight">Master Material Allocation Index</h2>
                     <p id="view-subtitle" class="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Asset Registry Desktop</p>
@@ -239,6 +282,7 @@
                                     <tr class="bg-slate-50 text-slate-400 font-bold uppercase text-[9px] border-b border-slate-100 tracking-wider">
                                         <th class="p-3 pl-4">Date Dispatched</th>
                                         <th class="p-3">Identity Context</th>
+                                        <th class="p-3">Equipment</th>
                                         <th class="p-3">Purpose</th>
                                         <th class="p-3 text-right">Qty Processing</th>
                                         <th class="p-3 text-center pr-4">Actions</th>
@@ -272,7 +316,10 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-slate-50 text-slate-400 font-bold uppercase text-[9px] border-b border-slate-100 tracking-wider">
-                                        <th class="p-3 pl-4 whitespace-nowrap">Req ID</th>
+                                        <th class="p-3 pl-4 text-center w-10">
+                                            <input type="checkbox" id="select-all-requests" onclick="toggleSelectAllRequests(this)" class="cursor-pointer rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                        </th>
+                                        <th class="p-3 whitespace-nowrap">Req ID</th>
                                         <th class="p-3 whitespace-nowrap">Part Number</th>
                                         <th class="p-3 min-w-[150px]">Description</th>
                                         <th class="p-3 whitespace-nowrap">Unit Price</th>
@@ -425,7 +472,7 @@
         <div class="bg-white rounded-xl shadow-xl border border-slate-200/60 w-full max-w-lg overflow-hidden my-auto transform transition-all scale-100">
             <div class="h-14 px-6 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
                 <h3 id="popup-title" class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                    <i data-lucide="layer-plus" class="w-4 h-4 text-emerald-500"></i> Register Asset Component
+                    <i data-lucide="layers" class="w-4 h-4 text-emerald-500"></i> Register Asset Component
                 </h3>
                 <button onclick="closeEntryPopup()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
@@ -565,7 +612,7 @@
         </div>
     </div>
 
-    <!-- Stock-Out Request Modal (Updated with Cart) -->
+    <!-- Stock-Out Request Modal (Updated with Equipment Field) -->
     <div id="stockout-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-xl shadow-xl border border-slate-200/60 w-full max-w-2xl overflow-hidden my-auto transform transition-all scale-100">
             <div class="h-14 px-6 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
@@ -584,8 +631,8 @@
                         <select id="stockout-asset-select" class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-2 text-slate-700 focus:outline-none focus:border-slate-400 font-mono">
                         </select>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                        <div class="col-span-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+                        <div>
                             <label class="block font-bold text-slate-400 uppercase tracking-wider mb-1 text-[10px]">Quantity Out</label>
                             <input type="number" id="stockout-qty" min="1" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-slate-400 font-mono" placeholder="5">
                         </div>
@@ -594,8 +641,12 @@
                             <input type="date" id="stockout-date" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-slate-400 font-mono">
                         </div>
                         <div>
+                            <label class="block font-bold text-slate-400 uppercase tracking-wider mb-1 text-[10px]">Equipment</label>
+                            <input type="text" id="stockout-equipment" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-slate-400 font-mono" placeholder="e.g. Pump #01 / Truck 102">
+                        </div>
+                        <div class="sm:col-span-3">
                             <label class="block font-bold text-slate-400 uppercase tracking-wider mb-1 text-[10px]">Purpose</label>
-                            <input type="text" id="stockout-purpose" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-slate-400 font-mono" placeholder="e.g. Work Order">
+                            <input type="text" id="stockout-purpose" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-slate-400 font-mono" placeholder="e.g. Maintenance Work Order">
                         </div>
                     </div>
                     <div class="flex justify-end mt-3">
@@ -613,13 +664,13 @@
                             <thead>
                                 <tr class="bg-slate-50 text-slate-400 font-bold uppercase text-[9px] border-b border-slate-200 tracking-wider">
                                     <th class="p-2 pl-3">Item Details</th>
+                                    <th class="p-2">Equipment</th>
                                     <th class="p-2">Purpose</th>
                                     <th class="p-2 text-center">Qty</th>
                                     <th class="p-2 text-center pr-3">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="stockout-cart-body" class="divide-y divide-slate-100 text-[11px] font-medium text-slate-700">
-                                <!-- Cart items populate here -->
                             </tbody>
                         </table>
                     </div>
@@ -719,7 +770,18 @@
 
     <!-- STANDARD SCRIPT (No module type required) -->
     <script>
-        const firebaseConfig = {
+        const cmmsConfig = {
+            apiKey: "AIzaSyCS6OIQ6wFFKDRcq-SFGCLP2aVq6faq5fo",
+            authDomain: "cmms-e5cce.firebaseapp.com",
+            databaseURL: "https://cmms-e5cce-default-rtdb.firebaseio.com",
+            projectId: "cmms-e5cce",
+            storageBucket: "cmms-e5cce.firebasestorage.app",
+            messagingSenderId: "143521296047",
+            appId: "1:143521296047:web:3f6b2b46d025ec32f36e5a"
+        };
+
+        // 2. Initialize your Inventory database configuration with a custom app name ("InventoryApp")
+        const inventoryConfig = {
             apiKey: "AIzaSyALduwl7WSzyPkLA4kODFbXaI3vnHRLDMg",
             authDomain: "inventory-fbd3c.firebaseapp.com",
             databaseURL: "https://inventory-fbd3c-default-rtdb.firebaseio.com",
@@ -730,11 +792,11 @@
             measurementId: "G-3VF8F56DFE"
         };
 
-        // Initialize Firebase using the Compat API
-        firebase.initializeApp(firebaseConfig);
-        const analytics = firebase.analytics();
-        const db = firebase.database();
-        const auth = firebase.auth();
+        const cmmsApp = firebase.initializeApp(cmmsConfig, "CMMSApp");
+        const inventoryApp = firebase.initializeApp(inventoryConfig, "InventoryApp");
+        const cmmsDb = cmmsApp.database();
+        const inventoryDb = inventoryApp.database();
+        const auth = inventoryApp.auth();
 
         // Core Hub Application State
         let localHubInventory = [];
@@ -824,7 +886,7 @@
                 const dbStatusElement = document.getElementById('db-status');
                 dbStatusElement.innerHTML = `<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Syncing Data...`;
                 
-                const dbRef = db.ref();
+                const dbRef = inventoryDb.ref();
                 const invSnapshot = await dbRef.child("inventory").get();
                 localHubInventory = invSnapshot.exists() ? Object.values(invSnapshot.val()) : [];
 
@@ -996,14 +1058,14 @@
                         opCount++;
 
                         if (opCount === 450) {
-                            batchSets.push(db.ref().update(activeUpdates));
+                            batchSets.push(inventoryDb.ref().update(activeUpdates));
                             activeUpdates = {};
                             opCount = 0;
                         }
                     }
 
                     if (opCount > 0) {
-                        batchSets.push(db.ref().update(activeUpdates));
+                        batchSets.push(inventoryDb.ref().update(activeUpdates));
                     }
 
                     await Promise.all(batchSets);
@@ -1128,10 +1190,11 @@
             const assetId = document.getElementById('stockout-asset-select').value;
             const qtyInput = document.getElementById('stockout-qty').value;
             const dateInput = document.getElementById('stockout-date').value;
-            const purposeInput = document.getElementById('stockout-purpose').value;
+            const equipmentInput = document.getElementById('stockout-equipment').value.trim();
+            const purposeInput = document.getElementById('stockout-purpose').value.trim();
 
             if (!assetId || !qtyInput || qtyInput <= 0 || !dateInput || !purposeInput) {
-                alert("Please fill out all fields correctly before adding to the cart.");
+                alert("Please fill out all required fields (Target Asset, Qty, Date, and Purpose) before adding to the cart.");
                 return;
             }
 
@@ -1140,7 +1203,6 @@
 
             let operationalDelta = parseInt(qtyInput);
             
-            // Calculate how much of this item is already pending in the cart
             let pendingCartQty = 0;
             stockOutCart.forEach(item => {
                 if (item.assetId === assetId) {
@@ -1156,7 +1218,6 @@
                 return;
             }
 
-            // Add to state array
             stockOutCart.push({
                 assetId: assetId,
                 partNumber: matchedItem.partNumber,
@@ -1164,11 +1225,12 @@
                 unit: matchedItem.unit || '',
                 qty: operationalDelta,
                 date: dateInput,
+                equipment: equipmentInput || 'N/A',
                 purpose: purposeInput
             });
 
-            // Reset inputs for next item
             document.getElementById('stockout-qty').value = '';
+            document.getElementById('stockout-equipment').value = '';
             document.getElementById('stockout-purpose').value = '';
             
             renderStockOutCart();
@@ -1199,6 +1261,7 @@
                             <div class="font-bold font-mono text-slate-800">${item.partNumber}</div>
                             <div class="text-[9px] text-slate-500 max-w-[150px] truncate">${item.description}</div>
                         </td>
+                        <td class="p-2 font-mono text-slate-700">${item.equipment}</td>
                         <td class="p-2 italic text-slate-600">${item.purpose}</td>
                         <td class="p-2 text-center font-mono font-bold text-amber-600">${item.qty} <span class="text-[9px] font-sans text-slate-400 font-normal">${item.unit}</span></td>
                         <td class="p-2 text-center pr-3">
@@ -1209,7 +1272,7 @@
             });
 
             cartBody.innerHTML = html;
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
 
         // --- NEW: Remove Single Item from Cart ---
@@ -1243,6 +1306,7 @@
                             <tr class="bg-slate-50 border-b-2 border-slate-200 text-slate-500 font-bold uppercase text-[10px] tracking-wider">
                                 <th class="p-3">Part Number</th>
                                 <th class="p-3">Description</th>
+                                <th class="p-3">Equipment</th>
                                 <th class="p-3">Purpose</th>
                                 <th class="p-3 text-right">Qty Dispatched</th>
                             </tr>
@@ -1255,6 +1319,7 @@
                     <tr>
                         <td class="p-3 font-mono font-bold text-slate-800">${item.partNumber}</td>
                         <td class="p-3 text-slate-600">${item.description}</td>
+                        <td class="p-3 font-mono text-slate-700">${item.equipment || 'N/A'}</td>
                         <td class="p-3 italic text-slate-500">${item.purpose}</td>
                         <td class="p-3 text-right font-mono font-bold text-amber-600">${item.qty} <span class="text-[9px] font-sans text-slate-400">${item.unit}</span></td>
                     </tr>
@@ -1280,7 +1345,6 @@
 
             printSection.innerHTML = html;
             
-            // Slight delay ensures the DOM has updated before the print dialog locks the thread
             setTimeout(() => {
                 window.print();
             }, 150);
@@ -1297,39 +1361,33 @@
                     const matchedIdx = localHubInventory.findIndex(el => el.id === cartItem.assetId);
                     if (matchedIdx === -1) return;
 
-                    // Generate unique transaction ID
                     const transactionObj = {
                         id: 'log_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
                         assetId: cartItem.assetId,
                         type: 'out',
                         qty: cartItem.qty.toString(),
                         date: cartItem.date,
+                        equipment: cartItem.equipment,
                         purpose: cartItem.purpose
                     };
 
-                    // Calculate final quantity
                     let currentQty = parseInt(localHubInventory[matchedIdx].initialQty || 0);
                     let finalQty = currentQty - cartItem.qty;
 
-                    // Queue Firebase Updates
                     updates[`stock_out_logs/${transactionObj.id}`] = transactionObj;
                     updates[`inventory/${cartItem.assetId}/initialQty`] = finalQty.toString();
 
-                    // Update Local State for instant UI refresh
                     localHubInventory[matchedIdx].initialQty = finalQty.toString();
                     stockOutHistory.push(transactionObj);
                 });
 
-                // Push batch update to Firebase
-                await db.ref().update(updates);
+                await inventoryDb.ref().update(updates);
 
                 alert(`Successfully dispatched ${stockOutCart.length} items.`);
                 
-                // --- NEW: Trigger Receipt Printing ---
                 if (confirm("Would you like to print a dispatch receipt for this transaction?")) {
                     printStockOutReceipt(stockOutCart);
                 }
-                // -----------------------------------
                 
                 closeStockOutPopup();
                 renderTransactionLogs();
@@ -1374,8 +1432,8 @@
             document.getElementById('stockout-modal').classList.add('hidden');
             document.getElementById('stockout-asset-search').value = '';
             
-            // Clear inputs and cart state
             document.getElementById('stockout-qty').value = '';
+            document.getElementById('stockout-equipment').value = '';
             document.getElementById('stockout-purpose').value = '';
             stockOutCart = [];
             renderStockOutCart();
@@ -1388,10 +1446,17 @@
 
         function openRequestPopup() {
             document.getElementById('request-form').reset();
+            document.getElementById('request-internal-id').value = '';
             document.getElementById('request-display-id').value = generateNextRequestId();
             document.getElementById('request-date').value = new Date().toISOString().split('T')[0];
             document.getElementById('request-modal').classList.remove('hidden');
+
+            // Reset title and button in case it was previously opened in Edit mode
+            document.querySelector('#request-modal h3').innerHTML = '<i data-lucide="clipboard-list" class="w-4 h-4 text-blue-500"></i> Create Material Request';
+            document.querySelector('#request-form button[type="submit"]').innerText = 'Submit Request';
+
             populateTransactionDropdowns();
+            lucide.createIcons();
         }
 
         function closeRequestPopup() {
@@ -1399,6 +1464,33 @@
             document.getElementById('request-form').reset();
             document.getElementById('request-internal-id').value = '';
             document.getElementById('request-asset-input').value = '';
+        }
+
+        function stageRequestForEdit(id) {
+            const req = activeRequests.find(r => r.id === id);
+            if (!req) return;
+
+            // Trigger the popup open logic
+            openRequestPopup();
+            
+            // Change Modal Text for Editing state
+            document.querySelector('#request-modal h3').innerHTML = '<i data-lucide="edit" class="w-4 h-4 text-blue-500"></i> Edit Material Request';
+            document.querySelector('#request-form button[type="submit"]').innerText = 'Update Request';
+
+            // Populate Fields
+            document.getElementById('request-internal-id').value = req.id;
+            document.getElementById('request-display-id').value = req.reqId || '';
+            document.getElementById('request-date').value = req.date || req.dateNeeded || '';
+            document.getElementById('request-part-number').value = req.partNumber || '';
+            document.getElementById('request-price').value = req.price || '0.00';
+            document.getElementById('request-description').value = req.description || '';
+            document.getElementById('request-category').value = req.category || '';
+            document.getElementById('request-category-desc').value = req.categoryDesc || '';
+            document.getElementById('request-unit').value = req.unit || '';
+            document.getElementById('request-qty').value = req.qty || '';
+            document.getElementById('request-requester').value = req.requester || '';
+
+            lucide.createIcons();
         }
 
         function handleRequestAssetSelect() {
@@ -1435,6 +1527,7 @@
             }
 
             const id = document.getElementById('request-internal-id').value || 'req_' + Date.now().toString();
+            const existingReq = activeRequests.find(r => r.id === id);
             
             const payload = {
                 id,
@@ -1448,25 +1541,27 @@
                 qty,
                 date,
                 requester,
-                status: 'Pending',
-                created: new Date().toISOString()
+                // Preserve existing status and creation date if editing
+                status: existingReq ? existingReq.status : 'Pending',
+                created: existingReq ? existingReq.created : new Date().toISOString()
             };
 
             try {
-                await db.ref(`requests/${id}`).set(payload);
+                await inventoryDb.ref(`requests/${id}`).set(payload);
                 const exIdx = activeRequests.findIndex(r => r.id === id);
                 if (exIdx !== -1) {
                     activeRequests[exIdx] = payload;
+                    alert("Material request updated successfully.");
                 } else {
                     activeRequests.unshift(payload); 
+                    alert("Material request submitted successfully.");
                 }
                 
                 closeRequestPopup();
                 renderRequests();
-                alert("Material request submitted successfully.");
             } catch (error) {
-                console.error("Error creating request: ", error);
-                alert("Failed to submit request to database.");
+                console.error("Error saving request: ", error);
+                alert("Failed to save request to database.");
             }
         }
 
@@ -1475,7 +1570,7 @@
             const emptyState = document.getElementById('requests-empty-state');
             const tableContainer = document.getElementById('requests-list-container');
 
-            if(!tbody || !emptyState || !tableContainer) return;
+            if (!tbody || !emptyState || !tableContainer) return;
 
             if (activeRequests.length === 0) {
                 emptyState.classList.remove('hidden');
@@ -1488,15 +1583,27 @@
 
             let htmlStr = '';
             activeRequests.forEach(req => {
-                
                 let statusBadge = '';
-                if (req.status === 'Pending') statusBadge = '<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Pending</span>';
-                else if (req.status === 'Approved') statusBadge = '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Approved</span>';
-                else statusBadge = `<span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">${req.status}</span>`;
+                if (req.status === 'Pending') {
+                    statusBadge = '<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Pending</span>';
+                } else if (req.status === 'Approved') {
+                    statusBadge = '<span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Approved</span>';
+                } else if (req.status === 'Completed') {
+                    statusBadge = '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">Completed</span>';
+                } else {
+                    statusBadge = `<span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider">${req.status}</span>`;
+                }
+
+                const completeBtn = (req.status !== 'Completed') 
+                    ? `<button onclick="completeRequest('${req.id}')" class="text-emerald-600 hover:text-emerald-800 font-semibold uppercase text-[10px] transition-colors mr-3">Complete</button>` 
+                    : '';
 
                 htmlStr += `
                     <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="p-3 pl-4 font-mono font-bold text-slate-700 whitespace-nowrap">${req.reqId || 'N/A'}</td>
+                        <td class="p-3 pl-4 text-center">
+                            <input type="checkbox" class="request-checkbox cursor-pointer rounded border-slate-300 text-blue-600 focus:ring-blue-500" value="${req.id}">
+                        </td>
+                        <td class="p-3 font-mono font-bold text-slate-700 whitespace-nowrap">${req.reqId || 'N/A'}</td>
                         <td class="p-3 font-mono text-slate-800 whitespace-nowrap">${req.partNumber || ''}</td>
                         <td class="p-3 font-semibold text-slate-800 min-w-[150px]">${req.description || ''}</td>
                         <td class="p-3 font-mono text-slate-800 whitespace-nowrap">${req.price ? parseFloat(req.price).toFixed(2) + ' QAR' : '-'}</td>
@@ -1507,19 +1614,58 @@
                         <td class="p-3 text-slate-600 font-medium whitespace-nowrap">${req.requester || ''}</td>
                         <td class="p-3 text-center">${statusBadge}</td>
                         <td class="p-3 text-center pr-4 whitespace-nowrap">
+                            ${completeBtn}
+                            <button onclick="stageRequestForEdit('${req.id}')" class="text-blue-500 hover:text-blue-700 font-semibold uppercase text-[10px] transition-colors mr-3">Edit</button>
                             <button onclick="deleteRequest('${req.id}')" class="text-slate-400 hover:text-rose-500 font-semibold uppercase text-[10px] transition-colors">Delete</button>
                         </td>
                     </tr>
                 `;
             });
+            
             tbody.innerHTML = htmlStr;
-            lucide.createIcons();
+            if (window.lucide && typeof lucide.createIcons === 'function') {
+                lucide.createIcons();
+            }
+        }
+
+        window.toggleSelectAllRequests = (master) => {
+            document.querySelectorAll('.request-checkbox').forEach(cb => cb.checked = master.checked);
+        };
+
+        async function completeRequest(id) {
+            if (!id) return;
+            
+            if (!confirm("Are you sure you want to mark this request as Completed?")) return;
+
+            try {
+                // Update in Firebase Realtime Database
+                await inventoryDb.ref(`requests/${id}`).update({
+                    status: 'Completed',
+                    completedAt: new Date().toISOString()
+                });
+
+                // Update local array state if maintained separately
+                const targetReq = activeRequests.find(r => r.id === id);
+                if (targetReq) {
+                    targetReq.status = 'Completed';
+                }
+
+                // Re-render UI
+                renderRequests();
+
+                if (typeof showToast === 'function') {
+                    showToast("Request marked as Completed!");
+                }
+            } catch (err) {
+                console.error("Failed to complete request:", err);
+                alert("Failed to update status: " + err.message);
+            }
         }
 
         async function deleteRequest(id) {
             if(!confirm("Permanently delete this material request log?")) return;
             try {
-                await db.ref(`requests/${id}`).remove();
+                await inventoryDb.ref(`requests/${id}`).remove();
                 activeRequests = activeRequests.filter(r => r.id !== id);
                 renderRequests();
             } catch (error) {
@@ -1561,14 +1707,13 @@
                 outCount++;
                 const itemRef = localHubInventory.find(el => el.id === log.assetId);
                 const infoText = itemRef ? `[${itemRef.itemId}] ${itemRef.partNumber} — ${itemRef.description}` : `<span class="text-slate-400 italic">Deleted Asset Reference Record</span>`;
+                const equipmentText = log.equipment ? log.equipment : `<span class="text-slate-400 italic">N/A</span>`;
                 const purposeText = log.purpose ? log.purpose : `<span class="text-slate-400 italic">N/A</span>`;
                 const unitText = itemRef && itemRef.unit ? itemRef.unit : '';
 
-                // Check if the item is Non-Consumable
                 const isNonConsumable = itemRef && itemRef.type === 'Non-Consumables';
                 let actionButtons = `<button onclick="removeTransactionLog('${log.id}', 'out')" class="text-slate-400 hover:text-red-500 font-semibold uppercase text-[10px]">Delete</button>`;
 
-                // Add return button or badge for Non-Consumables
                 if (isNonConsumable) {
                     if (log.returned) {
                         actionButtons = `<span class="text-emerald-600 font-bold text-[9px] uppercase tracking-wider mr-2 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Returned</span>` + actionButtons;
@@ -1581,6 +1726,7 @@
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="p-3 pl-4 font-mono text-slate-400">${log.date}</td>
                         <td class="p-3 font-semibold text-slate-800">${infoText}</td>
+                        <td class="p-3 text-slate-700 font-mono">${equipmentText}</td>
                         <td class="p-3 text-slate-600 font-medium">${purposeText}</td>
                         <td class="p-3 text-right font-mono font-bold text-amber-600">-${log.qty} <span class="text-[9px] font-sans text-slate-400 font-normal">${unitText}</span></td>
                         <td class="p-3 text-center pr-4 flex items-center justify-center">
@@ -1590,7 +1736,7 @@
             });
 
             if(inTable) inTable.innerHTML = inHtml || `<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">No entry allocations posted.</td></tr>`;
-            if(outTable) outTable.innerHTML = outHtml || `<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">No dispatch modifications posted.</td></tr>`;
+            if(outTable) outTable.innerHTML = outHtml || `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">No dispatch modifications posted.</td></tr>`;
             
             if(document.getElementById('stockin-log-count')) document.getElementById('stockin-log-count').innerText = `${inCount} Records`;
             if(document.getElementById('stockout-log-count')) document.getElementById('stockout-log-count').innerText = `${outCount} Records`;
@@ -1631,7 +1777,7 @@
                 updates[`inventory/${log.assetId}/initialQty`] = finalQty.toString();
                 updates[`stock_in_logs/${returnTransactionObj.id}`] = returnTransactionObj;
 
-                await db.ref().update(updates);
+                await inventoryDb.ref().update(updates);
 
                 // Update local state instantly
                 localHubInventory[assetIdx].initialQty = finalQty.toString();
@@ -1689,7 +1835,7 @@
                     updates[`inventory/${log.assetId}/initialQty`] = finalQty.toString();
                 }
 
-                await db.ref().update(updates);
+                await inventoryDb.ref().update(updates);
                 targetHistoryArray.splice(logIdx, 1);
                 
                 renderTransactionLogs();
@@ -1757,7 +1903,7 @@
                     updates[`inventory/${assetId}/dateAdded`] = dateAddedUpdate;
                 }
                 
-                await db.ref().update(updates);
+                await inventoryDb.ref().update(updates);
 
                 localHubInventory[matchedIdx].initialQty = finalQty.toString();
                 if (dateAddedUpdate) localHubInventory[matchedIdx].dateAdded = dateAddedUpdate;
@@ -1810,7 +1956,7 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('asset-date-purchase').value = today;
             document.getElementById('asset-date-added').value = today;
-            document.getElementById('popup-title').innerHTML = '<i data-lucide="layer-plus" class="w-4 h-4 text-emerald-500"></i> Register Asset Component';
+            document.getElementById('popup-title').innerHTML = '<i data-lucide="layers" class="w-4 h-4 text-emerald-500"></i> Register Asset Component';
             document.getElementById('btn-popup-submit').innerText = 'Commit Asset Block';
             populateCategoryDropdown();
         }
@@ -1863,7 +2009,7 @@
             };
 
             try {
-                await db.ref(`inventory/${internalId}`).set(payload);
+                await inventoryDb.ref(`inventory/${internalId}`).set(payload);
                 
                 const existingIdx = localHubInventory.findIndex(i => i.id === internalId);
                 if(existingIdx !== -1) {
@@ -1918,7 +2064,7 @@
         async function purgeAsset(id) {
             if(!confirm("Are you sure you want to permanently delete this asset?")) return;
             try {
-                await db.ref(`inventory/${id}`).remove();
+                await inventoryDb.ref(`inventory/${id}`).remove();
                 localHubInventory = localHubInventory.filter(i => i.id !== id);
                 compileDynamicInventory();
                 refreshHubTensors();
@@ -2420,10 +2566,25 @@
 
         window.triggerRequestsPrint = () => {
             const printSec = document.getElementById('print-section');
-            const dateStr = new Date().toLocaleDateString();
+            
+            // Format date as DD-MMM-YYYY (e.g., 01-Jan-2026)
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = now.toLocaleDateString('en-GB', { month: 'short' });
+            const year = now.getFullYear();
+            const dateStr = `${day}-${month}-${year}`;
 
-            if (activeRequests.length === 0) {
-                alert("No requests to print.");
+            // Get IDs of all checked checkboxes
+            const checkedBoxes = Array.from(document.querySelectorAll('.request-checkbox:checked'));
+            const selectedIds = checkedBoxes.map(cb => cb.value);
+
+            // Filter activeRequests: if items are checked, print those; otherwise print all
+            const itemsToPrint = selectedIds.length > 0
+                ? activeRequests.filter(req => selectedIds.includes(String(req.id || req.reqId)))
+                : activeRequests;
+
+            if (itemsToPrint.length === 0) {
+                alert("No requests available or selected to print.");
                 return;
             }
 
@@ -2437,34 +2598,34 @@
                         <p class="text-sm font-bold font-mono">Date Generated: ${dateStr}</p>
                     </div>
                 </div>
-                <table class="w-full text-left border-collapse mb-8 text-[10px]">
+                <table class="w-full text-left border-collapse mb-4 text-[10px]">
                     <thead>
                         <tr class="border-b-2 border-slate-900 text-[10px] uppercase font-bold text-slate-600">
-                            <th class="p-2 w-20">Req ID</th>
-                            <th class="p-2 w-24">Date</th>
+                            <th class="p-2 w-16">Item No.</th>
                             <th class="p-2 w-28">Part Number</th>
-                            <th class="p-2">Description & Category</th>
+                            <th class="p-2">Description</th>
+                            <th class="p-2 w-40">Category</th>
                             <th class="p-2 text-center w-20">Req. Qty</th>
-                            <th class="p-2 w-28">Requester</th>
-                            <th class="p-2 text-center w-20">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200">
+                    <tbody>
             `;
 
-            activeRequests.forEach(req => {
+            itemsToPrint.forEach((req, index) => {
+                let categoryText = req.category || '';
+                if (req.category && req.categoryDesc) {
+                    categoryText += ` | ${req.categoryDesc}`;
+                } else if (req.categoryDesc) {
+                    categoryText = req.categoryDesc;
+                }
+
                 reportHtml += `
-                    <tr class="text-[11px] font-medium">
-                        <td class="p-2 font-mono font-bold">${req.reqId || 'N/A'}</td>
-                        <td class="p-2 font-mono">${req.date || req.dateNeeded || ''}</td>
+                    <tr class="text-[11px] font-medium border-b border-dotted border-slate-400">
+                        <td class="p-2 font-mono font-bold text-slate-600">${index + 1}</td>
                         <td class="p-2 font-mono font-bold">${req.partNumber}</td>
-                        <td class="p-2">
-                            <span class="block text-slate-900">${req.description}</span>
-                            <span class="block text-[9px] text-slate-500 font-mono italic mt-0.5">Cat: ${req.category || ''} | ${req.categoryDesc || ''}</span>
-                        </td>
+                        <td class="p-2 text-slate-900">${req.description}</td>
+                        <td class="p-2 text-[9px] text-slate-500 font-mono italic">${categoryText}</td>
                         <td class="p-2 text-center font-mono font-bold">${req.qty} <span class="font-sans font-normal text-[9px] text-slate-500">${req.unit || ''}</span></td>
-                        <td class="p-2 text-slate-700">${req.requester}</td>
-                        <td class="p-2 text-center font-bold uppercase tracking-wider text-[9px]">${req.status}</td>
                     </tr>
                 `;
             });
@@ -2472,6 +2633,7 @@
             reportHtml += `
                     </tbody>
                 </table>
+
                 <div class="mt-12 pt-8 border-t border-slate-300 grid grid-cols-2 gap-12">
                     <div>
                         <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-6">Generated By Logistics Hub</p>
