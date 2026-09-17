@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al Ghaith CMMS | Full Access Sign In</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0">
+    <style>
+        :root { --login-bg: #eef3f0; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 1rem; color: var(--text-main); background: var(--login-bg); font-family: var(--bs-body-font-family); }
+        .login-shell { width: min(100%, 980px); display: grid; grid-template-columns: .92fr 1.08fr; overflow: hidden; border: 1px solid rgba(5, 28, 18, .12); border-radius: 18px; background: var(--card-background); box-shadow: 0 24px 70px rgba(5, 28, 18, .14); }
+        .login-identity { display: flex; flex-direction: column; justify-content: space-between; min-height: 560px; padding: 3rem; color: #fff; background: var(--brand-forest-dark); background-image: linear-gradient(145deg, rgba(26, 62, 48, .9), transparent 56%); }
+        .login-identity > div:first-child { width: 100%; text-align: center; }
+        .login-brand-mark { width: 86px; height: 86px; margin: 0 auto; display: grid; place-items: center; border: 1px solid rgba(180, 241, 5, .35); border-radius: 12px; background: rgba(255, 255, 255, .08); }
+        .login-brand-mark img { width: 66px; height: 66px; object-fit: contain; border-radius: 8px; }
+        .login-company { max-width: 330px; margin: 1rem auto 0; color: #fff; font-size: 1rem; font-weight: 800; line-height: 1.4; text-align: center; }
+        .login-kicker { margin: 0 0 .75rem; color: var(--brand-lime); font-size: .68rem; font-weight: 800; letter-spacing: .14em; }
+        .login-identity h1 { margin: auto 0 1rem; color: #fff; font-size: 3rem; line-height: 1.02; letter-spacing: -.04em; }
+        .login-identity h1 span { color: var(--brand-lime); }
+        .login-description { max-width: 330px; margin: 0; color: #b8c8c0; font-size: .88rem; line-height: 1.7; }
+        .login-status-row { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.13); color: #b8c8c0; font: .62rem 'JetBrains Mono', monospace; letter-spacing: .08em; }
+        .login-status-row span:first-child { display: inline-flex; align-items: center; gap: .45rem; }
+        .login-status-row i { width: 7px; height: 7px; display: inline-block; border-radius: 50%; background: var(--brand-lime); box-shadow: 0 0 0 4px rgba(180,241,5,.12); }
+        .login-card { width: 100%; min-width: 0; max-width: none; display: flex; flex-direction: column; justify-content: center; padding: 3.25rem; border: 0; border-radius: 0; box-shadow: none; background: var(--card-background); }
+        .login-card h2 { margin: 0; color: var(--text-main); font-size: 2rem; letter-spacing: -.04em; }
+        .login-subtitle { margin: .65rem 0 0; color: var(--text-muted-green); font-size: .82rem; }
+        .login-form { display: grid; gap: 1.2rem; margin-top: 2.25rem; }
+        .login-field { display: grid; gap: .45rem; }
+        .login-field label { color: var(--text-main); font-size: .74rem; font-weight: 700; }
+        .login-field input { width: 100%; padding: .85rem .95rem; border: 1px solid var(--border-light); border-radius: 8px; outline: none; color: var(--text-main); background: #f8faf9; font: inherit; font-size: .82rem; }
+        .login-field input:focus { border-color: var(--brand-lime); background: #fff; box-shadow: 0 0 0 3px var(--brand-lime-translucent); }
+        .login-error { padding: .7rem .8rem; border: 1px solid #fecaca; border-radius: 7px; color: #b91c1c; background: #fef2f2; font-size: .7rem; font-weight: 700; }
+        .login-error.hidden { display: none; }
+        .login-submit { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: .9rem 1rem; border: 0; border-radius: 8px; color: #fff; background: var(--brand-forest-medium); font: inherit; font-size: .78rem; font-weight: 800; cursor: pointer; }
+        .login-submit:hover { background: var(--brand-forest-dark); }
+        .login-submit .material-symbols-outlined { color: var(--brand-lime); font-size: 1.1rem; }
+        .login-footer { margin: 2.25rem 0 0; color: var(--text-muted-green); font-size: .68rem; }
+        .login-footer span { padding: 0 .35rem; color: var(--brand-lime); }
+        @media (max-width: 700px) { .login-shell { grid-template-columns: 1fr; border-radius: 14px; } .login-identity { min-height: auto; padding: 2rem; } .login-identity h1 { margin-top: 2.75rem; font-size: 2.35rem; } .login-card { padding: 2rem; } }
+    </style>
+</head>
+<body>
+    <main class="login-shell">
+        <section class="login-identity">
+            <div>
+                <div class="login-brand-mark"><img src="alghaithlogo.jpg" alt="Al Ghaith Logo"></div>
+                <p class="login-company">Al Ghaith Trading &amp; Industrial Services</p>
+            </div>
+            <div>
+                <p class="login-kicker">AL GHAITH OPERATIONS</p>
+                <h1>Maintenance<br><span>Management</span></h1>
+                <p class="login-description">One secure workspace for assets, work orders, inspections, mobilization, and field teams.</p>
+                <div class="login-status-row"><span><i></i> SYSTEM ONLINE</span><span>CMMS / 01</span></div>
+            </div>
+        </section>
+        <section class="login-card">
+            <p class="login-kicker">AUTHORIZED ACCESS</p>
+            <h2>Welcome back</h2>
+            <p class="login-subtitle">Sign in to continue to your operations console.</p>
+            <form id="login-form" onsubmit="handleLogin(event)" class="login-form">
+                <div class="login-field"><label for="auth-email">Email address</label><input type="email" id="auth-email" required autocomplete="username" placeholder="name@company.com"></div>
+                <div class="login-field"><label for="auth-password">Password</label><input type="password" id="auth-password" required autocomplete="current-password" placeholder="Enter your password"></div>
+                <div id="auth-error" class="login-error hidden"></div>
+                <button type="submit" id="btn-login" class="login-submit"><span>Sign in to portal</span><span class="material-symbols-outlined">arrow_forward</span></button>
+            </form>
+            <p class="login-footer">Protected operations environment <span>•</span> Authorized users only</p>
+        </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script>
+        const cmmsConfig = {
+            apiKey: "AIzaSyCS6OIQ6wFFKDRcq-SFGCLP2aVq6faq5fo",
+            authDomain: "cmms-e5cce.firebaseapp.com",
+            databaseURL: "https://cmms-e5cce-default-rtdb.firebaseio.com",
+            projectId: "cmms-e5cce",
+            storageBucket: "cmms-e5cce.firebasestorage.app",
+            messagingSenderId: "143521296047",
+            appId: "1:143521296047:web:3f6b2b46d025ec32f36e5a"
+        };
+        const auth = firebase.initializeApp(cmmsConfig, "CMMSApp").auth();
+        auth.onAuthStateChanged(user => { if (user) window.location.replace('nlb.html'); });
+        function handleLogin(event) {
+            event.preventDefault();
+            const button = document.getElementById('btn-login');
+            const error = document.getElementById('auth-error');
+            button.querySelector('span').textContent = 'Authenticating...';
+            error.classList.add('hidden');
+            auth.signInWithEmailAndPassword(document.getElementById('auth-email').value, document.getElementById('auth-password').value)
+                .then(() => window.location.replace('nlb.html'))
+                .catch(err => { button.querySelector('span').textContent = 'Sign in to portal'; error.textContent = 'Access denied: ' + err.message; error.classList.remove('hidden'); });
+        }
+    </script>
+</body>
+</html>
