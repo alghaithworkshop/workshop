@@ -800,7 +800,8 @@
         document.getElementById(`nav-${pane}`).classList.add('active');
 
         if (window.innerWidth >= 768) {
-            document.body.classList.add('sidebar-collapsed');
+            document.body.classList.remove('sidebar-collapsed');
+            requestAnimationFrame(() => document.body.classList.add('sidebar-collapsed'));
         }
 
         if (window.innerWidth < 768) {
