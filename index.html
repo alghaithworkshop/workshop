@@ -3,333 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Ghaith Asset Management Hub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>Al Ghaith Operations | Site Maintenance</title>
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0">
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
+        * { box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 2rem;
+            color: var(--text-main);
+            background: #EEF3F0;
+            font-family: var(--bs-body-font-family);
         }
-        .font-mono-tech {
+        .maintenance-shell {
+            width: min(100%, 980px);
+            display: grid;
+            grid-template-columns: .85fr 1.15fr;
+            overflow: hidden;
+            border: 1px solid rgba(5, 28, 18, .12);
+            border-radius: 18px;
+            background: var(--card-background);
+            box-shadow: 0 24px 70px rgba(5, 28, 18, .14);
+        }
+        .maintenance-brand {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 620px;
+            padding: 3rem;
+            color: #FFFFFF;
+            background: var(--brand-forest-dark);
+            background-image: linear-gradient(145deg, rgba(26, 62, 48, .9), transparent 56%);
+        }
+        .brand-mark {
+            width: 86px;
+            height: 86px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(180, 241, 5, .35);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .08);
+        }
+        .brand-mark img { width: 66px; height: 66px; object-fit: contain; border-radius: 8px; }
+        .eyebrow {
+            margin: 0 0 .8rem;
+            color: var(--brand-lime);
             font-family: 'JetBrains Mono', monospace;
+            font-size: .68rem;
+            font-weight: 800;
+            letter-spacing: .14em;
         }
-
-        /* Professional Technical Blueprint & Ambient Glow Background */
-        .bg-executive {
-            background-color: #030712;
-            background-image: 
-                radial-gradient(circle at 15% 20%, rgba(225, 29, 72, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.07) 0%, transparent 40%),
-                radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
-                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
-            background-attachment: fixed;
+        .maintenance-brand h1 {
+            margin: 0 0 1rem;
+            color: #FFFFFF;
+            font-size: clamp(2.4rem, 5vw, 4rem);
+            line-height: 1;
+            letter-spacing: -.05em;
         }
-
-        .animate-fade-in {
-            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .maintenance-brand h1 span { color: var(--brand-lime); }
+        .brand-copy { max-width: 330px; color: #B8C8C0; font-size: .9rem; line-height: 1.7; }
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, .13);
+            color: #B8C8C0;
+            font: .62rem 'JetBrains Mono', monospace;
+            letter-spacing: .08em;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
+        .system-status i {
+            width: 8px;
+            height: 8px;
+            display: inline-block;
+            border-radius: 50%;
+            background: var(--brand-lime);
+            box-shadow: 0 0 0 4px rgba(180, 241, 5, .12);
+            animation: pulse 2s infinite;
+        }
+        .maintenance-content { padding: 3.25rem; }
+        .maintenance-content h2 { margin: 0; font-size: 2rem; letter-spacing: -.04em; }
+        .intro { margin: .65rem 0 2rem; color: var(--text-muted-green); font-size: .86rem; line-height: 1.6; }
+        .notice {
+            display: flex;
+            gap: .8rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #D8E7DC;
+            border-radius: 8px;
+            color: var(--brand-forest-medium);
+            background: #F3F8F4;
+            font-size: .78rem;
+            line-height: 1.55;
+        }
+        .notice .material-symbols-outlined { color: var(--brand-forest-medium); }
+        .updates { display: grid; gap: .7rem; margin: 0; padding: 0; list-style: none; }
+        .updates li {
+            display: flex;
+            align-items: flex-start;
+            gap: .75rem;
+            padding: .85rem 0;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-muted-green);
+            font-size: .78rem;
+            line-height: 1.5;
+        }
+        .updates li:last-child { border-bottom: 0; }
+        .updates .material-symbols-outlined { color: var(--brand-forest-medium); font-size: 1.15rem; }
+        .updates strong { display: block; margin-bottom: .15rem; color: var(--text-main); font-size: .8rem; }
+        .maintenance-actions { display: flex; align-items: center; gap: .8rem; margin-top: 2rem; }
+        .primary-link {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .75rem 1rem;
+            border-radius: 8px;
+            color: #FFFFFF;
+            background: var(--brand-forest-medium);
+            font-size: .76rem;
+            font-weight: 800;
+            text-decoration: none;
+            transition: background .2s ease, transform .2s ease;
+        }
+        .primary-link:hover { color: #FFFFFF; background: var(--brand-forest-dark); transform: translateY(-1px); }
+        .timestamp { color: var(--text-muted-green); font: .62rem 'JetBrains Mono', monospace; }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 3px rgba(180, 241, 5, .12); } 50% { box-shadow: 0 0 0 7px rgba(180, 241, 5, .03); } }
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .maintenance-shell { grid-template-columns: 1fr; border-radius: 14px; }
+            .maintenance-brand { min-height: auto; gap: 3rem; padding: 2rem; }
+            .maintenance-content { padding: 2rem; }
+            .maintenance-content h2 { font-size: 1.65rem; }
+            .maintenance-actions { align-items: flex-start; flex-direction: column; }
         }
     </style>
 </head>
-<body class="bg-executive text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-rose-500 selection:text-white relative">
-
-    <!-- Subtle Background Ambient Light Orbs -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div class="absolute -top-32 -left-32 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute top-1/3 -right-32 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
-    </div>
-
-    <!-- Floating Navigation Return Button -->
-    <div id="floating-back-btn" class="hidden fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
-        <button onclick="returnToHub()" class="group flex items-center space-x-2 bg-slate-900/95 text-slate-100 hover:bg-rose-600 border border-slate-700/80 hover:border-rose-500 font-semibold text-xs px-4 py-2 sm:px-5 sm:py-2.5 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 backdrop-blur-md cursor-pointer whitespace-nowrap">
-            <span class="material-symbols-outlined text-base group-hover:rotate-180 transition-transform duration-500">grid_view</span>
-            <span class="tracking-wide">Switch Portal Menu</span>
-        </button>
-    </div>
-
-    <!-- Main Hub View -->
-    <div id="hub-view" class="flex-1 flex flex-col justify-between max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 lg:px-8 animate-fade-in z-10 relative">
-        
-        <!-- Executive Glass Header -->
-        <header class="mb-8 pt-2">
-            <div class="bg-slate-900/70 border border-slate-800/80 backdrop-blur-2xl rounded-2xl p-6 sm:p-7 shadow-2xl relative overflow-hidden">
-                <!-- Executive Accent Line -->
-                <div class="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-rose-500/60 to-transparent"></div>
-
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                    
-                    <!-- Brand & Title Block -->
-                    <div class="flex items-center gap-5">
-                        
-                        <!-- Executive Premium Logo Container -->
-                        <div class="relative group shrink-0">
-                            <!-- Soft Ambient Backlight Glow -->
-                            <div class="absolute -inset-1 bg-gradient-to-r from-rose-500/30 to-slate-500/20 rounded-2xl blur-md opacity-70 group-hover:opacity-100 transition duration-500"></div>
-                            
-                            <!-- Crisp Glassmorphic Logo Pod -->
-                            <div class="relative p-3.5 bg-white rounded-2xl shadow-2xl border border-slate-200/50 ring-1 ring-white/20 flex items-center justify-center">
-                                <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-11 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
-                            </div>
-                        </div>
-                        
-                        <!-- Title Typography -->
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="font-mono-tech text-[10px] uppercase font-semibold text-rose-400 tracking-wider bg-rose-500/10 px-2.5 py-0.5 rounded border border-rose-500/20">
-                                    RLC Workshop Division
-                                </span>
-                                <span class="text-slate-600"></span>
-                                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-widest"></span>
-                            </div>
-                            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white uppercase">
-                                Al Ghaith Trading & Industrial Services
-                            </h1>
-                            <p class="text-xs sm:text-sm text-slate-400 font-medium tracking-wide mt-0.5">
-                                Enterprise Operations & Asset Management Command Center
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Telemetry & Status Panel -->
-                    <div class="flex flex-wrap items-center gap-3 self-start lg:self-auto pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-800/80">
-                        <div class="flex items-center gap-2 bg-slate-950/80 border border-slate-800 px-3.5 py-2 rounded-xl text-xs font-mono-tech">
-                            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-slate-300 font-semibold tracking-wide">SYSTEM:</span>
-                            <span class="text-emerald-400 font-bold">ONLINE</span>
-                        </div>
-
-                        <div class="hidden sm:flex items-center gap-2 bg-slate-950/80 border border-slate-800 px-3.5 py-2 rounded-xl text-xs font-mono-tech text-slate-400">
-                            <span class="material-symbols-outlined text-sm text-slate-500">verified_user</span>
-                            <span>SECURE GATEWAY</span>
-                        </div>
-                    </div>
-
-                </div>
+<body>
+    <main class="maintenance-shell">
+        <section class="maintenance-brand">
+            <div>
+                <div class="brand-mark"><img src="alghaithlogo.jpg" alt="Al Ghaith Logo"></div>
+                <p style="max-width: 330px; margin: 1rem 0 0; color: #FFFFFF; font-size: 1rem; font-weight: 800; line-height: 1.4;">Al Ghaith Trading &amp; Industrial Services</p>
             </div>
-        </header>
+            <div>
+                <p class="eyebrow">AL GHAITH / OPERATIONS HUB</p>
+                <h1>Site<br><span>Maintenance</span></h1>
+                <p class="brand-copy">We are improving the operations platform to make daily asset and field-team work faster, clearer, and more reliable.</p>
+                <div class="system-status"><i></i> MAINTENANCE IN PROGRESS</div>
+            </div>
+        </section>
 
-        <!-- Visual Image Card Grid -->
-        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 my-auto py-2">
-            
-            <!-- Card 1: High Pressure Pump Portal -->
-            <button onclick="openPortal('information')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-rose-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-rose-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="hppump.jpg" alt="High Pressure Pump" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
+        <section class="maintenance-content">
+            <p class="eyebrow">SYSTEM UPDATE</p>
+            <h2>We will be back shortly.</h2>
+            <p class="intro">The site is temporarily unavailable while the latest operational improvements are being applied.</p>
 
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-400 flex items-center justify-center backdrop-blur-md group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">precision_manufacturing</span>
-                            </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-rose-400 px-2.5 py-1 rounded-full">Equipment and Vehicle</span>
-                        </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-rose-300 transition-colors">
-                            Industrial Equipment and Company Vehicle Information
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Monitor and track location, maintenance work orders, dispatch histories, and certificates.
-                        </p>
-                    </div>
+            <div class="notice">
+                <span class="material-symbols-outlined">info</span>
+                <span>Existing records are being preserved. Access will return after the update and verification process is complete.</span>
+            </div>
 
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-rose-400 group-hover:text-rose-300">
-                        <span>Access Information</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
+            <ul class="updates" aria-label="Maintenance updates">
+                <li><span class="material-symbols-outlined">dashboard</span><div><strong>Dashboard improvements</strong>Updated operational counts for assets, work orders, maintenance/down assets, dispatches, mobilization requests, and certificate expiry.</div></li>
+                <li><span class="material-symbols-outlined">inventory_2</span><div><strong>Asset registry updates</strong>Added Equipment Name, improved asset details, registry search, print layouts, and Excel export.</div></li>
+                <li><span class="material-symbols-outlined">directions_car</span><div><strong>Vehicle management updates</strong>Improved vehicle login, sidebar navigation, fixed scrolling, auto-hide menus, and vehicle registry Excel export.</div></li>
+                <li><span class="material-symbols-outlined">download</span><div><strong>Excel export updates</strong>Added filtered Excel exports with asset, equipment, location, certificate, vehicle, and operational status details.</div></li>
+                <li><span class="material-symbols-outlined">print</span><div><strong>Document and print updates</strong>Improved asset detail printing with branded headers, history tables, and signature sections.</div></li>
+                <li><span class="material-symbols-outlined">security</span><div><strong>Access and navigation updates</strong>Separated full-access and restricted operations login routes with focused navigation.</div></li>
+            </ul>
 
-            <!-- Card 2: Vehicle Management Portal -->
-            <button onclick="openPortal('mobilize')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-sky-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="vehicle.jpg" alt="Fleet Vehicle" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
-
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-sky-500/20 border border-sky-500/30 text-sky-400 flex items-center justify-center backdrop-blur-md group-hover:bg-sky-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">directions_car</span>
-                            </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-sky-400 px-2.5 py-1 rounded-full">Equipment Mobilization</span>
-                        </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-sky-300 transition-colors">
-                            Equipment Mobilization Portal
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Deploying high-pressure pumps, field units, and heavy machinery to job sites.
-                        </p>
-                    </div>
-
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-sky-400 group-hover:text-sky-300">
-                        <span>Login</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
-
-            <!-- Card 3: NLB Technician Login -->
-            <button onclick="openPortal('tech')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-amber-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="technician.jpg" alt="Technician" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
-
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center backdrop-blur-md group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">engineering</span>
-                            </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-amber-400 px-2.5 py-1 rounded-full">Technician</span>
-                        </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-amber-300 transition-colors">
-                            NLB Technician Login
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Secure terminal for Technician teams to update active work orders and complete field logs.
-                        </p>
-                    </div>
-
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-amber-400 group-hover:text-amber-300">
-                        <span>Login</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
-
-            <!-- Card 4: Vehicle Mechanic Login -->
-            <button onclick="openPortal('mechanic')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-purple-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="mechanic.jpg" alt="Vehicle Mechanic" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700" onerror="this.src='vehicle.jpg'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
-
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-400 flex items-center justify-center backdrop-blur-md group-hover:bg-purple-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">car_repair</span>
-                            </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-purple-400 px-2.5 py-1 rounded-full">Mechanic</span>
-                        </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors">
-                            Vehicle Mechanic Login
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Dedicated terminal for vehicle mechanics to view service tickets, update repairs, and document maintenance actions.
-                        </p>
-                    </div>
-
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-purple-400 group-hover:text-purple-300">
-                        <span>Login</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
-
-            <!-- Card 5: Inventory Control Portal -->
-            <button onclick="openPortal('inventory')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-emerald-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="inventory.png" alt="Inventory Racks" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
-
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center backdrop-blur-md group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">inventory_2</span>
-                            </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-emerald-400 px-2.5 py-1 rounded-full">Warehouse</span>
-                        </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-emerald-300 transition-colors">
-                            Inventory Control Portal
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Track workshop spare parts, monitor warehouse stock thresholds, and coordinate asset distribution.
-                        </p>
-                    </div>
-
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">
-                        <span>Login</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
-
-        </main>
-
-        <div class="mt-6"></div>
-    </div>
-
-    <!-- Embedded Portal Container -->
-    <div id="portal-frame-container" class="hidden fixed inset-0 w-full h-full bg-slate-950 z-40">
-        <iframe id="portal-iframe" src="" class="w-full h-full border-0 m-0 p-0 overflow-hidden" allow="autoplay; clipboard-write"></iframe>
-    </div>
-
-    <!-- Global Footer -->
-    <footer id="hub-footer" class="py-5 border-t border-slate-800/80 text-center text-xs text-slate-500 relative z-10 bg-slate-950/90 backdrop-blur-md w-full mt-auto">
-        <div class="flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto px-6 gap-2">
-            <div>&copy; 2026 Al Ghaith Trading & Industrial Services. All Rights Reserved.</div>
-            
-        </div>
-    </footer>
-
-    <!-- App Router Logic -->
-    <script>
-        const config = {
-            information: "information.html",
-            mobilize: "mobilize.html",
-            tech: "nlb.html",
-            mechanic: "vehicle.html",
-            inventory: "inventory.html"
-        };
-
-        function openPortal(type) {
-            const fileTarget = config[type];
-            if (!fileTarget) return;
-
-            const hubView = document.getElementById('hub-view');
-            const hubFooter = document.getElementById('hub-footer');
-            const frameContainer = document.getElementById('portal-frame-container');
-            const iframe = document.getElementById('portal-iframe');
-            const floatingBtn = document.getElementById('floating-back-btn');
-
-            iframe.src = fileTarget;
-
-            hubView.classList.add('hidden');
-            if (hubFooter) hubFooter.classList.add('hidden');
-
-            frameContainer.classList.remove('hidden');
-            floatingBtn.classList.remove('hidden');
-        }
-
-        function returnToHub() {
-            const hubView = document.getElementById('hub-view');
-            const hubFooter = document.getElementById('hub-footer');
-            const frameContainer = document.getElementById('portal-frame-container');
-            const iframe = document.getElementById('portal-iframe');
-            const floatingBtn = document.getElementById('floating-back-btn');
-
-            iframe.src = "";
-
-            frameContainer.classList.add('hidden');
-            floatingBtn.classList.add('hidden');
-
-            hubView.classList.remove('hidden');
-            if (hubFooter) hubFooter.classList.remove('hidden');
-        }
-    </script>
+            <div class="maintenance-actions">
+                
+                <span class="timestamp">STATUS: UPDATING PLATFORM</span>
+            </div>
+        </section>
+    </main>
 </body>
 </html>
