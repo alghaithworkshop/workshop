@@ -7,9 +7,29 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
+    <link rel="stylesheet" href="main.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
         .font-code { font-family: 'JetBrains Mono', monospace; }
+
+        body { background: var(--bs-body-bg) !important; color: var(--text-main) !important; font-family: var(--bs-body-font-family) !important; }
+        #app-container { height: 100vh; min-height: 0; overflow: hidden; }
+        #app-container > .flex.flex-1.overflow-hidden { min-height: 0; }
+        #app-container > nav { position: relative; min-height: 82px; padding: .8rem 1.5rem; border-bottom-color: var(--border-light) !important; background: linear-gradient(110deg,#FFF 0%,#FFF 62%,#F3F8F4 100%) !important; box-shadow: 0 5px 20px rgba(11,19,15,.05); }
+        #app-container > nav::after { content: ''; position: absolute; left: 0; bottom: -1px; width: 120px; height: 3px; background: var(--brand-lime); }
+        #app-container > nav img { width: 42px; height: 42px; object-fit: contain; border-radius: 9px; box-shadow: 0 0 0 4px rgba(180,241,5,.14); }
+        #app-container > nav > div:first-child > div > div:last-child::before { content: 'AL GHAITH / INFORMATION HUB'; display: block; color: var(--brand-forest-medium); font-size: .62rem; font-weight: 800; letter-spacing: .12em; }
+        #app-container > nav > div:first-child > div > div:last-child > div { display: none; }
+        #app-container > nav > div:first-child > div > div:last-child > p { margin: .15rem 0 0; color: var(--text-muted-green); font-size: .68rem; }
+        #sidebar { position: sticky !important; top: 0; width: var(--sidebar-width); height: 100%; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; background: var(--brand-forest-dark) !important; border-right-color: var(--border-dark-green) !important; box-shadow: none !important; }
+        #sidebar .mod-tab { color: var(--text-sidebar-muted) !important; justify-content: flex-start !important; border-radius: var(--radius-md); }
+        #sidebar .mod-tab:hover, #sidebar .mod-tab.bg-slate-900 { color: var(--brand-lime) !important; background: var(--brand-forest-light) !important; }
+        #sidebar .mod-tab.bg-slate-900 { box-shadow: inset 3px 0 0 var(--brand-lime); }
+        #sidebar .sidebar-section-title { margin: 1rem 0 .3rem; padding: 0 .75rem; color: var(--text-sidebar-muted); font-size: .58rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+        #sidebar .text-slate-400, #sidebar .text-slate-600, #sidebar .text-slate-500 { color: var(--text-sidebar-muted) !important; }
+        #sidebar .bg-slate-50 { background: rgba(255,255,255,.05) !important; border-color: var(--border-dark-green) !important; }
+        #app-container main { min-width: 0; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; background: var(--bs-body-bg); }
+        @media (max-width: 767px) { #sidebar { position: fixed !important; top: 0; width: min(var(--sidebar-width),86vw); height: 100vh; } }
         
         @media print {
             #app-container { display: none !important; }
@@ -68,16 +88,19 @@
                         <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-slate-600"><span class="material-symbols-outlined text-sm">close</span></button>
                     </div>
 
+                    <p class="sidebar-section-title">Overview</p>
                     <button onclick="setModule('dashboard')" id="tab-dashboard" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition bg-slate-900 text-white shadow-xs">
                         <span class="material-symbols-outlined">dashboard</span>
                         <span>Main Dashboard</span>
                     </button>
                     
+                    <p class="sidebar-section-title">Assets &amp; Fleet</p>
                     <button onclick="setModule('fleet')" id="tab-fleet" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
                         <span class="material-symbols-outlined">analytics</span>
                         <span>Machine / Equipment</span>
                     </button>
                     
+                    <p class="sidebar-section-title">Vehicle Operations</p>
                     <button 
                         onclick="setModule('fleet1')" 
                         id="tab-fleet1" 
