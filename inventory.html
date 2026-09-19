@@ -125,6 +125,20 @@
                 transform: translateX(0);
             }
 
+            /* Guard: keep the tap-to-close overlay hidden even if the Tailwind CDN
+               (which defines the `hidden` utility) fails to load */
+            #inventory-sidebar-overlay.hidden {
+                display: none !important;
+            }
+
+            /* Overlay geometry fallback when the Tailwind CDN is unavailable */
+            #inventory-sidebar-overlay:not(.hidden) {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background: rgba(15, 23, 42, 0.5);
+            }
+
             #app-dashboard header {
                 flex-wrap: wrap;
                 gap: 0.75rem;
