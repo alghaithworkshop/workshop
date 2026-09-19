@@ -39,6 +39,7 @@
    22. Keyframe Animations & Overlays
    23. Reusable Helper & Utility Classes (Zero Inline Style Policy)
    24. Transaction List Component
+   25. Mobile / Small-Screen Repair Layer
 --------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------
@@ -146,6 +147,7 @@ a:hover {
     width: var(--sidebar-width);
     background-color: var(--brand-forest-dark);
     height: 100vh;
+    height: 100dvh; /* dynamic viewport height: mobile browser chrome cannot clip the menu */
     position: fixed;
     top: 0;
     left: 0;
@@ -394,6 +396,7 @@ body.sidebar-minimized .sidebar-profile {
     margin-left: var(--sidebar-width);
     padding: 2rem 2.5rem;
     min-height: 100vh;
+    min-height: 100dvh;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
@@ -1735,6 +1738,7 @@ span.flatpickr-weekday {
 --------------------------------------------------------------------- */
 .login-wrapper {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3096,8 +3100,11 @@ span.flatpickr-weekday {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
+    right: 0;
+    /* width: 100vw included the scrollbar and forced a horizontal page scroll on mobile */
+    width: auto;
     height: 100vh;
+    height: 100dvh;
     background-color: rgba(5, 28, 18, 0.4);
     backdrop-filter: blur(4px);
     z-index: 1025;
@@ -3181,6 +3188,66 @@ span.flatpickr-weekday {
 
 .text-lime {
     color: var(--brand-lime) !important;
+}
+
+/* ---------------------------------------------------------------------
+   25. Mobile / Small-Screen Repair Layer
+   ---------------------------------------------------------------------
+   Shared small-screen fixes applied across every page of the project:
+   - dynamic viewport units so on-screen browser chrome cannot clip shells
+   - dialog / login overlays stay scrollable on short screens
+   - wide data tables and controls behave on touch devices
+--------------------------------------------------------------------- */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* Any horizontally scrollable region gets momentum scrolling on touch */
+.table-responsive,
+[class*="overflow-x-auto"],
+[class*="overflow-x-scroll"] {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+}
+
+@media (max-width: 900px) {
+    /* Login layouts must scroll instead of trapping content off-screen */
+    .login-wrapper {
+        align-items: flex-start;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+
+    .login-wrapper > .login-card {
+        margin: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-wrapper {
+        padding: 1rem;
+    }
+
+    /* Comfortable touch targets */
+    .btn-custom,
+    .form-control-custom {
+        min-height: 44px;
+    }
+
+    h1, .h1 {
+        font-size: 1.4rem;
+    }
+
+    .sidebar-wrapper {
+        width: min(var(--sidebar-width), 86vw);
+        padding: 1.5rem 1rem;
+    }
+
+    .transaction-item {
+        align-items: flex-start;
+    }
 }
 
 
