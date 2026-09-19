@@ -286,6 +286,7 @@
 
         #app-container {
             height: 100vh;
+            height: 100dvh; /* dynamic viewport height: mobile browser chrome cannot clip the shell */
             min-height: 0;
             overflow: hidden;
         }
@@ -316,6 +317,7 @@
                 top: 0;
                 bottom: 0;
                 height: 100vh;
+                height: 100dvh;
             }
         }
 
@@ -630,6 +632,66 @@
         }
 
         
+        /* ------------------------------------------------------------------
+           MOBILE / SMALL-SCREEN REPAIR LAYER
+           ------------------------------------------------------------------
+           1. App shells and the navigation drawer use the dynamic viewport
+              unit so on-screen browser chrome cannot clip them.
+           2. Login screens and modal dialogs become scrollable, so their
+              sign-in / save / close buttons stay reachable on short screens.
+           3. Wide data tables keep their own momentum-scrolling region.
+        ------------------------------------------------------------------ */
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        [class*="overflow-x-auto"],
+        [class*="overflow-x-scroll"] {
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+        }
+
+        @media (max-width: 767px) {
+            #app-container,
+            #sidebar {
+                height: 100dvh;
+            }
+
+            #sidebar {
+                height: 100dvh !important;
+            }
+        }
+
+        @media (max-width: 900px) {
+            #auth-overlay,
+            #login-screen,
+            .login-screen,
+            [id^="modal-"].fixed.inset-0 {
+                align-items: flex-start !important;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+            }
+
+            #auth-overlay > *,
+            #login-screen > *,
+            .login-screen > *,
+            [id^="modal-"].fixed.inset-0 > div {
+                margin: auto !important;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .login-shell {
+                border-radius: 14px;
+            }
+
+            .login-identity,
+            .login-card {
+                padding: 1.75rem;
+            }
+        }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
