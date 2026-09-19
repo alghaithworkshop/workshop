@@ -47,7 +47,7 @@
             .inventory-login-field input { width: 100%; box-sizing: border-box; padding: .85rem .95rem; border: 1px solid var(--border-light); border-radius: 8px; color: var(--text-main); background: #F8FAF9; font: inherit; font-size: .82rem; }
             .inventory-login-submit { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: .9rem 1rem; border: 0; border-radius: 8px; color: #FFF; background: var(--brand-forest-medium); font: inherit; font-size: .78rem; font-weight: 800; cursor: pointer; transition: background .2s ease, transform .2s ease; }
             .inventory-login-submit:hover { background: var(--brand-forest-dark); transform: translateY(-1px); }
-            #app-dashboard { height: 100vh; min-height: 0; background: var(--bs-body-bg); }
+            #app-dashboard { height: 100vh; height: 100dvh; min-height: 0; background: var(--bs-body-bg); }
             #app-dashboard > aside { position: relative; width: var(--sidebar-width) !important; background: var(--brand-forest-dark) !important; border-right: 1px solid var(--border-dark-green) !important; border-color: var(--border-dark-green) !important; color: var(--text-sidebar-muted) !important; }
             #app-dashboard > aside > div:first-child { padding: 1.5rem !important; background: var(--brand-forest-dark) !important; border-color: var(--border-dark-green) !important; }
             #app-dashboard > aside nav { padding: 1rem 1.5rem !important; }
@@ -65,6 +65,91 @@
             #filter-strip { border-bottom-color: var(--border-light) !important; background: var(--card-background) !important; }
             @keyframes inventoryPulse { 0%,100% { box-shadow: 0 0 0 3px rgba(180,241,5,.12); } 50% { box-shadow: 0 0 0 7px rgba(180,241,5,.03); } }
             @media (max-width: 700px) { .inventory-login-shell { grid-template-columns: 1fr; border-radius: 14px; } .inventory-login-identity { min-height: auto; padding: 2rem; } .inventory-login-card { padding: 2rem; } }
+        /* ------------------------------------------------------------------
+           MOBILE / SMALL-SCREEN REPAIR LAYER
+           ------------------------------------------------------------------
+           Phones & small tablets:
+           1. The warehouse sidebar becomes a slide-in navigation drawer
+              (opened from the header menu button) instead of squeezing the
+              content area into a sliver of the screen.
+           2. The login screen and the register / request pop-ups start at the
+              top of the screen and scroll, so their buttons stay reachable.
+           3. Header, filter strip and content area use tighter phone spacing.
+        ------------------------------------------------------------------ */
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        [class*="overflow-x-auto"],
+        [class*="overflow-x-scroll"] {
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+        }
+
+        @media (max-width: 900px) {
+            #login-screen,
+            #popup-modal {
+                align-items: flex-start !important;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+            }
+
+            #login-screen > *,
+            #popup-modal > * {
+                margin: auto !important;
+            }
+        }
+
+        @media (max-width: 767px) {
+            #app-dashboard {
+                height: 100dvh;
+            }
+
+            /* Slide-in navigation drawer for the warehouse sidebar */
+            #app-dashboard > aside {
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: min(var(--sidebar-width), 84vw) !important;
+                height: 100dvh;
+                transform: translateX(-100%);
+                transition: transform 0.25s ease, box-shadow 0.25s ease;
+                z-index: 45;
+                box-shadow: 0 24px 60px rgba(5, 28, 18, 0.3);
+            }
+
+            #app-dashboard.sidebar-open > aside {
+                transform: translateX(0);
+            }
+
+            #app-dashboard header {
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                padding: 0.85rem 1rem !important;
+            }
+
+            #app-dashboard main {
+                padding: 1rem !important;
+            }
+
+            #filter-strip {
+                padding: 0.75rem 1rem !important;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .inventory-login-shell {
+                border-radius: 14px;
+            }
+
+            .inventory-login-identity,
+            .inventory-login-card {
+                padding: 1.75rem;
+            }
+        }
         </style>
 
 </head>
@@ -102,6 +187,8 @@
 
     <!-- MAIN APP DASHBOARD (Hidden by default) -->
     <div id="app-dashboard" class="hidden w-full h-full flex overflow-hidden">
+        <!-- Mobile navigation overlay: tap to close the sidebar drawer -->
+        <div id="inventory-sidebar-overlay" onclick="toggleInventorySidebar()" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden"></div>
         
         <aside class="w-64 bg-[#0F172A] text-slate-400 h-full flex flex-col flex-shrink-0 border-r border-slate-800 z-20">
             <div class="p-4 border-b border-slate-800 flex flex-col gap-3 bg-[#090D16]">
@@ -162,9 +249,14 @@
         <div class="flex-1 flex flex-col overflow-hidden h-full relative">
             
             <header class="relative bg-white border-b border-slate-200/80 px-6 flex items-center justify-between flex-shrink-0">
-                <div>
-                    <h2 id="view-title" class="text-sm font-bold text-slate-900 tracking-tight">Master Material Allocation Index</h2>
-                    <p id="view-subtitle" class="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Asset Registry Desktop</p>
+                <div class="flex items-center gap-3 min-w-0">
+                    <button onclick="toggleInventorySidebar()" class="md:hidden flex items-center justify-center w-9 h-9 shrink-0 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 cursor-pointer" aria-label="Open navigation menu" title="Open navigation menu">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <div class="min-w-0">
+                        <h2 id="view-title" class="text-sm font-bold text-slate-900 tracking-tight">Master Material Allocation Index</h2>
+                        <p id="view-subtitle" class="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Asset Registry Desktop</p>
+                    </div>
                 </div>
                 
                 <div id="header-action-container" class="flex items-center gap-6">
@@ -1092,6 +1184,30 @@
             trackingReader.readAsText(uploadedFile);
         }
 
+        // ==========================
+        // MOBILE NAVIGATION DRAWER
+        // ==========================
+        function toggleInventorySidebar() {
+            const dashboard = document.getElementById('app-dashboard');
+            const overlay = document.getElementById('inventory-sidebar-overlay');
+            if (!dashboard) return;
+
+            const isOpen = dashboard.classList.toggle('sidebar-open');
+            if (overlay) overlay.classList.toggle('hidden', !isOpen);
+        }
+
+        function closeInventorySidebar() {
+            const dashboard = document.getElementById('app-dashboard');
+            const overlay = document.getElementById('inventory-sidebar-overlay');
+            if (dashboard) dashboard.classList.remove('sidebar-open');
+            if (overlay) overlay.classList.add('hidden');
+        }
+
+        // Return to the compact desktop layout whenever the viewport grows
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) closeInventorySidebar();
+        });
+
         function switchView(viewName) {
             const views = ['inventory', 'stockin', 'stockout', 'requests', 'reports'];
             views.forEach(v => {
@@ -1145,6 +1261,9 @@
                 calculateReports();
                 runPrintFilterMatrix();
             }
+
+            // Phones: close the navigation drawer so the chosen module is visible
+            closeInventorySidebar();
         }
 
         function populateTransactionDropdowns() {
