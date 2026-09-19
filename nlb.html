@@ -312,12 +312,65 @@
         }
 
         @media (max-width: 767px) {
-            #app-container > .flex.flex-1.overflow-hidden > #sidebar {
-                position: fixed;
-                top: 0;
-                bottom: 0;
-                height: 100vh;
-                height: 100dvh;
+            /* Drawer positioning: fixed full-height drawer, hidden off-canvas
+               by default (JS slides it open on menu tap). Plain selectors
+               (not child combinators) so a Tailwind preflight/normalize reset
+               cannot break the match; explicit z-index keeps it above the
+               topbar, main content and overlay. */
+            #sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                height: 100vh !important;
+                height: 100dvh !important;
+                width: 256px !important;
+                width: min(256px, 86vw) !important;
+                max-width: 86vw !important;
+                z-index: 90 !important;
+                margin: 0 !important;
+                background-color: var(--brand-forest-dark) !important;
+                box-shadow: 0 24px 60px rgba(5, 28, 18, 0.35) !important;
+                transition: transform 0.2s ease !important;
+            }
+
+            /* CLOSED state — forced off-canvas even when the Tailwind CDN is
+               unavailable/blocked (its `-translate-x-full` utility would not
+               exist). `!important` beats the base `transform` utility. */
+            #sidebar.-translate-x-full {
+                transform: translateX(-110%) !important;
+                visibility: hidden;
+            }
+
+            /* OPEN state — JS removes `-translate-x-full`. Off-canvas
+               positioning (top/right/bottom/left) is *not* inherited by Tailwind
+               translate utilities, so also force the geometry that `fixed
+               inset-y-0 left-0` provided on desktop. */
+            #sidebar:not(.-translate-x-full) {
+                transform: translateX(0) !important;
+                visibility: visible;
+                position: fixed !important;
+                top: 0 !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: auto !important;
+                height: 100vh !important;
+                height: 100dvh !important;
+                max-height: 100vh !important;
+                max-height: 100dvh !important;
+                margin-top: 0 !important;
+                z-index: 90 !important;
+            }
+
+            #sidebar-overlay {
+                position: fixed !important;
+                inset: 0 !important;
+                z-index: 80 !important;
+                background: rgba(15, 23, 42, 0.45) !important;
+            }
+
+            #sidebar-overlay.hidden {
+                display: none !important;
             }
         }
 
@@ -637,6 +690,48 @@
             overscroll-behavior-x: contain;
         }
 
+        /* Mobile navigation trigger (visible on phones only) */
+        .topbar-menu-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            margin-right: 0.75rem;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            color: var(--brand-forest-dark);
+            background: #FFFFFF;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .topbar-menu-btn:hover,
+        .topbar-menu-btn:focus-visible {
+            color: var(--brand-lime);
+            background: var(--brand-forest-dark);
+            border-color: var(--brand-forest-dark);
+            outline: none;
+        }
+
+        .topbar-menu-btn .material-symbols-outlined {
+            font-size: 1.35rem;
+            line-height: 1;
+        }
+
+        @media (max-width: 767px) {
+            .topbar-menu-btn {
+                display: inline-flex;
+            }
+
+            .topbar-brand,
+            .topbar-brand-inner {
+                min-width: 0;
+            }
+        }
+
         @media (max-width: 767px) {
             #app-container,
             #sidebar {
@@ -734,6 +829,10 @@
     <div id="app-container" class="flex flex-col min-h-screen">
         <nav class="topbar">
             <div class="topbar-brand">
+                <!-- Mobile navigation trigger: opens the module drawer on phones -->
+                <button type="button" class="topbar-menu-btn" onclick="toggleMobileSidebar()" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false" title="Open navigation menu">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
                 <div class="topbar-brand-inner">
                     <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-9 w-9 object-contain rounded" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
                     <div>
@@ -3424,14 +3523,25 @@
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
-            if(sidebar.classList.contains('-translate-x-full')) {
+            const trigger = document.querySelector('.topbar-menu-btn');
+            if (!sidebar) return;
+            const willOpen = sidebar.classList.contains('-translate-x-full');
+
+            if (willOpen) {
                 sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
+                if (overlay) overlay.classList.remove('hidden');
             } else {
                 sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
+                if (overlay) overlay.classList.add('hidden');
             }
+
+            if (trigger) trigger.setAttribute('aria-expanded', String(willOpen));
         }
+
+        // Expose the drawer toggle before any later script error can hide it:
+        // inline `onclick="toggleMobileSidebar()"` handlers resolve through the
+        // global scope, so a failure further down this file must not remove it.
+        window.toggleMobileSidebar = toggleMobileSidebar;
 
         // UPDATED: Bind DB pipeline to authentication state
         window.onload = function() {
