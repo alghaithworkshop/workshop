@@ -374,31 +374,59 @@
             }
         }
 
+        /* ============================================================
+           EXECUTIVE TOP HEADER — deep forest gradient + lime accents
+           ============================================================ */
         .topbar {
             position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 1.5rem;
-            min-height: 82px;
-            padding: 0.8rem 1.5rem;
-            border-bottom: 1px solid var(--border-light);
-            background: linear-gradient(110deg, #FFFFFF 0%, #FFFFFF 62%, #F3F8F4 100%);
-            box-shadow: 0 5px 20px rgba(11, 19, 15, 0.05);
+            min-height: 96px;
+            padding: 1rem 1.75rem;
+            border-bottom: 1px solid rgba(180, 241, 5, 0.22);
+            /* Photo backdrop (hppump.jpg) behind a translucent forest-green gradient
+               so the header picture shows through while text stays readable.
+               Swap the url() to technician.jpg / vehicle.jpg / mechanic.jpg to change it. */
+            background:
+                linear-gradient(115deg, rgba(5, 28, 18, 0.97) 0%, rgba(7, 47, 31, 0.92) 45%, rgba(26, 62, 48, 0.8) 100%),
+                url('hppump.jpg') center / cover no-repeat;
+            box-shadow: 0 10px 30px rgba(5, 28, 18, 0.35);
+            overflow: hidden;
+            isolation: isolate;
         }
 
+        /* Ambient lime glow for depth */
+        .topbar::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            right: -80px;
+            width: 340px;
+            height: 340px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(180, 241, 5, 0.16) 0%, rgba(180, 241, 5, 0) 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Lime accent line on the bottom edge */
         .topbar::after {
             content: '';
             position: absolute;
             left: 0;
-            bottom: -1px;
-            width: 120px;
+            bottom: 0;
+            width: 160px;
             height: 3px;
-            background: var(--brand-lime);
+            background: linear-gradient(90deg, var(--brand-lime), rgba(180, 241, 5, 0));
+            z-index: 1;
         }
 
         .topbar-brand {
             min-width: 250px;
+            position: relative;
+            z-index: 1;
         }
 
         .topbar-brand,
@@ -408,45 +436,60 @@
         }
 
         .topbar-brand-inner {
-            gap: 0.8rem;
+            gap: 0.95rem;
         }
 
-        .topbar-brand img {
-            width: 42px;
-            height: 42px;
-            object-fit: contain;
-            border-radius: 9px;
-            box-shadow: 0 0 0 4px rgba(180, 241, 5, 0.14);
-        }
-
-        .topbar-brand-inner > div:last-child {
+        /* Premium white logo pod with lime ring glow */
+        .topbar-logo-pod {
             display: grid;
-            gap: 0.15rem;
+            place-items: center;
+            flex-shrink: 0;
+            padding: 0.45rem;
+            background: #FFFFFF;
+            border: 1px solid rgba(180, 241, 5, 0.45);
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(5, 28, 18, 0.45), 0 0 0 4px rgba(180, 241, 5, 0.12);
         }
 
-        .topbar-brand-inner > div:last-child > div {
-            display: none;
+        .topbar-logo-pod img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            border-radius: 8px;
         }
 
-        .topbar-brand-inner > div:last-child::before {
-            content: 'AL GHAITH / OPERATIONS HUB';
-            color: var(--brand-forest-medium);
-            font-size: 0.62rem;
+        .topbar-brand-text {
+            display: grid;
+            gap: 0.18rem;
+            min-width: 0;
+        }
+
+        .topbar-brand-kicker {
+            margin: 0;
+            color: var(--brand-lime);
+            font-size: 0.6rem;
             font-weight: 800;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
         }
 
-        .topbar-brand-inner > div:last-child > span {
-            color: var(--text-main);
-            font-size: 0.86rem;
+        .topbar-brand-title {
+            color: #FFFFFF;
+            font-size: 1rem;
             font-weight: 800;
             line-height: 1.2;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .topbar-brand-inner > div:last-child > p {
+        .topbar-brand-sub {
             margin: 0;
-            color: var(--text-muted-green);
+            color: #B8C8C0;
             font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
         }
 
         .topbar-metrics {
@@ -455,21 +498,23 @@
             justify-content: flex-end;
             gap: 0.55rem;
             flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
         }
 
         .topbar-status {
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.45rem;
             margin-right: 0.35rem;
-            padding: 0.45rem 0.7rem;
-            border: 1px solid #D8E7DC;
+            padding: 0.45rem 0.8rem;
+            border: 1px solid rgba(180, 241, 5, 0.35);
             border-radius: 999px;
-            color: var(--brand-forest-medium);
-            background: #F3F8F4;
+            color: var(--brand-lime);
+            background: rgba(180, 241, 5, 0.08);
             font-size: 0.58rem;
             font-weight: 800;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.1em;
             white-space: nowrap;
         }
 
@@ -478,32 +523,38 @@
             height: 7px;
             border-radius: 50%;
             background: var(--sys-green);
-            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.14);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+            animation: topbarPulse 2s infinite;
+        }
+
+        @keyframes topbarPulse {
+            0%, 100% { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25); }
+            50% { box-shadow: 0 0 0 7px rgba(34, 197, 94, 0.06); }
         }
 
         .topbar-metric {
             display: grid;
-            gap: 0.15rem;
-            min-width: 82px;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.78);
-            box-shadow: 0 2px 8px rgba(11, 19, 15, 0.025);
+            gap: 0.18rem;
+            min-width: 86px;
+            padding: 0.55rem 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
 
         .topbar-metric span {
-            color: var(--text-muted-green);
-            font-size: 0.58rem;
+            color: #9FB4AA;
+            font-size: 0.56rem;
             font-weight: 800;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
         }
 
         .topbar-metric strong {
-            color: var(--text-main);
+            color: var(--brand-lime);
             font-family: 'JetBrains Mono', monospace;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             line-height: 1;
         }
 
@@ -523,6 +574,9 @@
             }
 
             .topbar-status { display: none; }
+
+            .topbar-brand-title { font-size: 0.92rem; }
+            .topbar-logo-pod img { width: 44px; height: 44px; }
         }
 
         #sidebar {
@@ -699,20 +753,20 @@
             height: 42px;
             padding: 0;
             margin-right: 0.75rem;
-            border: 1px solid var(--border-light);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             border-radius: var(--radius-md);
-            color: var(--brand-forest-dark);
-            background: #FFFFFF;
-            box-shadow: var(--shadow-sm);
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: none;
             cursor: pointer;
             transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
 
         .topbar-menu-btn:hover,
         .topbar-menu-btn:focus-visible {
-            color: var(--brand-lime);
-            background: var(--brand-forest-dark);
-            border-color: var(--brand-forest-dark);
+            color: var(--brand-forest-dark);
+            background: var(--brand-lime);
+            border-color: var(--brand-lime);
             outline: none;
         }
 
@@ -834,12 +888,13 @@
                     <span class="material-symbols-outlined">menu</span>
                 </button>
                 <div class="topbar-brand-inner">
-                    <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-9 w-9 object-contain rounded" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <span class="text-sm font-bold tracking-tight text-slate-900 max-w-[220px] md:max-w-none block truncate">Al Ghaith Trading &amp; Industrial Services</span>
-                        </div>
-                        <p class="text-xs text-slate-500">Maintenance Management System</p>
+                    <div class="topbar-logo-pod">
+                        <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
+                    </div>
+                    <div class="topbar-brand-text">
+                        <p class="topbar-brand-kicker">Al Ghaith / Operations Hub</p>
+                        <span class="topbar-brand-title">Al Ghaith Trading &amp; Industrial Services</span>
+                        <p class="topbar-brand-sub">Maintenance Management System</p>
                     </div>
                 </div>
             </div>
@@ -934,25 +989,7 @@
                         <span>Parts Reference</span>
                     </button>
 
-                    <div class="flex flex-col w-full">
-                        <button onclick="document.getElementById('plan-submenu').classList.toggle('hidden')" id="tab-plan" class="mod-tab flex items-center justify-between w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900 cursor-pointer">
-                            <div class="flex items-center space-x-3">
-                                <span class="material-symbols-outlined">event_repeat</span>
-                                <span>Maintenance Plan</span>
-                            </div>
-                            <span class="material-symbols-outlined text-sm">expand_more</span>
-                        </button>
-                        
-                        <!-- Sub-menu Links -->
-                        <div id="plan-submenu" class="hidden flex-col space-y-1 pl-9 mt-1">
-                            <a href="20kplan.html" class="flex items-center w-full px-3 py-2 rounded text-xs font-semibold transition text-slate-500 hover:bg-slate-100 hover:text-slate-900 cursor-pointer border-l-2 border-transparent hover:border-slate-900">
-                                20k Maintenance Plan
-                            </a>
-                            <a href="40kplan.html" class="flex items-center w-full px-3 py-2 rounded text-xs font-semibold transition text-slate-500 hover:bg-slate-100 hover:text-slate-900 cursor-pointer border-l-2 border-transparent hover:border-slate-900">
-                                40k Maintenance Plan
-                            </a>
-                        </div>
-                    </div>
+                    
 
                     <button onclick="setModule('safety')" id="tab-safety" class="mod-tab group flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition hover:bg-slate-50">
                         <span class="material-symbols-outlined text-red-600 group-hover:text-red-600">health_and_safety</span>
@@ -1030,64 +1067,106 @@
                     <section id="pane-dashboard" class="pane-view space-y-6">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
                             <div>
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">System Dashboard</h2>
-                                <p class="text-xs text-slate-500">High-level operational overview and active alerts.</p>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2"><span class="material-symbols-outlined text-slate-700">space_dashboard</span> System Dashboard</h2>
+                                <p class="text-xs text-slate-500">High-level operational overview and active alerts &middot; synced <span id="dash-last-updated" class="font-code">--:--</span></p>
                             </div>
+                            <button onclick="renderDashboardProExtras()" class="bg-white border border-slate-300 hover:border-slate-900 text-slate-700 hover:text-slate-900 font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-xs w-full md:w-auto shrink-0">
+                                <span class="material-symbols-outlined text-sm">refresh</span>
+                                <span>Refresh Overview</span>
+                            </button>
                         </div>
 
                         <!-- KPI Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                            <div class="bg-white border border-slate-200 p-5 rounded shadow-sm flex items-center justify-between border-l-4 border-l-blue-600">
-                                <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Assets</p>
-                                    <h3 id="dash-fleet-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">0</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 grid place-items-center rounded bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">local_shipping</span></span>
+                                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">Fleet</span>
                                 </div>
-                                <span class="material-symbols-outlined text-3xl text-blue-100">local_shipping</span>
+                                <h3 id="dash-fleet-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
+                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">Total Assets</p>
                             </div>
-                            <div class="bg-white border border-slate-200 p-5 rounded shadow-sm flex items-center justify-between border-l-4 border-l-amber-500">
-                                <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pending Work Orders</p>
-                                    <h3 id="dash-wo-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">0</h3>
+                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 grid place-items-center rounded bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">build</span></span>
+                                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">Open</span>
                                 </div>
-                                <span class="material-symbols-outlined text-3xl text-amber-100">build</span>
+                                <h3 id="dash-wo-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
+                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">Pending Work Orders</p>
                             </div>
-                            <div class="bg-white border border-slate-200 p-5 rounded shadow-sm flex items-center justify-between border-l-4 border-l-rose-600">
-                                <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Assets In Maintenance / Down</p>
-                                    <h3 id="dash-maintenance-down-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">0</h3>
+                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 grid place-items-center rounded bg-rose-50 text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">engineering</span></span>
+                                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">Down</span>
                                 </div>
-                                <span class="material-symbols-outlined text-3xl text-rose-100">engineering</span>
+                                <h3 id="dash-maintenance-down-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
+                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">In Maintenance / Down</p>
                             </div>
-                            <div class="bg-white border border-slate-200 p-5 rounded shadow-sm flex items-center justify-between border-l-4 border-l-indigo-600">
-                                <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Dispatches</p>
-                                    <h3 id="dash-total-dispatch-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">0</h3>
+                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 grid place-items-center rounded bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">local_shipping</span></span>
+                                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">On Site</span>
                                 </div>
-                                <span class="material-symbols-outlined text-3xl text-indigo-100">local_shipping</span>
+                                <h3 id="dash-total-dispatch-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
+                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">Active Dispatches</p>
                             </div>
-                            <div class="bg-white border border-slate-200 p-5 rounded shadow-sm flex items-center justify-between border-l-4 border-l-sky-600">
-                                <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Mobilization Requests</p>
-                                    <h3 id="dash-mobilization-request-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">0</h3>
+                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 grid place-items-center rounded bg-sky-50 text-sky-600 group-hover:bg-sky-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">assignment_turned_in</span></span>
+                                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">Moves</span>
                                 </div>
-                                <span class="material-symbols-outlined text-3xl text-sky-100">assignment_turned_in</span>
+                                <h3 id="dash-mobilization-request-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
+                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">Mobilization Requests</p>
                             </div>
-                            <div class="bg-white border border-slate-200 p-5 rounded shadow-sm flex items-center justify-between border-l-4 border-l-orange-500">
-                                <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Upcoming Certificate Expiry</p>
-                                    <h3 id="dash-certificate-expiry-count" class="text-2xl font-bold text-slate-900 mt-1 font-code">0</h3>
+                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="w-8 h-8 grid place-items-center rounded bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">event_busy</span></span>
+                                    <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">30 Days</span>
                                 </div>
-                                <span class="material-symbols-outlined text-3xl text-orange-100">event_busy</span>
+                                <h3 id="dash-certificate-expiry-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
+                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">Certificate Expiry</p>
                             </div>
                         </div>
 
+                        <!-- PRO Analytics Row: Readiness + Expenditure Trend -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div class="bg-white border border-slate-200 rounded-md shadow-sm p-4 flex flex-col">
+                                <p class="text-xs font-bold text-slate-900 uppercase tracking-wide mb-3 flex items-center gap-1.5"><span class="material-symbols-outlined text-sm">donut_small</span> Operational Readiness</p>
+                                <div class="flex items-end gap-2 mb-2">
+                                    <span id="dash-ops-readiness" class="text-3xl font-black text-slate-900 font-code leading-none">0%</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Fleet Ready</span>
+                                </div>
+                                <div class="h-2 bg-slate-100 rounded overflow-hidden mb-1"><div id="dash-ops-readiness-bar" class="bg-emerald-500 h-full rounded transition-all duration-500" style="width:0%"></div></div>
+                                <p class="text-[9px] font-code text-slate-300 mb-4"><span id="dash-readiness-detail">0 of 0 assets operational</span></p>
+                                <div id="dash-status-breakdown" class="space-y-3 flex-1"></div>
+                            </div>
+                            <div class="bg-white border border-slate-200 rounded-md shadow-sm p-4 lg:col-span-2 flex flex-col">
+                                <div class="flex items-baseline justify-between mb-4 gap-2">
+                                    <p class="text-xs font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5"><span class="material-symbols-outlined text-sm">bar_chart</span> Expenditure — Last 6 Months</p>
+                                    <span id="dash-expense-window-total" class="text-[10px] font-code font-bold text-slate-500 shrink-0"></span>
+                                </div>
+                                <div id="dash-expense-trend" class="flex items-stretch justify-between gap-2 h-40"></div>
+                                <p class="text-[9px] font-code text-slate-300 mt-2 text-right">Monthly average: <span id="dash-expense-avg" class="font-bold text-slate-500">QAR 0</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Work Order Pipeline -->
+                        <div class="bg-white border border-slate-200 rounded-md shadow-sm p-4">
+                            <div class="flex items-baseline justify-between mb-3 gap-2">
+                                <p class="text-xs font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5"><span class="material-symbols-outlined text-sm">linear_scale</span> Work Order Pipeline</p>
+                                <span id="dash-wo-pipeline-total" class="text-[10px] font-code font-bold text-slate-500 shrink-0"></span>
+                            </div>
+                            <div id="dash-wo-pipeline" class="h-3 w-full rounded overflow-hidden flex bg-slate-100"></div>
+                            <div id="dash-wo-pipeline-legend" class="flex flex-wrap gap-x-5 gap-y-1.5 mt-3"></div>
+                        </div>
+
                         <!-- Widgets Grid -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Recent Work Orders -->
-                            <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden flex flex-col">
-                                <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                            <div class="bg-white border border-slate-200 rounded-md shadow-sm overflow-hidden flex flex-col">
+                                <div class="px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                                     <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-amber-600">construction</span> Active Work Orders</h4>
-                                    <button onclick="setModule('wo')" class="text-[10px] font-bold text-slate-500 hover:text-slate-900 uppercase cursor-pointer">View All</button>
+                                    <button onclick="setModule('wo')" class="text-[10px] font-bold text-slate-500 hover:text-slate-900 uppercase tracking-wider cursor-pointer">View All &rarr;</button>
                                 </div>
                                 <div class="p-4 flex-1 overflow-auto max-h-64">
                                     <ul id="dash-recent-wo" class="divide-y divide-slate-100 text-xs">
@@ -1097,10 +1176,10 @@
                             </div>
 
                             <!-- Expiring Certificates -->
-                            <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden flex flex-col">
-                                <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                            <div class="bg-white border border-slate-200 rounded-md shadow-sm overflow-hidden flex flex-col">
+                                <div class="px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                                     <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-rose-600">verified</span> Upcoming Expirations</h4>
-                                    <button onclick="setModule('cert')" class="text-[10px] font-bold text-slate-500 hover:text-slate-900 uppercase cursor-pointer">View All</button>
+                                    <button onclick="setModule('cert')" class="text-[10px] font-bold text-slate-500 hover:text-slate-900 uppercase tracking-wider cursor-pointer">View All &rarr;</button>
                                 </div>
                                 <div class="p-4 flex-1 overflow-auto max-h-64">
                                     <ul id="dash-recent-certs" class="divide-y divide-slate-100 text-xs">
@@ -1110,20 +1189,38 @@
                             </div>
 
                             <!-- Dispatch Widget Card -->
-                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                                <div class="flex justify-between items-center mb-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-indigo-600">local_shipping</span>
-                                        <h3 class="font-bold text-slate-800 text-sm">Active Dispatches</h3>
-                                    </div>
-                                    <span id="dash-dispatch-count" class="bg-indigo-50 text-indigo-700 font-bold text-xs px-2 py-0.5 rounded-full">0 Active</span>
+                            <div class="bg-white border border-slate-200 rounded-md shadow-sm overflow-hidden flex flex-col">
+                                <div class="px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-indigo-600">local_shipping</span> Active Dispatches</h4>
+                                    <span id="dash-dispatch-count" class="text-[9px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">0 ACTIVE</span>
                                 </div>
-
-                                <!-- Scrollable List -->
-                                <div class="max-h-64 overflow-y-auto pr-1">
+                                <div class="p-4 flex-1 overflow-auto max-h-64 pr-1">
                                     <ul id="dash-dispatch-list" class="divide-y divide-slate-100">
                                         <!-- Dynamic dispatch items will render here -->
                                     </ul>
+                                </div>
+                            </div>
+
+                            <!-- Maintenance Spend Analytics -->
+                            <div class="bg-white border border-slate-200 rounded-md shadow-sm overflow-hidden flex flex-col">
+                                <div class="px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between gap-2">
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-600">payments</span> Maintenance Spend</h4>
+                                    <select id="dash-expense-period-filter" onchange="populateMainDashboard()" class="bg-white border border-slate-300 rounded text-[10px] font-bold text-slate-600 px-1.5 py-1 focus:outline-none focus:border-slate-900 cursor-pointer">
+                                        <option value="month">This Month</option>
+                                        <option value="year">This Year</option>
+                                        <option value="all">All-Time</option>
+                                    </select>
+                                </div>
+                                <div class="px-4 py-3 border-b border-slate-100 flex items-end justify-between">
+                                    <div>
+                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Cost</p>
+                                        <p id="dash-alert-count" class="text-xl font-black text-slate-900 font-code mt-0.5 leading-none">QAR 0.00</p>
+                                    </div>
+                                    <p id="dash-spend-records" class="text-[9px] font-code font-bold text-slate-400"></p>
+                                </div>
+                                <div class="p-4 flex-1 overflow-auto max-h-56">
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2">Top Assets by Spend</p>
+                                    <ul id="dash-expenses-asset" class="divide-y divide-slate-100 text-xs"></ul>
                                 </div>
                             </div>
 
@@ -1240,8 +1337,7 @@
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
                                             <th class="p-4">Order ID</th>
                                             <th class="p-4">Date</th> <!-- New Date Column Added Here -->
-                                            <th class="p-4">Equipment Asset</th>
-                                            <th class="p-4">Serial Number</th> 
+                                            <th class="p-4">Equipment Asset / Serial</th>
                                             <th class="p-4">Current Metric</th>
                                             <th class="p-4">Target Metric</th>
                                             <th class="p-4">Remaining Hours / Info</th>
@@ -3662,8 +3758,8 @@
                 if (data) { 
                     Object.keys(data).forEach(id => { memory.maintenanceLogs.push({ id, ...data[id] }); }); 
                     
-                    // Add this line to sort the logs so the newest date appears at the top
-                    memory.maintenanceLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    // Sort logs so equipment that is "Down" or "In Maintenance" is always at the top, then newest first
+                    sortLogsWithPriority(memory.maintenanceLogs);
                 }
                 updateDashboardTopCounters();
                 refreshWorkspaceView();
@@ -4366,6 +4462,26 @@
             }
         }
 
+        // Priority helper: equipment that is "Down" or "In Maintenance" sorts to the top of the maintenance log
+        function getLogPriority(status) {
+            const s = String(status || '').toLowerCase();
+            if (s === 'down') return 0;            // Down equipment - highest priority
+            if (s === 'in maintenance') return 1;  // Equipment in maintenance
+            return 2;                              // All other statuses (Operational, Standby, etc.)
+        }
+
+        // Sorts maintenance logs so equipment "Down" or "In Maintenance" always appears at the top,
+        // followed by all other equipment; newest date first within each group.
+        function sortLogsWithPriority(logArray) {
+            if (!Array.isArray(logArray)) return;
+            logArray.sort((a, b) => {
+                const pDiff = getLogPriority(a.status) - getLogPriority(b.status);
+                if (pDiff !== 0) return pDiff;
+                // Newest date first within each priority group
+                return new Date(b.date || 0) - new Date(a.date || 0);
+            });
+        }
+
         function getAssetStatusBadgeClass(status) {
             switch (status) {
                 case "Operational": return "bg-emerald-100 text-emerald-800 border border-emerald-200";
@@ -4881,8 +4997,7 @@
                         <tr class="hover:bg-slate-50">
                             <td class="p-4 font-bold font-code text-slate-900">${w.id}</td>
                             <td class="p-4 font-code font-medium">${formatDisplayDate(w.date)}</td>
-                            <td class="p-4 font-code font-medium">${w.assetId}</td>
-                            <td class="p-4 font-code">${serialNumber}</td>
+                            <td class="p-4 font-code font-medium">${w.assetId}<div class="text-[10px] text-slate-400 font-normal mt-0.5">S/N: ${serialNumber}</div></td>
                             <td class="p-4 font-code">${metricInfo}</td>
                             <td class="p-4 font-code">${targetInfo}</td>
                             <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
@@ -4912,13 +5027,22 @@
                     l.action.toLowerCase().includes(search)
                 );
 
+                // Always place equipment that is "Down" or "In Maintenance" at the top of the log list
+                sortLogsWithPriority(filtered);
+
                 filtered.forEach(l => {
                     const logBadgeColorClass = getAssetStatusBadgeClass(l.status);
+
+                    // --- SERIAL NUMBER LOOKUP ---
+                    // Find the matching asset and safely grab its serial number
+                    const asset = memory.assets.find(a => a.id === l.assetId);
+                    const serialNumber = asset && asset.serial ? asset.serial : 'N/A';
+                    // ----------------------------
 
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50 text-xs">
                             <td class="p-4 font-code"><div class="font-bold text-slate-900">${l.id}</div><div class="text-[10px] text-slate-400 mt-0.5">${l.date}</div></td>
-                            <td class="p-4 font-code font-bold text-slate-700">${l.assetId}</td>
+                            <td class="p-4 font-code font-bold text-slate-700">${l.assetId}<div class="text-[10px] text-slate-400 font-normal mt-0.5">S/N: ${serialNumber}</div></td>
                             <td class="p-4 font-code text-slate-500">${l.currentMetric} / ${l.targetMetric}</td>
                             <td class="p-4 font-semibold text-slate-600">${l.remainingHours}</td>
                             <td class="p-4 max-w-xs"><div class="truncate text-rose-700 font-medium">⚠️ ${l.fault}</div><div class="whitespace-pre-line text-slate-600 mt-0.5 text-[11px]">⚙️ ${l.action}</div></td>
@@ -7156,7 +7280,7 @@
                 } else {
                     // IF RETURN IN TO WORKSHOP:
                     let assetUpdates = {
-                        status: 'Maintenance',
+                        status: 'In Maintenance',
                         location: 'WORKSHOP'
                     };
                     
@@ -7610,6 +7734,104 @@
         }
 
         // ADD THIS FUNCTION
+        function renderDashboardProExtras() {
+            const assets = memory.assets || [];
+            const expenses = memory.expenses || [];
+            const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+            const norm = (s) => String(s || '').trim().toLowerCase();
+
+            // Operational readiness + status breakdown
+            const counts = {
+                operational: assets.filter(a => ['operational', 'active', 'available'].includes(norm(a.status))).length,
+                maintenance: assets.filter(a => norm(a.status) === 'in maintenance').length,
+                down: assets.filter(a => norm(a.status) === 'down').length
+            };
+            counts.other = assets.length - (counts.operational + counts.maintenance + counts.down);
+            const readiness = assets.length ? Math.round((counts.operational / assets.length) * 100) : 0;
+            setText('dash-ops-readiness', readiness + '%');
+            const readinessBar = document.getElementById('dash-ops-readiness-bar');
+            if (readinessBar) readinessBar.style.width = readiness + '%';
+
+            const breakdown = [
+                { label: 'Operational', count: counts.operational, bar: 'bg-emerald-500', text: 'text-emerald-600' },
+                { label: 'In Maintenance', count: counts.maintenance, bar: 'bg-amber-500', text: 'text-amber-600' },
+                { label: 'Down', count: counts.down, bar: 'bg-rose-500', text: 'text-rose-600' },
+                { label: 'Unclassified', count: Math.max(counts.other, 0), bar: 'bg-slate-400', text: 'text-slate-500' }
+            ];
+            const breakdownEl = document.getElementById('dash-status-breakdown');
+            if (breakdownEl) breakdownEl.innerHTML = assets.length === 0
+                ? '<p class="text-xs text-slate-400 font-medium">No assets registered yet.</p>'
+                : breakdown.map(b => {
+                    const pct = assets.length ? Math.round((b.count / assets.length) * 100) : 0;
+                    return `
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-semibold text-slate-600">${b.label}</span>
+                            <span class="text-xs font-code font-bold ${b.text}">${b.count} <span class="text-slate-400">(${pct}%)</span></span>
+                        </div>
+                        <div class="h-2 bg-slate-100 rounded overflow-hidden"><div class="${b.bar} h-full rounded transition-all" style="width:${pct}%"></div></div>
+                    </div>`;
+                }).join('');
+
+            // Expenditure trend — last 6 months
+            const now = new Date();
+            const months = [];
+            for (let k = 5; k >= 0; k--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - k, 1);
+                months.push({ key: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'), label: d.toLocaleDateString('en-US', { month: 'short' }), total: 0 });
+            }
+            expenses.forEach(e => {
+                const m = months.find(mo => mo.key === String(e.date || '').substring(0, 7));
+                if (m) m.total += parseFloat(e.total || e.cost || e.amount || e.totalPrice || 0);
+            });
+            setText('dash-expense-window-total', '6-MO TOTAL: QAR ' + months.reduce((s, m) => s + m.total, 0).toLocaleString('en-US', { maximumFractionDigits: 0 }));
+            setText('dash-expense-avg', 'QAR ' + Math.round(months.reduce((s, m) => s + m.total, 0) / 6).toLocaleString('en-US', { maximumFractionDigits: 0 }));
+            const maxMonth = Math.max(...months.map(m => m.total), 1);
+            const trendEl = document.getElementById('dash-expense-trend');
+            if (trendEl) trendEl.innerHTML = months.map(m => {
+                const label = m.total > 0 ? (m.total >= 1000 ? (m.total / 1000).toFixed(m.total >= 10000 ? 0 : 1).replace(/\.0$/, '') + 'k' : String(Math.round(m.total))) : '\u2014';
+                return `
+                <div class="flex-1 flex flex-col items-center gap-1 h-full min-w-0">
+                    <span class="text-[9px] font-code font-bold ${m.total > 0 ? 'text-slate-700' : 'text-slate-300'}">${label}</span>
+                    <div class="w-full flex-1 flex items-end"><div class="w-full ${m.total > 0 ? 'bg-slate-900' : 'bg-slate-200'} rounded-t" style="height:${m.total > 0 ? Math.max((m.total / maxMonth) * 100, 4) : 2}%"></div></div>
+                    <span class="text-[10px] font-semibold text-slate-400 uppercase">${m.label}</span>
+                </div>`;
+            }).join('');
+
+            // Work order pipeline
+            const wos = memory.workOrders || [];
+            const normStatus = (s) => norm(s);
+            const pipeline = [
+                { label: 'Pending', match: (s) => s.includes('pending'), bar: 'bg-slate-400', dot: 'bg-slate-400' },
+                { label: 'In Progress', match: (s) => s.includes('progress'), bar: 'bg-blue-500', dot: 'bg-blue-500' },
+                { label: 'Check-up / Inspection', match: (s) => s.includes('check') || s.includes('inspection'), bar: 'bg-amber-500', dot: 'bg-amber-500' },
+                { label: 'Completed', match: (s) => s.includes('complet'), bar: 'bg-emerald-500', dot: 'bg-emerald-500' },
+                { label: 'Cancelled', match: (s) => s.includes('cancel'), bar: 'bg-rose-400', dot: 'bg-rose-400' }
+            ];
+            let matched = 0;
+            pipeline.forEach(p => { p.count = wos.filter(w => p.match(normStatus(w.status))).length; matched += p.count; });
+            const unmatched = wos.length - matched;
+            if (unmatched > 0) pipeline.push({ label: 'Other', count: unmatched, bar: 'bg-slate-300', dot: 'bg-slate-300' });
+            setText('dash-wo-pipeline-total', wos.length + ' TOTAL WORK ORDERS');
+            const pipelineEl = document.getElementById('dash-wo-pipeline');
+            if (pipelineEl) pipelineEl.innerHTML = wos.length === 0
+                ? '<div class="w-full h-full bg-slate-100"></div>'
+                : pipeline.filter(p => p.count > 0).map(p => `<div class="${p.bar} h-full transition-all" style="width:${(p.count / wos.length) * 100}%"></div>`).join('');
+            const legendEl = document.getElementById('dash-wo-pipeline-legend');
+            if (legendEl) legendEl.innerHTML = pipeline.filter(p => p.count > 0).map(p => `
+                <span class="flex items-center gap-1.5 text-[10px] font-semibold text-slate-500">
+                    <span class="w-2 h-2 rounded-full ${p.dot}"></span>${p.label} <span class="font-code font-bold text-slate-700">${p.count}</span>
+                    <span class="text-slate-300 font-code">(${wos.length ? Math.round((p.count / wos.length) * 100) : 0}%)</span>
+                </span>`).join('');
+
+            // Readiness sub-caption + spend record count
+            setText('dash-readiness-detail', counts.operational + ' of ' + assets.length + ' assets operational');
+            const spendRecs = document.getElementById('dash-spend-records');
+            if (spendRecs) spendRecs.textContent = expenses.length + ' record' + (expenses.length === 1 ? '' : 's');
+
+            setText('dash-last-updated', new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
+        }
+
         function populateMainDashboard() {
             updateDashboardKpis();
             
@@ -7911,6 +8133,9 @@
             // (Added a safety check here too, just in case populateMainDashboard has similar issues)
             if (typeof populateMainDashboard === 'function') {
                 populateMainDashboard(); 
+            }
+            if (typeof renderDashboardProExtras === 'function') {
+                renderDashboardProExtras();
             }
         }
         
