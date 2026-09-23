@@ -959,7 +959,7 @@
                     <p class="sidebar-section-title">Inspection &amp; Safety</p>
                     <button onclick="setModule('preop')" id="tab-preop" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
                         <span class="material-symbols-outlined">fact_check</span>
-                        <span>Daily Pre-Operation Checklist</span>
+                        <span>Pre-Operation Checklist</span>
                     </button>
 
                     <button onclick="setModule('pm_checklist')" id="tab-pm_checklist" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
@@ -987,6 +987,11 @@
                     <button onclick="setModule('parts')" id="tab-parts" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
                         <span class="material-symbols-outlined">build_circle</span>
                         <span>Parts Reference</span>
+                    </button>
+
+                    <button onclick="setModule('forms')" id="tab-forms" class="mod-tab flex items-center space-x-3 w-full px-3 py-2.5 rounded text-sm font-semibold transition text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                        <span class="material-symbols-outlined">download</span>
+                        <span>Download Forms</span>
                     </button>
 
                     
@@ -1274,6 +1279,17 @@
                                 </table>
                             </div>
                         </div>
+                    </section>
+
+                    <section id="pane-forms" class="pane-view space-y-4 hidden">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Download Forms</h2>
+                                <p class="text-xs text-slate-500">Download printable operational and maintenance forms for field use.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="grid-forms"></div>
                     </section>
 
                     <section id="pane-cert" class="pane-view space-y-4 hidden">
@@ -2098,8 +2114,15 @@
                 </div>
                 
                 <div>
+                    <label class="block text-slate-600 font-medium mb-1">Type *</label>
+                    <select id="in-w-category" onchange="toggleWoCategory(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
+                        <option value="Equipment">Equipment</option>
+                        <option value="Accessories">Accessories</option>
+                    </select>
+                </div>
+
+                <div id="wrapper-wo-asset">
                     <label class="block text-slate-600 font-medium mb-1">Target Equipment Asset *</label>
-                    <!-- ... (Rest of your existing form code continues here) ... -->
                     <div class="relative mb-1">
                         <input type="text" id="in-w-search-asset" oninput="filterDropdownSearch('in-w-search-asset', 'in-w-asset')" placeholder="Type to filter equipment list below..." class="w-full bg-slate-100 border border-slate-300 rounded p-1.5 text-slate-800 text-[11px] focus:outline-none focus:border-slate-500">
                     </div>
@@ -2107,7 +2130,7 @@
                 </div>                
 
                 <!-- Tracking Type Selection -->
-                <div>
+                <div id="wrapper-wo-tracking">
                     <label class="block text-slate-600 font-medium mb-1">Tracking Type *</label>
                     <select id="in-w-type" onchange="toggleMetricInputs(this.value); autoFillTargetMetricFromRecentLog();" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
                         <option value="hours">Running Hours</option>
@@ -2160,7 +2183,7 @@
     <div id="modal-accept-wo" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
         <div class="bg-white border border-slate-200 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl">
             <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+                <h3 id="modal-accept-wo-title" class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-slate-700">handshake</span> Accept Work Order
                 </h3>
                 <button onclick="toggleModal('modal-accept-wo', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
@@ -2174,7 +2197,7 @@
                 </div>
                 <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
                     <button type="button" onclick="toggleModal('modal-accept-wo', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Accept & Add to Log</button>
+                    <button type="submit" id="btn-accept-submit" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Accept & Add to Log</button>
                 </div>
             </form>
         </div>
@@ -4418,6 +4441,27 @@
             }
         }
 
+        // Show/hide asset & tracking fields based on the Work Order Type (Equipment vs Accessories)
+        function toggleWoCategory(category) {
+            const isAccessory = String(category).toLowerCase() === 'accessories';
+            const assetWrapper = document.getElementById('wrapper-wo-asset');
+            const trackingWrapper = document.getElementById('wrapper-wo-tracking');
+            const assetSelect = document.getElementById('in-w-asset');
+
+            if (assetWrapper) assetWrapper.classList.toggle('hidden', isAccessory);
+            if (trackingWrapper) trackingWrapper.classList.toggle('hidden', isAccessory);
+
+            if (assetSelect) assetSelect.required = !isAccessory;
+
+            if (isAccessory) {
+                // Accessories have no asset and no tracking type
+                if (assetSelect) assetSelect.value = "";
+                const typeSelect = document.getElementById('in-w-type');
+                if (typeSelect) typeSelect.value = "none";
+                toggleMetricInputs('none');
+            }
+        }
+
         function filterDropdownSearch(inputId, selectId) {
             const filterVal = document.getElementById(inputId).value.toLowerCase();
             const selectEl = document.getElementById(selectId);
@@ -4733,9 +4777,13 @@
 
             // Loop through the work orders stored in memory
             memory.workOrders.forEach(wo => {
+                // Accessory work orders are excluded: they never generate maintenance logs
+                const isAccessoryWo = String(wo.category || '').toLowerCase() === 'accessories' || !wo.assetId;
+                if (isAccessoryWo) return;
+
                 // Find the corresponding asset in the master fleet registry
                 const asset = memory.assets.find(a => a.id === wo.assetId);
-                
+
                 // Extract the serial number, defaulting to 'N/A' if missing
                 const serialNumber = (asset && asset.serial) ? asset.serial : 'N/A';
 
@@ -4873,7 +4921,177 @@
             XLSX.writeFile(workbook, `asset-registry-${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
+        // ------------------- DOWNLOAD FORMS MODULE -------------------
+        // Exact replica of "High_Pressure_Hose_Checklist_A4.xlsx"
+        const downloadableForms = [
+            {
+                id: 'hose-checklist',
+                title: 'High-Pressure & UHP Hose Pre-Operational Inspection Checklist',
+                desc: 'A4 printable pre-operational inspection checklist for high-pressure waterblasting hoses.',
+                icon: 'fact_check',
+                file: 'High_Pressure_Hose_Checklist_A4.html'
+            }
+        ];
+
+        // Inspection rows exactly as they appear in the Excel form:
+        const hoseChecklistRows = [
+            { no: '01', cat: 'Visual Outer Jacket', text: '1. Check entire hose cover for cuts, deep abrasions, gouges, or wire exposure.' },
+            { no: '02', cat: 'Visual Outer Jacket', text: '2. Inspect for exposed inner wire braid or spiral reinforcement layers.' },
+            { no: '03', cat: 'Visual Outer Jacket', text: '3. Verify no severe kinks, crushing, flat spots, or core deformation.' },
+            { no: '04', cat: 'Visual Outer Jacket', text: '4. Ensure outer cover is free from chemical deterioration or thermal damage.' },
+            { no: '05', cat: 'End Fittings & Couplings', text: '5. Inspect end fittings for cracks, thread galling, or mechanical damage.' },
+            { no: '06', cat: 'End Fittings & Couplings', text: '6. Verify ferrule / collar for signs of slippage or axial movement.' },
+            { no: '07', cat: 'End Fittings & Couplings', text: '7. Check high-pressure sealing faces / cones for scratches, pitting, or burrs.' },
+            { no: '08', cat: 'End Fittings & Couplings', text: '8. Ensure correct whip-check safety cables or safety stockings installed.' },
+            { no: '09', cat: 'Pressure Ratings & Life', text: '9. Verify hose Max Working Pressure (MWP) exceeds unit pressure rating.' },
+            { no: '10', cat: 'Pressure Ratings & Life', text: '10. Confirm ID tag is legible with serial #, MWP, and hydrotest date.' },
+            { no: '11', cat: 'Pressure Ratings & Life', text: '11. Confirm hose has not exceeded service life / mandatory recertification.' },
+            { no: '12', cat: 'Bore Cleanliness', text: '12. Check internal bore for scale, sediment, or chemical residue.' },
+            { no: '13', cat: 'Bore Cleanliness', text: '13. Flush line at low pressure before attaching high-pressure nozzle/gun.' },
+            { no: '14', cat: 'Low-Pressure Leak Test', text: '14. Slowly pressurize system to low pressure; inspect joints for leaks.' },
+            { no: '15', cat: 'Low-Pressure Leak Test', text: '15. Check hose body for localized swelling, blistering, or bulges under pressure.' },
+            { no: '16', cat: 'Low-Pressure Leak Test', text: '16. Verify dump valve / control gun functions properly before full pressure.' }
+        ];
+
+        // Company logo extracted from the original Excel form (embedded as base64)
+        const LOGO_B64 = "/9j/4AAQSkZJRgABAQEA3ADcAAD/2wBDAAIBAQEBAQIBAQECAgICAgQDAgICAgUEBAMEBgUGBgYFBgYGBwkIBgcJBwYGCAsICQoKCgoKBggLDAsKDAkKCgr/2wBDAQICAgICAgUDAwUKBwYHCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgr/wAARCABYAFgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD8jHOBzUYxTpDTMcZr9OifkMRU+9T1yWwKm0LRdY8S65Z+G/Duk3WoahqF1HbWFhY27TTXM0jBUijRQWd2YhVUAkkgDk1+kfh79m79nn/gkz+ytqHxv/ah+Gvg34mfFrxIr6XoPhXxNb2+paRa3u1WktIo23JcLbK6SXl9HklngtbSSFZRfT+fmWcYXLJUqUk5VKsuWEI/FJ7t9lGK1lJ6JebSfqZbk+KzOnVqxajTpR5pzl8MVsl3cpPSMVq35Jtfm1To67b4Jfs3fG79oi9ubb4S+AbjULXT5I49W1y8uobHStMaRXMQu9QunjtbQyeW6x+dKnmOuxNzEKfYvDf/AATy8OWt1p8/xJ/an8PLZ3MOb+38D6DfarfWEneNkvEsbaUjn5orl1P8JYGvap0q2Ik1Ti5W7Ju3rbY8OpOnRinUkop92lf0vufNo61ImccelfVmuf8ABN/4aa3qlvY/CL9rWLyGX/SL74jeBrjSY4/90aZNqjv+KrXnvxO/4J+/tNfDTQ7rxnZeD7fxd4cs4Z57nxB4Jvk1KO2tYTh7q6gj/wBK0+HPR7yGAN1GRzTrUMRh1erCUfNppfe1Y541KNaVqc4yfZNN/cnc8ZHWrC8cCq6kZ/GrArIzkSR9qKE7UUHPI5xzk0gOOaDXefsx/AnXf2m/j94T+A/h67a1l8SaxHb3WoratONOs1Bkur141IZo7e3SWdwCDsibkda56lSnRpyqVHaKTbb6Jbs+ipUqlapGnTV22kkt23okfcf/AARp/Y98PeE/DM37dvxpaCwjS0vpfA97eQyyppGnWaTf2p4gaJF+cxJDPDBt8xw8N24jSWK1kPk2v3upf8FGv2gdW/ao+NFhrGj/AAu0O8j0Lwl4c0+7H27UEi+e30KwdlZPtDCU3N5dLGYYXunlMfmXVrbT/d/7b3wd8afE39jvWvgb+zktjotpcaDJb2Ol3jSXkv8Awj+gae+oQ6JH5cTym+uV06L7PM+xZ00nUw8nmHZL5N+z1oHg74AQa14w8PpZ6zoXwT0ubT/Bt1p9wDa6jqsL26al4igmVU+1JJqd1plvkOl3b2muWcsE8babAyfB+H/NxNiK/E2JTftXyUY7ONFS5YRXaVafvSf8v+FI/QuOKMeHcPQ4coNJUkp1pdJVnG82+8aUPdiu9/5mXtf+GGnfDDw7osP7SV1ovh+HSljfwx8IbS1uv7P0WzkaESeVa206TXU/lIpl8y6s/Pd98mqT3lve2q149f0z4XaLb+Jvi3+0f8Svh1Zx2scmm6t4L8eaJ8Lri90mU/6POdGsdOvtT1aNV+UXQkvWbDHfkuT5L49+PGnfCr4l+Gf+Fl/E3+y/iJ8Rbi31XXvG15Yi5bwHpN0+6O9jtwPm1O4hxPAxAjtLWW3ni3TTwy2Lpf2ov+Cdvwk8R6te6ZqMfiTWtSIv5vGGi/D9vFl/qV6Znk+0Xmq+J5LG4ttQ3ndJcafaQwuWDhc5Vf1HGVKLl9Xk+a2/xKmn1UIw1025m229Xo03+ZU1Ws60fdvslyub63lKenyVrLRO6aWb+2V+27ovg4+GdQ/ZU/4KH/Fz4mXsV1I+raT8R/GN74t0Xy9vyM8Gt6Np8YlVs4Q21yr7t2+FolE3N/Bj/gqjNbeIbO8+Pfwst0uYrnz18b/DZRo+qWtwZEK3JtFIsZViUMVt7eOxZ225uEAJP6ifs6f8L0+Mnw6sfi7rP7e/iDS/DNxZxy3moaX4p1nX20+V1BFvO9pELRZQWCsEupACeC3GeZ+N/wACpvi7pcmr/Fm88O/FjTZLiTTLWTx9bpcagln9oRI2S7Z3k0hbqaSKOCJLy2vJ5JlSOPfuUeJgM64fjjvqOFzGkq/8nO4t/JqzXk9O/lrmWU8SLBfXcXllaVD+dRjOK89JXT8469tT5U+In7P37Nn7fvw6uPih4T8SaK2pbYxJ8UPD2mm3udOvJmLpF4n06Nd7tJIZ1a92PPJJ5skVzqKWwgf8+viv8J/H3wN+IeqfCz4naG2n61pMypdW+9XR1ZFkimikUlJYZY2SWOVCySRyI6MysCfsv48/sTfEH9lPxJf/ALUX7CniLXtD1Dwr9on8VeBLwedd6VZqD9rMYlBGo6egWRbmzuY2kjtz+++1xJdTRcV+2n+1B+zF+1p+y34Q8ZW8b+H/AIpeH9U+wt4Ts7OeSGCwlWSa6VLmQMHsftOJ7VGm+0QSXd5FIk6st43qYrmpz5alPkmt0lo79UlovWPuNXa5WrS8PCyjWpqdKpz03ezb1i1um3ZteUvfi7J8yd4/JcfaiiI8ZorEJI5uvtT/AIIZeHfD9/8AtNeMfFurQSfbtB+Gd5L4fuI2KmC6uL6xs5Tn0ayuL2MjuJDXxXX3B/wQpnjm+OvxG0qa+hh2/DNryKOVgGnkj1fTYtidydtw7YH8KMe3HxPiHUxFPgfMZUfi9jU+7ld/wufp3h/To1eOMujW+F1offzK342P0f8ABPibUvDP/BU74BfCfX9NjtHh0m91mbVRIFh1HQZfD91PZxzgnG+1u7rxF8xH+rvMZI4X42/ZL8H+Kfi/8N4/grpmvpY2viGx1ex0l7hRtnv7vxN4BhmjC5y4SJbaYgc4Rj0Uke1/t6ab41vf2jPgP40tvEWn6TZ+Pvhjqfw0i167vFVNMlnl1HS7iV8HdF5FprNrMHPrkZ2kV84eM7vU/wBqb4Ay/Hz4Q/HGx+GXiHw746uNXvobfVLjSf8AhGNV1m0+xeINNEdnE14BcvaWMllFGrobFb9Gkd7S88v2OCalKjwTlc8La0qGHlG2t5Qc046bu8/lb0J40p1qnFuYwxGslWrJ9NJcrv6WX4+p5r+yd8GPhv8A8FPP22Pip4/+LUutaH4ah03UPFVrofhu8hhmjjk1K1tLPTIZpYpUhigju12qIn/dWflqEB8yPL/4KZfsHfDz9kG78IeMfg14g1i68M+LFvLRtP8AEV9FdX9jfWgt2lLSwW8EbQSpdRNF8gcNHOrAhFd/tT/glV4b/Yu/ZZ+Edp4D+LP7T+jS33inxA2q+PrjRfD+tnbHbJLDp9lGXswJFRXnlMwEbZ1GRCreQjt61rEX7HvxbsvDupeMvi34f1S68H+OrLxJo9ldaFqxjuZILDUYY0Y/Y+FS7uLG6aNlaOZbNonUq/HwmNzLxAw3iBH2OCrvLYwnBpUpPmlCHPzr3eb3pNU462k0z6XD5XwHV8P5e3xlGOYynGacqqjyxlNQcH73L7sU6ktLxTR8ufsDf8EffFXhmwh+MXxf8afELwv4+sdNm1bT9F+Heupo9/4Ut1j5lvrx4ZHjuWQurWkYjeEvHG8pnaW2h+pbv4++CfBn7QHhf9nHWvF1/F4t8WeE01HwbrGoR20J1uVrm6spdJuBbRQwvdyeQTBJFBDFcrOto0b3MbT3jvEHifWP+Gmvg3oHhPXYda8Nw23ibxf8TJ7O/ltZk0qW0bw/Z3MQurYu8wm1DVoY0CFJnlcSPEsD3Fv+fP8AwW40TxJoX7WPhvxVP43uLzT9c8AWt74V09rNrcaHYw399aLBGfPl3757W4unkymZrqbEaqFLfHUctzbjjiCOC4kqqnKpRnUjQ5UqmHkqnLBxajzxlFK8nOSUnLl5Wk7fW1szyngjh943hqm6kadanTlX5m6eIi6fNNSTlySjJu0VCL5UubmV1f8ARrxXpwtv7P8AFHg2OTTrm0Zf+Efaxd1awurSCS6ewjK/MIvsttNe2gzi2j0/ULcNHbxaZbR/lf8A8FMf2f8AQPg18eo/GvgLSI7Pwz8QLFtbsNPs7UR2+lXhmeO90+MJGkaIky+dFCmfKtbq1ViWyx/Qy2/aT1b4j/sN6X+2VB4TtdZ19tB0rxdfafPJGqyajo2twnWZHjh2pClzFp+qfulAC21/5eAG214f/wAFi/hXLo37O62us6tvvPhr8XJdHs7WP7si6ha3C3k7eoV9FsVU8Aeaeu4Y/W/DrNM0zThGphc0lzYnA1ZUZS6yimkn6NShLXu3s7H4v4lZTleUcZ0sZlUeXDZhSVaMekZWcvv0qR07Jbq5+bsROKKYhO7FFfXnxb3Oer7t/wCCa9h8M/CHgjwX+0r4H8JLcePPC/jDWNM8R6Xp91LcXfiLRpbNFvLVYJZBbx3zafd3M2mDdF51xo97GRdSyWsUfwlXu/7B/wAVW8O+N9Q+C+qeOf8AhHbLxu1q2i67NqRtYdF8SWcjS6TqDS+ZGsPzvPZG4kcJbxanPOcmJRXHisLh8bRdCv8ABJOMu1pJp37pXu11Wh9RgcRUwmKjVpu0otOL6pppprs7rc/WX9pL9n+3/aq+BU3wW8M6lpN9rkNzH4h+F+vLcRx2uoPNAmYkuJFGLe/tfIeJyVQyw2ZYpGXdfBv2c/E/w0+OHxI0r4JfGj4P/CvQ/E1x47mvfi7ZfEq68QaPqvibUo4hFLPBe2+oQQR6hIIZIjb6hHthvLq4uInkN9Paw6/7Nn7U+meHPA994Y+J3hS90qLwzqF4/jrQdP0Z1ufA8/nO93qkNhGnmHSJJ2lmvLOBN+m3DXE0EJt5xawfRHxp+CHwV+Pfh6xl/aZ+EcGqT61pNvceHPin4duAupS2EqQGK5iuYXFvq8XkKqwmYyBA4CuFGyvxvKc8xXhLzcN8RKpHBKUnhsVT1dLn+xPy1uu+6Vtv27M8nw/ig457kjg8byxWIw03yqpy/bh6pWfVbNp7/I//AAUd/aQ/ZV/Yk8V6f8FvhF+yb8Ldc8eWd7cjxrY3HifxHfWuhRoEWK2Z7bWVVrpnMpdBIfJWJQwLSER+2fBr9pD/AIJu+Lvgf4X+LGp2XwX8Ny6tpdjDq2k6x4+1WK9s9YeNYp4DZf2s9ylv9r3hLh08lYSkskiKHZYdQ/Yx0/UrZPDcHjjw5rng+xtXsPD2ifFXxq2tX2nWO/IS2efwTdRaSzcFltGYA8eY+Ax8e8Vf8Eo/2JvB/i7Wf2ifj58RIPBPgCxuoo38H+HtWuH0qzYQjy1GsXsa3t/NP5E8zWcGnwTOTMtuY0iUj2sRxTw/iMtw+X4biGvUmmrSpVnKvUevuyjFSet76RtGy95HzK4Xz6jmWIx+KyGgqclZxrUVCjTWnvRlJpaWtrJuV3oz7F0f4geE/jbcz+CfhX8VPh/4q1rTbOwSHwr8O9esdYvF0uEXK27GSykmknt7ZnmULJLI8LXzO+03ReX5b+E+i/Cj9qP/AIKW/FPXfiT4Q0Xxh8O9Hm8L/ChrXWvKv4dOmubiIXt3YSkN9nWU6VrjJcWzJIh1AyxurMWrwH4A/wDBOTwj8YPjvq3xt8YfDvVPCPwg1TXrnVvhn4B1y8Nnqet6JI73NobiSSZmsNNjs/Laa/ll/eJnyJJAJrq2+97zxjofxP8Aj18HPhja21nDZx6lolj5un6c9g0elfbP+JfatAdqRxRR3N1dW8XlwvaQ6qtnLEk1rKW9jgvwzw2R5/VzP29WtKtTtKVVqUkotylK/VOSjHZJPRX1t83xt4nYnPOH6eVqhToRo1PdjSTjFyklCMbPZqLlLq7atK8b/J/7FF3rui/8EWfiPq3h/wAPXF5qbeMvE+hrDHHmRl1Gw8O6XHEOM8S6kcL3aT1avQv+CuHiPwv4h+FPxm8TxSrLa6t4uWXQ5CB800mspIhHubcT/gTXzZ/wSl+Mf7Q/if4qf8KqsfiTdWPw78K67J8T/EWi2NvaKZ9VtJrM2JZ3TzpIJNTh0dZbdHCmOLzdoaEOvZf8FZfiTB4W+APg74Fho2vvF3iA+KryCS3YSW9jYpc2FnMkmNjJPPcaojJncraehIAdSfs+H8p/snD5nipW/wBoqwaXm4U1JPzSp83zPgeJc4/tjGZTgoX/ANmpTUm+ynUcWvJupy/LsfAsf3hRSI+OtFdZxuLMCgjdwaKAazPaPrP4G/HjUv2hdY0m6k+Ia+FfjVoMcK6N4nm1ZdPj8XJCm2Pfckolrq8aKFEruseoIPnZL1S2p/Yfwh/bn0x9Lk+Enxi8Ta58CfH3hyaWyN9ZeE0vPCt7NDb+T5GseHZImW1uI2hWGOaCB2gE5jWKKC1t4Y/yKZcjmvYfAX7bvxY8NeG7XwR8RNE0L4iaHptqtvo9j45t55rjTI0hEMMVtf200N9Fbwrkx2QuDZq7M5gLEmuj2mGxFBYfGU1UglZaJtJ9LSTjKP8AdkmvuSXTSxeIw8vaUZuM+92rvveLUov+9F3/AF/Yqwuf25Ljw5eeKvhf8APgr8R9J0WdYrjx78PfEDapDPNtRyfszaiUBIcZja0QDPCLgVkeJ/gd+1l8UvEWkfHP4vfBL4f/AA1h802+n+LfHWurHY6LJI6v5thb6xe3K6Q/mIrh9MggfeARyBj8z7L9rr9lLUWsbWD4PfELwrsVTfap/wAJdY68Gfjd5Vr9i0/YM5I3XDkcAlsZOzP+15+yX4aeLUNG0/4jeKlDf6Rpd1pthoBde5W6W41DaR7wNn1HWsMryPhPKKjqYLD0aUnvy4eza8+WXJ57W8h5xn3EmcU1DF4mtVitlKvdL05o83438z7g8c/F34SeBLK/8PeCPFH/AAsLWtUlWbW/El1ayfY7+ZlSRknW6j8y5hWdpN1sR5Vy1vFLPLcwTyWEfhH7XXx4m/Z++FOsXXiLWTqXxG+Iuj3VrY6Ze3ImubTTtRgkS51e8Dhm3TQSutsrFJJGuPtYcJCguPAvF/8AwUt1bTftVl+zj8E9H8HxtIGsde8Q3x17W7VTGVkQSyRw2OCSWSRbFZoiFKShl3nP/YS/aD+B3w3/AGidW/ad/a28S+Lta8R6esmq+Hby3tRqVzc65JLuN/NJPOjSXMbMZYy7KPNPntJugWG49fE5jTjRnTw6d52U5ytzNbWtHRRt0S2vaPU+Xo5bKVaFSs1aF3CEb8qe97yabk31b3teVj7Q/Zz+EPhL9gL9kq4uPjzeyaL/AKZa678V7uONvtCXxjlTT9AgjfHm30UT3KCIqhW5uL7zWFtam4j/ADn/AGj/AI/eK/2mfjRrfxl8Yww282qSRx2Om23+q06xgiWC1s0OAWWG3jiiDvmSTZvkZnZmO9+1/wDtleP/ANrbxfDc6lZ/2H4T0aSVfCng+3ujNFp0b43yyylVN1eShEM1yyqXKqqJFDHDBF5CJD1xXDUre0hGnHSMdu7b3k/NvptFWS2belDC+yqTqzd6k2rtbJLSMY7aJdbJybcmlolZWQE5Bopkb/L0orn5jo5THozRRUnpAScYzRRRQTIF61Jk0UVoSODkU7zSRwaKKCXFDt7YwTQsvaiigmxIk5xjP4iiiipbMz//2Q==";
+
+        function renderForms() {
+            const grid = document.getElementById('grid-forms');
+            if (!grid) return;
+            grid.innerHTML = downloadableForms.map(f => `
+                <div class="bg-white border border-slate-200 rounded shadow-xs p-4 flex items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3 min-w-0">
+                        <span class="material-symbols-outlined text-emerald-700 bg-emerald-50 p-2 rounded">${f.icon}</span>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-800 truncate">${f.title}</p>
+                            <p class="text-xs text-slate-500 truncate">${f.desc}</p>
+                        </div>
+                    </div>
+                    <button onclick="downloadForm('${f.id}')" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs px-3 py-2 rounded flex items-center space-x-1.5 transition cursor-pointer shrink-0">
+                        <span class="material-symbols-outlined text-sm">download</span>
+                        <span>Download</span>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function downloadForm(formId) {
+            const form = downloadableForms.find(f => f.id === formId);
+            if (!form) return;
+            const rows = hoseChecklistRows.map((r, i) => `
+                <tr${i % 2 === 1 ? ' class="alt"' : ''}>
+                    <td class="c b">${r.no}</td>
+                    <td class="b">${r.cat}</td>
+                    <td>${r.text}</td>
+                    <td></td>
+                    <td></td>
+                </tr>`).join('');
+            const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>${form.title}</title>
+<style>
+    @page { size: A4 portrait; margin: 10mm; }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    body { font-family: Calibri, 'Segoe UI', Arial, sans-serif; margin: 0; color: #4A5568; background: #e5e7eb; }
+    .sheet { width: 210mm; min-height: 296mm; margin: 0 auto; padding: 8mm 10mm; background: #fff; }
+    .hdr { text-align: center; }
+    .hdr img { width: 34px; height: 34px; }
+    .company { font-size: 15pt; font-weight: bold; color: #1A365D; margin: 2px 0 8px; }
+    .banner { background: #1A365D; color: #FFFFFF; font-size: 12pt; font-weight: bold; text-align: center; padding: 6px 10px; border-radius: 2px; }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { border: 1px solid #A0AEC0; padding: 4px 6px; font-size: 8.5pt; vertical-align: middle; }
+    th { background: #2B6CB0; color: #FFFFFF; font-size: 9.5pt; font-weight: bold; text-align: center; padding: 5px 6px; }
+    tr.alt td { background: #F7FAFC; }
+    .c { text-align: center; width: 5.5%; }
+    .b { font-weight: bold; font-size: 9pt; }
+    .st { width: 11%; }
+    .rm { width: 27%; }
+    .info { border-collapse: collapse; margin-top: 8px; }
+    .info td { border: none; padding: 2.5px 4px; font-size: 8pt; }
+    .info .lbl { font-weight: bold; text-align: right; white-space: nowrap; width: 16.5%; }
+    .info .fill { border-bottom: 1px solid #4A5568; width: 16.5%; }
+    .decl-title { background: #1A365D; color: #FFFFFF; font-size: 9.5pt; font-weight: bold; text-align: center; padding: 5px; margin-top: 12px; border-radius: 2px; }
+    .decl-body { border: 1px solid #A0AEC0; border-top: none; padding: 7px 10px; font-size: 8pt; text-align: center; line-height: 1.5; }
+    .sigs { width: 80%; margin: 42px auto 0; }
+    .sigs td { border: none; border-top: 1.5px solid #1A365D; width: 45%; padding-top: 5px; font-size: 9pt; font-weight: bold; text-align: center; }
+    .sigs .gap { border: none; width: 10%; }
+    .noprint { text-align: center; margin: 14px; }
+    .noprint button { padding: 9px 20px; background: #1A365D; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; font-family: inherit; }
+    .noprint button:hover { background: #2B6CB0; }
+    @media print { body { background: #fff; } .sheet { width: auto; min-height: 0; margin: 0; padding: 0; } .noprint { display: none; } }
+</style>
+</head>
+<body>
+<div class="sheet">
+    <div class="hdr">
+        <img src="data:image/jpeg;base64,${LOGO_B64}" alt="Company Logo">
+        <div class="company">AL GHAITH TRADING &amp; INDUSTRIAL SERVICES</div>
+    </div>
+    <div class="banner">HIGH-PRESSURE &amp; UHP HOSE PRE-OPERATIONAL INSPECTION CHECKLIST</div>
+
+    <table class="info">
+        <tr>
+            <td class="lbl">Date:</td><td class="fill"></td>
+            <td class="lbl">Hose Tag / ID:</td><td class="fill"></td>
+            <td class="lbl">Pump Operating Pressure:</td><td class="fill"></td>
+        </tr>
+        <tr>
+            <td class="lbl">Inspector Name:</td><td class="fill"></td>
+            <td class="lbl">Hose Rating (PSI):</td><td class="fill"></td>
+            <td class="lbl">Location / Site:</td><td class="fill"></td>
+        </tr>
+        <tr>
+            <td class="lbl">Supervisor Name:</td><td class="fill" colspan="3"></td>
+            <td class="lbl">Hose Length &amp; Diameter:</td><td class="fill"></td>
+        </tr>
+    </table>
+
+    <table style="margin-top: 8px;">
+        <tr>
+            <th class="c">Item</th>
+            <th style="width: 17%;">Category</th>
+            <th>Specific Inspection Checkpoint</th>
+            <th class="st">Status</th>
+            <th class="rm">Action Required / Remarks</th>
+        </tr>
+        ${rows}
+    </table>
+
+    <div class="decl-title">OPERATIONAL SAFETY DECLARATION &amp; SIGN-OFF</div>
+    <div class="decl-body">
+        I confirm that all high-pressure waterblasting hoses have been physically inspected according to Al Ghaith safety standards. Safety whip-checks are engaged and MWP ratings match pump limits.
+    </div>
+
+    <table class="sigs">
+        <tr>
+            <td>Inspector Sign &amp; Date</td>
+            <td class="gap"></td>
+            <td>Supervisor Sign and Date</td>
+        </tr>
+    </table>
+</div>
+<p class="noprint"><button onclick="window.print()">Print / Save as PDF</button></p>
+</body>
+</html>`;
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = form.file;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
         function refreshWorkspaceView() {
+            if (currentActiveModule === "forms") {
+                renderForms();
+            }
+
             if (currentActiveModule === "fleet") {
                 // Added a fallback in case the element doesn't exist yet
                 const searchInput = document.getElementById('in-f-search');
@@ -4978,13 +5196,22 @@
                     // --- ADDED LOGIC FOR SERIAL NUMBER ---
                     // Find the matching asset in your memory/database
                     const asset = memory.assets.find(a => a.id === w.assetId);
+                    const isAccessoryWo = String(w.category || '').toLowerCase() === 'accessories' || !w.assetId;
                     // Safely grab the serial number, defaulting to 'N/A' if it doesn't exist
-                    const serialNumber = asset && asset.serial ? asset.serial : 'N/A';
+                    const serialNumber = isAccessoryWo ? '—' : (asset && asset.serial ? asset.serial : 'N/A');
                     // -------------------------------------
 
-                    let metricInfo = w.type === 'hours' ? `${w.currentHours} Hrs` : (w.type === 'date' ? w.currentDate : 'N/A');
-                    let targetInfo = w.type === 'hours' ? `${w.targetHours} Hrs` : (w.type === 'date' ? w.targetDate : 'N/A');
-                    let diffInfo = w.type === 'hours' ? `${w.targetHours - w.currentHours} Hours Remaining` : 'Target Schedule Bound';
+                    let metricInfo = isAccessoryWo ? 'N/A' : (w.type === 'hours' ? `${w.currentHours} Hrs` : (w.type === 'date' ? w.currentDate : 'N/A'));
+                    let targetInfo = isAccessoryWo ? 'N/A' : (w.type === 'hours' ? `${w.targetHours} Hrs` : (w.type === 'date' ? w.targetDate : 'N/A'));
+                    let diffInfo = isAccessoryWo ? 'No Tracking (Accessory)' : (w.type === 'hours' ? `${w.targetHours - w.currentHours} Hours Remaining` : 'Target Schedule Bound');
+
+                    // Action button: Accessories show 'Accept' first, then switch to 'Complete' once In Progress
+                    let woActionButton = '';
+                    if (isAccessoryWo && w.status === 'In Progress') {
+                        woActionButton = `<button onclick="completeAccessoryWo('${w.id}')" class="bg-slate-900 hover:bg-slate-800 text-white px-2 py-1 rounded transition text-[10px] font-bold shadow-sm" title="Complete Accessory Work Order">Complete</button>`;
+                    } else {
+                        woActionButton = `<button onclick="openAcceptWoModal('${w.id}')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-2 py-1 rounded transition text-[10px] font-bold shadow-sm" title="Accept Work Order">Accept</button>`;
+                    }
                     
                     let woStatusClass = "bg-slate-100 text-slate-700 border border-slate-200";
                     if (w.status === "Pending") woStatusClass = "bg-slate-100 text-slate-700 border border-slate-300";
@@ -4997,7 +5224,7 @@
                         <tr class="hover:bg-slate-50">
                             <td class="p-4 font-bold font-code text-slate-900">${w.id}</td>
                             <td class="p-4 font-code font-medium">${formatDisplayDate(w.date)}</td>
-                            <td class="p-4 font-code font-medium">${w.assetId}<div class="text-[10px] text-slate-400 font-normal mt-0.5">S/N: ${serialNumber}</div></td>
+                            <td class="p-4 font-code font-medium">${isAccessoryWo ? 'Accessory' : w.assetId}<div class="text-[10px] text-slate-400 font-normal mt-0.5">S/N: ${serialNumber}</div></td>
                             <td class="p-4 font-code">${metricInfo}</td>
                             <td class="p-4 font-code">${targetInfo}</td>
                             <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
@@ -5006,9 +5233,7 @@
                             <td class="p-4 text-center space-x-2">
                                 <button onclick="openEditWoModal('${w.id}')" class="text-slate-600 hover:text-slate-900 font-semibold cursor-pointer">Edit State</button>
                                 <button onclick="dropWorkOrder('${w.id}')" class="text-rose-600 hover:text-rose-900 font-semibold cursor-pointer">Purge</button>
-                                <button onclick="openAcceptWoModal('${w.id}')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-2 py-1 rounded transition text-[10px] font-bold shadow-sm" title="Accept Work Order">
-                                    Accept
-                                </button>
+                                ${woActionButton}
                             </td>
                         </tr>
                     `;
@@ -5756,6 +5981,9 @@
             }
 
             populateEquipmentDropdown('in-w-asset');
+            // Default new work orders to Equipment type
+            document.getElementById('in-w-category').value = 'Equipment';
+            toggleWoCategory('Equipment');
             toggleMetricInputs(document.getElementById('in-w-type').value);
 
             // Auto-fill target metric from the latest maintenance log
@@ -5779,7 +6007,12 @@
             populateEquipmentDropdown('in-w-asset');
             document.getElementById('in-w-asset').value = wo.assetId;
             document.getElementById('in-w-type').value = wo.type;
-            
+
+            // Restore the Work Order Type (Equipment / Accessories) and apply visibility rules
+            const woCategory = wo.category || 'Equipment';
+            document.getElementById('in-w-category').value = woCategory;
+            toggleWoCategory(woCategory);
+
             toggleMetricInputs(wo.type);
             
             if (wo.type === 'hours') {
@@ -5800,26 +6033,35 @@
             e.preventDefault();
             
             const id = document.getElementById('in-w-id').value.trim().toUpperCase();
-            const type = document.getElementById('in-w-type').value;
-            const assetId = document.getElementById('in-w-asset').value; 
+            const category = document.getElementById('in-w-category')?.value || 'Equipment';
+            const isAccessory = String(category).toLowerCase() === 'accessories';
+            const type = isAccessory ? 'none' : document.getElementById('in-w-type').value;
+            const assetId = isAccessory ? '' : document.getElementById('in-w-asset').value; 
             const woStatus = document.getElementById('in-w-status').value || "";
 
             // 1. Guard check: Ensure IDs exist before attempting a database write
-            if (!id || !assetId) {
-                alert("Submission Blocked: Order ID and Equipment Asset are required.");
+            if (!id) {
+                alert("Submission Blocked: Order ID is required.");
+                return;
+            }
+            if (!isAccessory && !assetId) {
+                alert("Submission Blocked: Equipment Asset is required for Equipment work orders.");
                 return;
             }
 
             // 2. Status check: Prevent adding work order if equipment is dispatched
-            const targetAsset = memory.assets.find(a => a.id === assetId);
-            if (targetAsset && targetAsset.status === 'Dispatched') {
-                alert("Submission Blocked: Cannot add a work order for equipment currently in 'Dispatched' status.");
-                return;
+            if (!isAccessory) {
+                const targetAsset = memory.assets.find(a => a.id === assetId);
+                if (targetAsset && targetAsset.status === 'Dispatched') {
+                    alert("Submission Blocked: Cannot add a work order for equipment currently in 'Dispatched' status.");
+                    return;
+                }
             }
 
             // 3. Build the payload, ensuring NO undefined values are passed (Firebase strictly rejects undefined)
             const payload = {
                 id: id,
+                category: category,
                 assetId: assetId,
                 date: document.getElementById('in-w-date').value || "",
                 type: type || "",
@@ -5832,6 +6074,7 @@
             };
 
             // Determine the dynamic asset status and color based on work order completion
+            // (Accessories work orders are not linked to an asset, so no asset update is performed)
             const isCompleted = woStatus === "Completed";
             const assetUpdates = {
                 status: isCompleted ? "Operational" : "In Maintenance",
@@ -5841,7 +6084,8 @@
             // 4. Use Promises instead of callbacks for better error catching
             cmmsDb.ref('workOrders/' + id).set(payload)
                 .then(() => {
-                    // If the first write succeeds, update the asset status dynamically
+                    // If the first write succeeds, update the asset status dynamically (skip for Accessories)
+                    if (isAccessory || !assetId) return null;
                     return cmmsDb.ref('assets/' + assetId).update(assetUpdates);
                 })
                 .then(() => {
@@ -8164,7 +8408,20 @@
             // 3. If validation passes, proceed with opening the modal
             document.getElementById('in-accept-wo-id').value = woId;
             const techSelect = document.getElementById('in-accept-tech');
-            
+
+            // Accessories skip the log, but the action itself is still an "Accept"
+            const isAccessoryWo = String(workOrder.category || '').toLowerCase() === 'accessories' || !workOrder.assetId;
+            const acceptTitleEl = document.getElementById('modal-accept-wo-title');
+            if (acceptTitleEl) {
+                acceptTitleEl.innerHTML = isAccessoryWo
+                    ? `<span class="material-symbols-outlined text-slate-700">handshake</span> Accept Accessory Work Order`
+                    : `<span class="material-symbols-outlined text-slate-700">handshake</span> Accept Work Order`;
+            }
+            const acceptSubmitBtn = document.getElementById('btn-accept-submit');
+            if (acceptSubmitBtn) {
+                acceptSubmitBtn.innerText = isAccessoryWo ? 'Accept Work Order' : 'Accept & Add to Log';
+            }
+
             // Clear and populate technicians from memory cache
             if (memory.technicians && memory.technicians.length > 0) {
                 // DEBUG: Check your console (F12) to see actual Technician properties
@@ -8196,6 +8453,24 @@
 
             const wo = memory.workOrders.find(w => String(w.id) === String(woId));
             if (!wo) return alert("Work order not found in memory cache.");
+
+            const isAccessoryWo = String(wo.category || '').toLowerCase() === 'accessories' || !wo.assetId;
+
+            // ACCESSORY WORK ORDERS: no maintenance log is created.
+            // Step 1: Accepting an accessory work order sets it to 'In Progress'.
+            // Step 2: The row button then switches to 'Complete' (completeAccessoryWo) to mark it 'Completed'.
+            if (isAccessoryWo) {
+                cmmsDb.ref('workOrders/' + wo.id).update({ status: 'In Progress' })
+                    .then(() => {
+                        toggleModal('modal-accept-wo', false);
+                        alert('Accessory Work Order Accepted! (No maintenance log was generated). Use the Complete button to finish it.');
+                    })
+                    .catch(err => {
+                        console.error("Error accepting Accessory Work Order:", err);
+                        alert("Database Error: Could not accept work order.");
+                    });
+                return;
+            }
 
             const logId = 'LOG-' + Math.floor(100000 + Math.random() * 900000); 
             const currentDate = new Date().toISOString().split('T')[0];
@@ -8255,6 +8530,34 @@
                 .catch(err => {
                     console.error("Error accepting Work Order:", err);
                     alert("Database Error: Could not accept work order.");
+                });
+        }
+
+        // Step 2 for Accessory work orders: after being accepted ('In Progress'),
+        // the Complete button marks the work order as 'Completed' (no maintenance log).
+        function completeAccessoryWo(id) {
+            const wo = memory.workOrders.find(w => String(w.id) === String(id));
+            if (!wo) return alert("Work order not found in memory cache.");
+
+            const woStatus = String(wo.status || '').trim().toLowerCase();
+            if (woStatus === 'completed') {
+                alert("This accessory work order is already completed.");
+                return;
+            }
+            if (woStatus !== 'in progress') {
+                alert(`Action denied. Accept the work order first. Only 'In Progress' accessory work orders can be completed. Current status: ${wo.status}`);
+                return;
+            }
+
+            if (!confirm(`Mark Accessory Work Order ${id} as Completed?`)) return;
+
+            cmmsDb.ref('workOrders/' + id).update({ status: 'Completed' })
+                .then(() => {
+                    alert('Accessory Work Order Completed! (No maintenance log was generated)');
+                })
+                .catch(err => {
+                    console.error("Error completing Accessory Work Order:", err);
+                    alert("Database Error: Could not complete work order.");
                 });
         }
 
