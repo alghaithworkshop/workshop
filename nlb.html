@@ -1035,10 +1035,25 @@
                                     <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
                                     <input type="text" id="in-f-search" oninput="refreshWorkspaceView()" placeholder="Search ID, name, type, model..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
                                 </div>
-                                <button onclick="exportAssetRegistryExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm shrink-0">
-                                    <span class="material-symbols-outlined text-sm">download</span>
-                                    <span>Export Excel</span>
-                                </button>
+                                <!-- Hidden Excel File Input (Asset Registry Import) -->
+                                <input type="file" id="in-f-excel-file" accept=".xlsx, .xls, .csv" class="hidden" onchange="importAssetRegistryExcel(event)">
+
+                                <!-- Three-dot menu: Import / Export -->
+                                <div class="relative shrink-0" id="fleet-menu-wrapper">
+                                    <button type="button" onclick="toggleFleetMenu(event)" id="btn-fleet-menu" aria-haspopup="true" aria-expanded="false" title="Import or export the asset registry" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 font-semibold text-xs px-3 py-2.5 rounded flex items-center justify-center transition cursor-pointer shadow-sm">
+                                        <span class="material-symbols-outlined text-lg leading-none">more_vert</span>
+                                    </button>
+                                    <div id="menu-fleet-actions" class="hidden absolute right-0 mt-2 w-52 bg-white border border-slate-200 rounded-md shadow-lg z-30 overflow-hidden">
+                                        <button type="button" onclick="triggerAssetRegistryImport()" class="w-full flex items-center gap-2 px-3 py-2.5 text-left text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition cursor-pointer">
+                                            <span class="material-symbols-outlined text-base">upload_file</span>
+                                            <span>Import Excel</span>
+                                        </button>
+                                        <button type="button" onclick="exportAssetRegistryExcel()" class="w-full flex items-center gap-2 px-3 py-2.5 text-left text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition cursor-pointer border-t border-slate-100">
+                                            <span class="material-symbols-outlined text-base">download</span>
+                                            <span>Export Excel</span>
+                                        </button>
+                                    </div>
+                                </div>
                                 <button onclick="openAddModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm shrink-0">
                                     <span class="material-symbols-outlined text-sm">add</span>
                                     <span>Register Asset Spec</span>
@@ -2425,7 +2440,7 @@
                 <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-slate-700">fact_check</span> Complete Pre-Operation Checklist
                 </h3>
-                <p class="text-[11px] text-slate-500">Compliance (Jetting & Bundle Puller Standard)</p>
+                <p class="text-[11px] text-slate-500">Compliance (Jetting, Bundle Puller, Dewatering &amp; AutoBox/TLX Standard)</p>
             </div>
             <button type="button" onclick="toggleModal('modal-add-preop', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
         </div>
@@ -2439,7 +2454,7 @@
                 </div>
                 <label class="inline-flex items-center gap-2 cursor-pointer bg-white border border-emerald-300 px-3 py-1 rounded shadow-xs hover:bg-emerald-100 transition-colors">
                     <input type="checkbox" id="chk-pass-all-global" onchange="toggleAllPreopCheckboxes(this.checked)" class="rounded text-emerald-600 focus:ring-emerald-500 border-emerald-400">
-                    <span class="font-bold text-xs text-emerald-800">Pass All Items (Select All 47 Items)</span>
+                    <span id="pass-all-label" class="font-bold text-xs text-emerald-800">Pass All Items (Select All Items)</span>
                 </label>
             </div>
 
@@ -2480,21 +2495,36 @@
                         ></div>
                     </div>
                     <div>
+                        <label class="block text-slate-600 font-medium mb-1">Equipment Type *</label>
+                        <select id="in-po-type" required onchange="applyPreopTypeFilter(this.value)" class="w-full bg-white border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
+                            <option value="">— Select Equipment Type —</option>
+                            <option value="nlb">NLB Pump</option>
+                            <option value="landa">Landa Pump</option>
+                            <option value="ptc">PTC</option>
+                            <option value="dewatering">Dewatering Pump</option>
+                            <option value="puller">Bundle Puller</option>
+                            <option value="autobox">AutoBox (ABX-2L)</option>
+                            <option value="tlx">TLX Lance System</option>
+                        </select>
+                    </div>
+                    <div>
                         <label class="block text-slate-600 font-medium mb-1">Location / Site Name</label>
                         <input type="text" id="in-po-location" class="w-full bg-white border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. Ras Laffan RLC">
                     </div>
                     <div>
-                        <label class="block text-slate-600 font-medium mb-1">Engine Hours</label>
+                        <label class="block text-slate-600 font-medium mb-1">Engine / Hydraulic Hours</label>
                         <input type="number" step="0.1" id="in-po-hours" class="w-full bg-white border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. 145.5">
                     </div>
                 </div>
             </div>
 
+            <div id="preop-type-hint" class="hidden bg-amber-50 border border-amber-200 text-amber-900 p-2 rounded text-[11px] font-medium"></div>
+
             <!-- Section 1: HSE & MANDATORY SITE COMPLIANCE (Standards) -->
-            <div class="space-y-1.5">
+            <div class="space-y-1.5" data-preop-group="po-hse">
                 <div class="flex justify-between items-center">
                     <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">1. HSE & MANDATORY SITE COMPLIANCE (Standards)</p>
-                    <button type="button" onclick="toggleSectionCheckboxes('po-hse', true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
                 </div>
                 <div class="border border-slate-200 rounded overflow-hidden">
                     <table class="w-full text-left border-collapse text-[11px]">
@@ -2563,10 +2593,10 @@
             </div>
 
             <!-- Section 2: DIESEL / ELECTRIC DRIVE & HYDRAULIC POWER PACK (HPP) -->
-            <div class="space-y-1.5">
+            <div class="space-y-1.5" data-preop-group="po-drive">
                 <div class="flex justify-between items-center">
                     <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">2. DIESEL / ELECTRIC DRIVE & HYDRAULIC POWER PACK (HPP)</p>
-                    <button type="button" onclick="toggleSectionCheckboxes('po-drive', true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
                 </div>
                 <div class="border border-slate-200 rounded overflow-hidden">
                     <table class="w-full text-left border-collapse text-[11px]">
@@ -2642,10 +2672,10 @@
             </div>
 
             <!-- Section 3: PULLER HYDRAULIC SYSTEM, CYLINDERS & WINCH ASSEMBLY -->
-            <div class="space-y-1.5">
+            <div class="space-y-1.5" data-preop-group="po-hydraulic">
                 <div class="flex justify-between items-center">
                     <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">3. PULLER HYDRAULIC SYSTEM, CYLINDERS & WINCH ASSEMBLY</p>
-                    <button type="button" onclick="toggleSectionCheckboxes('po-hydraulic', true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
                 </div>
                 <div class="border border-slate-200 rounded overflow-hidden">
                     <table class="w-full text-left border-collapse text-[11px]">
@@ -2714,10 +2744,10 @@
             </div>
 
             <!-- Section 4: WATER SYSTEM & HIGH-PRESSURE / ULTRA-HIGH PRESSURE PUMP HEADS -->
-            <div class="space-y-1.5">
+            <div class="space-y-1.5" data-preop-group="po-water">
                 <div class="flex justify-between items-center">
                     <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">4. WATER SYSTEM & HIGH-PRESSURE / ULTRA-HIGH PRESSURE PUMP HEADS</p>
-                    <button type="button" onclick="toggleSectionCheckboxes('po-water', true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
                 </div>
                 <div class="border border-slate-200 rounded overflow-hidden">
                     <table class="w-full text-left border-collapse text-[11px]">
@@ -2793,10 +2823,10 @@
             </div>
 
             <!-- Section 5: DEWATERING PUMP SYSTEM & SUCTION / DISCHARGE SPECIFICATIONS -->
-            <div class="space-y-1.5">
+            <div class="space-y-1.5" data-preop-group="po-dewatering">
                 <div class="flex justify-between items-center">
                     <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">5. DEWATERING PUMP SYSTEM & SUCTION / DISCHARGE SPECIFICATIONS</p>
-                    <button type="button" onclick="toggleSectionCheckboxes('po-dewatering', true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
                 </div>
                 <div class="border border-slate-200 rounded overflow-hidden">
                     <table class="w-full text-left border-collapse text-[11px]">
@@ -2858,10 +2888,10 @@
             </div>
 
             <!-- Section 6: HOT WATER HEATER / BURNER & COMBUSTION SYSTEM (PTC & LANDA) -->
-            <div class="space-y-1.5">
+            <div class="space-y-1.5" data-preop-group="po-burner">
                 <div class="flex justify-between items-center">
                     <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">6. HOT WATER HEATER / BURNER & COMBUSTION SYSTEM (PTC & LANDA)</p>
-                    <button type="button" onclick="toggleSectionCheckboxes('po-burner', true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
                 </div>
                 <div class="border border-slate-200 rounded overflow-hidden">
                     <table class="w-full text-left border-collapse text-[11px]">
@@ -2908,11 +2938,469 @@
                 </div>
             </div>
 
+            <!-- Section 7a: AUTOBOX ABX-2L CHECKLIST (per Autobox.xlsx) -->
+            <div class="space-y-1.5" data-preop-group="po-ab-s1">
+                <div class="flex justify-between items-center">
+                    <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">1. General &amp; Safety / Hose Clamp Checks (Standards)</p>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                </div>
+                <div class="border border-slate-200 rounded overflow-hidden">
+                    <table class="w-full text-left border-collapse text-[11px]">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-2 w-10 text-center">Ref</th>
+                                <th class="p-2">Inspection Item Description</th>
+                                <th class="p-2">Applicability / Unit Spec</th>
+                                <th class="p-2">Compliance Standard & Remarks</th>
+                                <th class="p-2 w-24 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2 text-center font-mono">85</td>
+                                <td class="p-2 font-medium">Valid Third-Party Inspection Certificate (TPI) available &amp; valid</td>
+                                <td class="p-2 text-slate-500">Common (AutoBox System)</td>
+                                <td class="p-2 text-slate-500">Check TPI expiration date on tag</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Valid Third-Party Inspection Certificate (TPI) available &amp; valid" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">86</td>
+                                <td class="p-2 font-medium">Pneumatic Safety Whip Checks &amp; Safety Cables Fitted</td>
+                                <td class="p-2 text-slate-500">AutoBox Pneumatic Safety</td>
+                                <td class="p-2 text-slate-500">Installed at hose connection points &amp; air inlet</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Pneumatic Safety Whip Checks &amp; Safety Cables Fitted" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">87</td>
+                                <td class="p-2 font-medium">Grounding / Earthing Bond Wire Connected</td>
+                                <td class="p-2 text-slate-500">Common (AutoBox System)</td>
+                                <td class="p-2 text-slate-500">Static ground wire connected to earthing point</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Grounding / Earthing Bond Wire Connected" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">88</td>
+                                <td class="p-2 font-medium">Emergency Air Shut-off Valve (E-Stop Dump Valve)</td>
+                                <td class="p-2 text-slate-500">AutoBox Pneumatic System</td>
+                                <td class="p-2 text-slate-500">Accessible, functional test, immediate pressure dump</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Emergency Air Shut-off Valve (E-Stop Dump Valve)" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">89</td>
+                                <td class="p-2 font-medium">Portable Fire Extinguisher &amp; PPE Area Set Up</td>
+                                <td class="p-2 text-slate-500">Site Safety (AutoBox)</td>
+                                <td class="p-2 text-slate-500">Safety barrier, splash shield, and clear safety zone</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Portable Fire Extinguisher &amp; PPE Area Set Up" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="space-y-1.5" data-preop-group="po-ab-s2">
+                <div class="flex justify-between items-center">
+                    <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">2. Mechanical &amp; Frame Inspection (StoneAge AutoBox ABX-2L Assembly)</p>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                </div>
+                <div class="border border-slate-200 rounded overflow-hidden">
+                    <table class="w-full text-left border-collapse text-[11px]">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-2 w-10 text-center">Ref</th>
+                                <th class="p-2">Inspection Item Description</th>
+                                <th class="p-2">Applicability / Unit Spec</th>
+                                <th class="p-2">Compliance Standard & Remarks</th>
+                                <th class="p-2 w-24 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2 text-center font-mono">54</td>
+                                <td class="p-2 font-medium">Positioner / Clamp Plate &amp; Guide Tube Condition</td>
+                                <td class="p-2 text-slate-500">AutoBox ABX-2L Assembly</td>
+                                <td class="p-2 text-slate-500">Securely bolted, proper alignment, no excessive wear</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Positioner / Clamp Plate &amp; Guide Tube Condition" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">55</td>
+                                <td class="p-2 font-medium">Drive Rollers &amp; Traction Belt Assembly</td>
+                                <td class="p-2 text-slate-500">AutoBox ABX-2L Assembly</td>
+                                <td class="p-2 text-slate-500">Inspect polyurethane/rubber rollers for wear, cracking, or grease</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Drive Rollers &amp; Traction Belt Assembly" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">56</td>
+                                <td class="p-2 font-medium">Drive Chain / Belt Tension &amp; Lubrication</td>
+                                <td class="p-2 text-slate-500">AutoBox ABX-2L Assembly</td>
+                                <td class="p-2 text-slate-500">Proper tension, lubricated, zero slack or jamming</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Drive Chain / Belt Tension &amp; Lubrication" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">57</td>
+                                <td class="p-2 font-medium">Hose Clamp &amp; Collet Bushing Sizing</td>
+                                <td class="p-2 text-slate-500">AutoBox ABX-2L Assembly</td>
+                                <td class="p-2 text-slate-500">Matched to high-pressure hose outer diameter (OD)</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Hose Clamp &amp; Collet Bushing Sizing" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">58</td>
+                                <td class="p-2 font-medium">Pneumatic Cylinder Clamp Pressure Assembly</td>
+                                <td class="p-2 text-slate-500">AutoBox ABX-2L Assembly</td>
+                                <td class="p-2 text-slate-500">Smooth engagement, no air leaks, correct clamping force</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Pneumatic Cylinder Clamp Pressure Assembly" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">59</td>
+                                <td class="p-2 font-medium">Fasteners, Mounting Bolts &amp; Frame Structural Welds</td>
+                                <td class="p-2 text-slate-500">AutoBox ABX-2L Assembly</td>
+                                <td class="p-2 text-slate-500">All hardware torqued, no hairline frame cracks</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Fasteners, Mounting Bolts &amp; Frame Structural Welds" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="space-y-1.5" data-preop-group="po-ab-s3">
+                <div class="flex justify-between items-center">
+                    <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">3. Pneumatic Control Box &amp; Hose Feed Hydraulics/Pneumatics</p>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                </div>
+                <div class="border border-slate-200 rounded overflow-hidden">
+                    <table class="w-full text-left border-collapse text-[11px]">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-2 w-10 text-center">Ref</th>
+                                <th class="p-2">Inspection Item Description</th>
+                                <th class="p-2">Applicability / Unit Spec</th>
+                                <th class="p-2">Compliance Standard & Remarks</th>
+                                <th class="p-2 w-24 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2 text-center font-mono">60</td>
+                                <td class="p-2 font-medium">Air Line Lubricator Oil Level &amp; Drip Rate</td>
+                                <td class="p-2 text-slate-500">Pneumatic Control Box</td>
+                                <td class="p-2 text-slate-500">Pneumatic oil filled, set to ~1 droplet/min under flow</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Air Line Lubricator Oil Level &amp; Drip Rate" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">61</td>
+                                <td class="p-2 font-medium">Air Filter / Regulator (FRL Unit) &amp; Water Trap</td>
+                                <td class="p-2 text-slate-500">Pneumatic Control Box</td>
+                                <td class="p-2 text-slate-500">Drain condensate, clean bowl, pressure set 80&#8211;100 PSI</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Air Filter / Regulator (FRL Unit) &amp; Water Trap" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">62</td>
+                                <td class="p-2 font-medium">Pneumatic Control Box Joysticks &amp; Valves</td>
+                                <td class="p-2 text-slate-500">Pneumatic Control Box</td>
+                                <td class="p-2 text-slate-500">Forward / Reverse / Speed control moves freely &amp; returns to neutral</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Pneumatic Control Box Joysticks &amp; Valves" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">63</td>
+                                <td class="p-2 font-medium">High-Pressure Hose Anti-Withdrawal / Stop Mechanism</td>
+                                <td class="p-2 text-slate-500">Pneumatic Control Box</td>
+                                <td class="p-2 text-slate-500">Backout stop / anti-withdrawal device locked in position</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="High-Pressure Hose Anti-Withdrawal / Stop Mechanism" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">64</td>
+                                <td class="p-2 font-medium">Air Hoses &amp; Quick-Disconnect Couplings</td>
+                                <td class="p-2 text-slate-500">Pneumatic Control Box</td>
+                                <td class="p-2 text-slate-500">No cuts/abrasions, safety lock pins inserted on claw couplers</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Air Hoses &amp; Quick-Disconnect Couplings" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="space-y-1.5" data-preop-group="po-ab-s4">
+                <div class="flex justify-between items-center">
+                    <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">4. Pre-Operational &amp; Running Test (No-Load / Low-Pressure Feed Test)</p>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                </div>
+                <div class="border border-slate-200 rounded overflow-hidden">
+                    <table class="w-full text-left border-collapse text-[11px]">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-2 w-10 text-center">Ref</th>
+                                <th class="p-2">Inspection Item Description</th>
+                                <th class="p-2">Applicability / Unit Spec</th>
+                                <th class="p-2">Compliance Standard & Remarks</th>
+                                <th class="p-2 w-24 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2 text-center font-mono">65</td>
+                                <td class="p-2 font-medium">Forward &amp; Reverse Drive Feed Functionality</td>
+                                <td class="p-2 text-slate-500">Running Test (No-Load / Low-Pressure)</td>
+                                <td class="p-2 text-slate-500">Smooth hose feed in both directions without slipping</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Forward &amp; Reverse Drive Feed Functionality" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">66</td>
+                                <td class="p-2 font-medium">Hose Clamp Tension Adjustment</td>
+                                <td class="p-2 text-slate-500">Running Test (No-Load / Low-Pressure)</td>
+                                <td class="p-2 text-slate-500">Hose held securely without crushing outer cover</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Hose Clamp Tension Adjustment" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">67</td>
+                                <td class="p-2 font-medium">Variable Feed Speed Control Function</td>
+                                <td class="p-2 text-slate-500">Running Test (No-Load / Low-Pressure)</td>
+                                <td class="p-2 text-slate-500">Responds smoothly to control valve adjustments</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Variable Feed Speed Control Function" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">68</td>
+                                <td class="p-2 font-medium">Emergency Air Dump / E-Stop Activation Test</td>
+                                <td class="p-2 text-slate-500">Running Test (No-Load / Low-Pressure)</td>
+                                <td class="p-2 text-slate-500">Immediate stop of drive rollers &amp; air venting on activation</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-autobox" value="Emergency Air Dump / E-Stop Activation Test" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section 7b: TLX LANCE SYSTEM CHECKLIST (per TLX.xlsx) -->
+            <div class="space-y-1.5" data-preop-group="po-tlx-s1">
+                <div class="flex justify-between items-center">
+                    <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">1. General &amp; HSE Site Compliance (Standards)</p>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                </div>
+                <div class="border border-slate-200 rounded overflow-hidden">
+                    <table class="w-full text-left border-collapse text-[11px]">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-2 w-10 text-center">Ref</th>
+                                <th class="p-2">Inspection Item Description</th>
+                                <th class="p-2">Applicability / Unit Spec</th>
+                                <th class="p-2">Compliance Standard & Remarks</th>
+                                <th class="p-2 w-24 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2 text-center font-mono">90</td>
+                                <td class="p-2 font-medium">Valid Third-Party Inspection Certificate (TPI) available &amp; valid</td>
+                                <td class="p-2 text-slate-500">Common (TLX System)</td>
+                                <td class="p-2 text-slate-500">Check TPI expiration date on tag</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Valid Third-Party Inspection Certificate (TPI) available &amp; valid" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">91</td>
+                                <td class="p-2 font-medium">Pneumatic Safety Whip Checks &amp; Safety Cables Fitted</td>
+                                <td class="p-2 text-slate-500">TLX Pneumatic Safety</td>
+                                <td class="p-2 text-slate-500">Installed at air inlet, control box, and pneumatic supply connections</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Pneumatic Safety Whip Checks &amp; Safety Cables Fitted" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">92</td>
+                                <td class="p-2 font-medium">Grounding / Earthing Bond Wire Connected</td>
+                                <td class="p-2 text-slate-500">Common (TLX System)</td>
+                                <td class="p-2 text-slate-500">Static ground wire connected to earthing point</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Grounding / Earthing Bond Wire Connected" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">93</td>
+                                <td class="p-2 font-medium">Emergency Air Shut-off Valve (E-Stop Dump Valve)</td>
+                                <td class="p-2 text-slate-500">TLX Pneumatic System</td>
+                                <td class="p-2 text-slate-500">Accessible, functional test, immediate pressure dump</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Emergency Air Shut-off Valve (E-Stop Dump Valve)" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">94</td>
+                                <td class="p-2 font-medium">Safety Zone &amp; Barrier / Shield Setup</td>
+                                <td class="p-2 text-slate-500">Site Safety (TLX)</td>
+                                <td class="p-2 text-slate-500">Safety splash shield mounted at tube sheet; clear work perimeter</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Safety Zone &amp; Barrier / Shield Setup" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="space-y-1.5" data-preop-group="po-tlx-s2">
+                <div class="flex justify-between items-center">
+                    <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">2. TLX Mechanical Tractor &amp; Guide Assembly Inspection</p>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                </div>
+                <div class="border border-slate-200 rounded overflow-hidden">
+                    <table class="w-full text-left border-collapse text-[11px]">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-2 w-10 text-center">Ref</th>
+                                <th class="p-2">Inspection Item Description</th>
+                                <th class="p-2">Applicability / Unit Spec</th>
+                                <th class="p-2">Compliance Standard & Remarks</th>
+                                <th class="p-2 w-24 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2 text-center font-mono">69</td>
+                                <td class="p-2 font-medium">TLX Carriage &amp; Feed Rail Condition</td>
+                                <td class="p-2 text-slate-500">TLX Mechanical Tractor</td>
+                                <td class="p-2 text-slate-500">Clean, free of debris, guide tracks smooth and free of burrs</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="TLX Carriage &amp; Feed Rail Condition" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">70</td>
+                                <td class="p-2 font-medium">Drive Belt / Gearbox &amp; Traction Roller Assembly</td>
+                                <td class="p-2 text-slate-500">TLX Mechanical Tractor</td>
+                                <td class="p-2 text-slate-500">Inspect drive belt/gear engagement; check rollers for wear or grease</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Drive Belt / Gearbox &amp; Traction Roller Assembly" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">71</td>
+                                <td class="p-2 font-medium">TLX Collet Cartridge &amp; Lance Clamp Sizing</td>
+                                <td class="p-2 text-slate-500">TLX Mechanical Tractor</td>
+                                <td class="p-2 text-slate-500">Collet/clamp block matched correctly to flex/rigid lance OD</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="TLX Collet Cartridge &amp; Lance Clamp Sizing" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">72</td>
+                                <td class="p-2 font-medium">TLX Snout Assembly &amp; Front Tube Sheet Lock</td>
+                                <td class="p-2 text-slate-500">TLX Mechanical Tractor</td>
+                                <td class="p-2 text-slate-500">Snout plate, locking pins, and guide tube aligned and locked</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="TLX Snout Assembly &amp; Front Tube Sheet Lock" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">73</td>
+                                <td class="p-2 font-medium">Anti-Withdrawal Device / Backout Stop</td>
+                                <td class="p-2 text-slate-500">TLX Mechanical Tractor</td>
+                                <td class="p-2 text-slate-500">Mechanical backout stop installed to prevent lance exiting tube sheet</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Anti-Withdrawal Device / Backout Stop" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">74</td>
+                                <td class="p-2 font-medium">Fasteners, Mounting Bolts &amp; Structural Weld Condition</td>
+                                <td class="p-2 text-slate-500">TLX Mechanical Tractor</td>
+                                <td class="p-2 text-slate-500">All clamping bolts torqued; structural welds free of fatigue/cracks</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Fasteners, Mounting Bolts &amp; Structural Weld Condition" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="space-y-1.5" data-preop-group="po-tlx-s3">
+                <div class="flex justify-between items-center">
+                    <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">3. Pneumatic Control Box &amp; Positioner Drive System</p>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                </div>
+                <div class="border border-slate-200 rounded overflow-hidden">
+                    <table class="w-full text-left border-collapse text-[11px]">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-2 w-10 text-center">Ref</th>
+                                <th class="p-2">Inspection Item Description</th>
+                                <th class="p-2">Applicability / Unit Spec</th>
+                                <th class="p-2">Compliance Standard & Remarks</th>
+                                <th class="p-2 w-24 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2 text-center font-mono">75</td>
+                                <td class="p-2 font-medium">Air Line Lubricator Oil Level &amp; Drip Rate</td>
+                                <td class="p-2 text-slate-500">TLX Pneumatic Control Box</td>
+                                <td class="p-2 text-slate-500">Pneumatic oil filled, set to ~1 droplet/min under air flow</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Air Line Lubricator Oil Level &amp; Drip Rate" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">76</td>
+                                <td class="p-2 font-medium">Air Filter / Regulator (FRL Unit) &amp; Water Trap</td>
+                                <td class="p-2 text-slate-500">TLX Pneumatic Control Box</td>
+                                <td class="p-2 text-slate-500">Drain condensate, clean bowl, supply pressure set 80&#8211;100 PSI</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Air Filter / Regulator (FRL Unit) &amp; Water Trap" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">77</td>
+                                <td class="p-2 font-medium">TLX Remote Control Box Joysticks &amp; Valves</td>
+                                <td class="p-2 text-slate-500">TLX Pneumatic Control Box</td>
+                                <td class="p-2 text-slate-500">Forward / Reverse / Clamp joysticks move freely &amp; return to neutral</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="TLX Remote Control Box Joysticks &amp; Valves" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">78</td>
+                                <td class="p-2 font-medium">Pneumatic Positioner / Indexing Motor Controls</td>
+                                <td class="p-2 text-slate-500">TLX Positioner Drive System</td>
+                                <td class="p-2 text-slate-500">Pitch adjustment drive and cross-travel motors respond smoothly</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Pneumatic Positioner / Indexing Motor Controls" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">79</td>
+                                <td class="p-2 font-medium">Air Supply Hoses &amp; Quick-Disconnect Couplings</td>
+                                <td class="p-2 text-slate-500">TLX Pneumatic Control Box</td>
+                                <td class="p-2 text-slate-500">No cuts/abrasions, safety lock pins inserted on claw couplers</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Air Supply Hoses &amp; Quick-Disconnect Couplings" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="space-y-1.5" data-preop-group="po-tlx-s4">
+                <div class="flex justify-between items-center">
+                    <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">4. Pre-Operational &amp; Functional Running Test (No-Load Test)</p>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                </div>
+                <div class="border border-slate-200 rounded overflow-hidden">
+                    <table class="w-full text-left border-collapse text-[11px]">
+                        <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-2 w-10 text-center">Ref</th>
+                                <th class="p-2">Inspection Item Description</th>
+                                <th class="p-2">Applicability / Unit Spec</th>
+                                <th class="p-2">Compliance Standard & Remarks</th>
+                                <th class="p-2 w-24 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-2 text-center font-mono">80</td>
+                                <td class="p-2 font-medium">TLX Forward &amp; Reverse Stroke Feed Functionality</td>
+                                <td class="p-2 text-slate-500">Running Test (No-Load)</td>
+                                <td class="p-2 text-slate-500">Smooth lance feed and retract strokes without slipping or binding</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="TLX Forward &amp; Reverse Stroke Feed Functionality" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">81</td>
+                                <td class="p-2 font-medium">TLX Clamp Tension &amp; Feed Force Adjustment</td>
+                                <td class="p-2 text-slate-500">Running Test (No-Load)</td>
+                                <td class="p-2 text-slate-500">Holds lance firmly during feed without crushing outer jacket</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="TLX Clamp Tension &amp; Feed Force Adjustment" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">82</td>
+                                <td class="p-2 font-medium">Pneumatic Indexer &amp; Pitch Traverse Operation</td>
+                                <td class="p-2 text-slate-500">Running Test (No-Load)</td>
+                                <td class="p-2 text-slate-500">Smooth X-Y positioning across simulated tube sheet pattern</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Pneumatic Indexer &amp; Pitch Traverse Operation" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 text-center font-mono">83</td>
+                                <td class="p-2 font-medium">Emergency Air Dump / E-Stop Activation Test</td>
+                                <td class="p-2 text-slate-500">Running Test (No-Load)</td>
+                                <td class="p-2 text-slate-500">Immediate halt of feed motors and instant system pressure venting</td>
+                                <td class="p-2 text-center"><label class="inline-flex items-center gap-1 cursor-pointer"><input type="checkbox" name="po-tlx" value="Emergency Air Dump / E-Stop Activation Test" class="rounded border-slate-300 js-preop-item"> <span>Pass</span></label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Section 7: HOSES, REELS, GUNS, LANCES & ACCESSORIES -->
-            <div class="space-y-1.5">
+            <div class="space-y-1.5" data-preop-group="po-hoses">
                 <div class="flex justify-between items-center">
                     <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">7. HOSES, REELS, GUNS, LANCES & ACCESSORIES</p>
-                    <button type="button" onclick="toggleSectionCheckboxes('po-hoses', true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
                 </div>
                 <div class="border border-slate-200 rounded overflow-hidden">
                     <table class="w-full text-left border-collapse text-[11px]">
@@ -2967,10 +3455,10 @@
             </div>
 
             <!-- Section 8: FUNCTIONAL RUNNING TEST & OPERATIONAL CHECKS -->
-            <div class="space-y-1.5">
+            <div class="space-y-1.5" data-preop-group="po-functional">
                 <div class="flex justify-between items-center">
                     <p class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">8. FUNCTIONAL RUNNING TEST & OPERATIONAL CHECKS</p>
-                    <button type="button" onclick="toggleSectionCheckboxes('po-functional', true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
+                    <button type="button" onclick="togglePreopSection(this, true)" class="text-[10px] text-slate-600 hover:text-slate-900 font-bold underline cursor-pointer">Pass Section</button>
                 </div>
                 <div class="border border-slate-200 rounded overflow-hidden">
                     <table class="w-full text-left border-collapse text-[11px]">
@@ -3992,6 +4480,186 @@
                 tbody.innerHTML = html || '<tr><td colspan="8" class="p-6 text-center text-slate-500 italic">No parts found matching your criteria.</td></tr>';
             }
 
+        // ============================================================
+        // EQUIPMENT TYPE FILTERING — Daily Pre-Operation Checklist
+        // Maps each checklist Ref (01-53) to the equipment types it applies to.
+        // 'all' = common to every type | 'puller' = bundle puller only
+        // ============================================================
+        const PREOP_TYPE_LABELS = { nlb: 'NLB Pump', landa: 'Landa Pump', ptc: 'PTC', dewatering: 'Dewatering Pump', puller: 'Bundle Puller', autobox: 'AutoBox (ABX-2L)', tlx: 'TLX Lance System' };
+
+        const PREOP_ITEM_APPLICABILITY = {
+            // 1. HSE & Mandatory Site Compliance (Common to all equipment)
+            '01': 'all', '02': 'all', '03': 'all', '04': 'all', '05': 'all', '06': 'all', '07': 'all',
+            // 2. Diesel / Electric Drive & HPP
+            '08': 'nlb ptc dewatering puller', // Engine Crankcase Oil (engine-driven units / HPP)
+            '09': 'nlb ptc dewatering puller', // Engine Coolant (diesel engine units)
+            '10': 'nlb ptc dewatering puller', // Fuel System (engine-driven units)
+            '11': 'landa',              // Electric Motor & Power Cord (Landa Electric)
+            '12': 'nlb ptc dewatering puller', // Air Intake & Spark Arrestor (engine-driven units)
+            '13': 'all', '14': 'all', '15': 'all',
+            // 3. Puller Hydraulic System (Bundle Pullers only)
+            '16': 'puller', '17': 'puller', '18': 'puller', '19': 'puller', '20': 'puller', '21': 'puller', '22': 'puller',
+            // 4. Water System & HP/UHP Pump Heads
+            '23': 'nlb landa ptc',      // Pump Crankcase Oil (Comet / NLB / Landa pump base)
+            '24': 'nlb',                // Water Charge / Boost Pump (NLB UHP units)
+            '25': 'ptc landa',          // Water Supply & Buffer Tank (PTC / Landa units)
+            '26': 'nlb ptc landa',      // Water Inlet Filter (common jetting)
+            '27': 'ptc landa',          // Detergent / Anti-Scale (PTC / Landa hot water units)
+            '28': 'nlb ptc landa',      // Rupture Disc / Thermal Relief (common jetting)
+            '29': 'ptc landa',          // Unloader / Pressure Regulating Valve (PTC / Landa units)
+            '30': 'nlb ptc landa'       // HP Calibrated Gauge (common jetting)
+        };
+
+        // Sections 5-8 appended (kept separate to stay maintainable)
+        Object.assign(PREOP_ITEM_APPLICABILITY, {
+            // 5. Dewatering Pump System
+            '31': 'dewatering', '32': 'dewatering', '33': 'dewatering',
+            '34': 'dewatering', '35': 'dewatering', '36': 'dewatering',
+            // 6. Hot Water Heater / Burner & Combustion (PTC & Landa)
+            '37': 'ptc landa', '38': 'ptc landa', '39': 'ptc landa', '40': 'ptc landa',
+            // 7. Hoses, Reels, Guns, Lances & Accessories
+            '41': 'nlb ptc landa',      // HP & UHP Hoses (jetting units)
+            '42': 'nlb ptc landa',      // Whipcheck (jetting units)
+            '43': 'ptc landa',          // Hose Reel Mechanism (PTC / Landa units)
+            '44': 'nlb ptc landa',      // Dump Valve / Foot Pedal / Trigger Gun (jetting units)
+            '45': 'nlb ptc landa',      // Nozzle & Quick-Connect Couplers
+            // 8. Functional Running Test & Operational Checks
+            '46': 'puller', '47': 'puller', // Bundle puller tests
+            '48': 'nlb ptc landa dewatering', // Low Pressure Priming & Air Bleed (jetting & dewatering pumps)
+            '49': 'nlb ptc landa dewatering', // Clutch / Throttle Engagement (jetting & dewatering pumps)
+            '50': 'nlb ptc landa',      // Bypass & Dump Valve (jetting units)
+            '51': 'nlb ptc landa dewatering', // Fluid End Packing / Seal (jetting & dewatering pumps)
+            '52': 'ptc landa',          // Boiler / Burner Ignition (PTC / Landa hot water units)
+            '53': 'all',                // Shutdown & Safe Bleed Off (all equipment)
+            // 7a. AutoBox ABX-2L — per Autobox.xlsx (Sections 1-4)
+            '85': 'autobox', '86': 'autobox', '87': 'autobox', '88': 'autobox', '89': 'autobox',
+            '54': 'autobox', '55': 'autobox', '56': 'autobox', '57': 'autobox', '58': 'autobox', '59': 'autobox',
+            '60': 'autobox', '61': 'autobox', '62': 'autobox', '63': 'autobox', '64': 'autobox',
+            '65': 'autobox', '66': 'autobox', '67': 'autobox', '68': 'autobox',
+            // 7b. TLX Lance System — per TLX.xlsx (Sections 1-4)
+            '90': 'tlx', '91': 'tlx', '92': 'tlx', '93': 'tlx', '94': 'tlx',
+            '69': 'tlx', '70': 'tlx', '71': 'tlx', '72': 'tlx', '73': 'tlx', '74': 'tlx',
+            '75': 'tlx', '76': 'tlx', '77': 'tlx', '78': 'tlx', '79': 'tlx',
+            '80': 'tlx', '81': 'tlx', '82': 'tlx', '83': 'tlx'
+        });
+
+        /**
+         * Maps every on-screen checklist section (data-preop-group) to the equipment types
+         * that own it. AutoBox and TLX each carry their own self-contained Excel checklist
+         * (Autobox.xlsx / TLX.xlsx), so the generic jetting / puller sections are hidden for
+         * those two types and only their own 4 sections are displayed.
+         */
+        const PREOP_GROUP_SCOPES = {
+            'po-hse': 'nlb landa ptc dewatering puller',
+            'po-drive': 'nlb landa ptc dewatering puller',
+            'po-hydraulic': 'puller',
+            'po-water': 'nlb landa ptc',
+            'po-dewatering': 'dewatering',
+            'po-burner': 'ptc landa',
+            'po-hoses': 'nlb landa ptc',
+            'po-functional': 'nlb landa ptc dewatering puller',
+            // Sections 7a (AutoBox ABX-2L) & 7b (TLX Lance System) — exclusive to their own unit type
+            'po-ab-s1': 'autobox', 'po-ab-s2': 'autobox', 'po-ab-s3': 'autobox', 'po-ab-s4': 'autobox',
+            'po-tlx-s1': 'tlx', 'po-tlx-s2': 'tlx', 'po-tlx-s3': 'tlx', 'po-tlx-s4': 'tlx'
+        };
+
+        // Returns true when a section group should be visible for the selected equipment type.
+        function groupAppliesToType(groupKey, typeKey) {
+            if (!typeKey) return true;                 // No type chosen yet → show every section
+            const scope = PREOP_GROUP_SCOPES[groupKey];
+            if (!scope) return true;                   // Unscoped sections stay visible
+            return scope.split(/\s+/).includes(typeKey);
+        }
+
+        // Normalizes a stored type value ("nlb", "NLB Pump", "PTC"...) into a type key.
+        function getPreopTypeKey(raw) {
+            const value = String(raw || '').trim().toLowerCase();
+            if (PREOP_TYPE_LABELS[value]) return value;
+            if (value.startsWith('nlb')) return 'nlb';
+            if (value.startsWith('landa')) return 'landa';
+            if (value.startsWith('ptc')) return 'ptc';
+            if (value.includes('dewater')) return 'dewatering';
+            if (value.includes('autobox') || value.includes('auto box')) return 'autobox';
+            if (value.includes('tlx')) return 'tlx';
+            if (value.includes('pull')) return 'puller';
+            return '';
+        }
+
+        function typeAppliesToItem(app, typeKey) {
+            if (!typeKey) return true;           // No type chosen yet → show everything
+            if (!app || app === 'all') return true;
+            return app.split(/\s+/).includes(typeKey);
+        }
+
+        // Shows/hides checklist sections & rows based on the selected Equipment Type.
+        // e.g. selecting "NLB Pump" displays ONLY the NLB pump checklist items.
+        function applyPreopTypeFilter(typeRaw) {
+            const typeKey = getPreopTypeKey(typeRaw);
+
+            let visibleSectionNo = 0;
+            let visibleRefNo = 0;
+            document.querySelectorAll('[data-preop-group]').forEach(section => {
+                // Some sections belong exclusively to one unit type (AutoBox / TLX own
+                // their own Excel checklist), so hide the whole group when it is not in scope.
+                const groupEnabled = groupAppliesToType(section.dataset.preopGroup, typeKey);
+                let visibleRows = 0;
+                section.querySelectorAll('tbody tr').forEach(tr => {
+                    const checkbox = tr.querySelector('input[type="checkbox"]');
+                    if (!checkbox) return;
+                    // Cache the original master Ref # on the row ONCE, so renumbering
+                    // the displayed Ref # never breaks the applicability lookups.
+                    if (!tr.dataset.ref) {
+                        const m = (tr.querySelector('td')?.textContent || '').trim().match(/^\d+/);
+                        tr.dataset.ref = m ? String(m[0]).padStart(2, '0') : '';
+                    }
+                    const ref = tr.dataset.ref || '';
+                    const applies = groupEnabled && typeAppliesToItem(PREOP_ITEM_APPLICABILITY[ref], typeKey);
+                    tr.classList.toggle('hidden', !applies);
+                    if (!applies && checkbox.checked) checkbox.checked = false; // clear hidden selections
+                    if (applies) {
+                        visibleRows++;
+                        // Renumber the visible Ref # sequentially (01, 02, 03, ...) across
+                        // the whole type-specific checklist.
+                        const refTd = tr.querySelector('td');
+                        if (refTd) refTd.textContent = String(visibleRefNo + 1).padStart(2, '0');
+                        visibleRefNo++;
+                    }
+                });
+                const hasItems = visibleRows > 0;
+                section.classList.toggle('hidden', !hasItems);
+                if (!hasItems) return;
+
+                // Renumber visible sections sequentially (1, 2, 3, ...) because some
+                // sections may be filtered out.
+                visibleSectionNo++;
+                const headerEl = section.querySelector('p');
+                if (headerEl) {
+                    headerEl.textContent = `${visibleSectionNo}. ` + headerEl.textContent.replace(/^\s*\d+\.\s*/, '');
+                }
+            });
+
+            let visibleCount = 0;
+            document.querySelectorAll('#form-preop input[type="checkbox"].js-preop-item').forEach(cb => {
+                const row = cb.closest('tr');
+                if (!row || !row.classList.contains('hidden')) visibleCount++;
+            });
+
+            const hint = document.getElementById('preop-type-hint');
+            if (hint) {
+                hint.classList.remove('hidden');
+                hint.innerHTML = typeKey
+                    ? `Showing <strong>${PREOP_TYPE_LABELS[typeKey]}</strong> checklist — ${visibleCount} applicable items (non-relevant sections are hidden).`
+                    : `Select an <strong>Equipment Type</strong> above to display only the checklist applicable to that unit.`;
+            }
+
+            const passAllLabel = document.getElementById('pass-all-label');
+            if (passAllLabel) {
+                passAllLabel.textContent = typeKey
+                    ? `Pass All Items (Select All ${visibleCount} Applicable Items)`
+                    : `Pass All Items (Select All ${visibleCount} Items)`;
+            }
+        }
+
         function openAddPreopModal() {
     preopEditingId = null;
 
@@ -4002,6 +4670,9 @@
     document.getElementById('preop-modal-title').innerHTML = '<span class="material-symbols-outlined text-slate-700">fact_check</span> Complete Pre-Operation Checklist';
     document.getElementById('preop-submit-btn').textContent = 'Save Checklist';
     document.getElementById('in-po-id').disabled = false;
+
+    // Reset type filter → all sections visible until an Equipment Type is selected
+    applyPreopTypeFilter(document.getElementById('in-po-type')?.value || '');
 
     // 2. Uncheck all section-level and global "Pass All" checkboxes
     const passAllCheckboxes = document.querySelectorAll('.chk-pass-all-section, #chk-pass-all-global');
@@ -4076,6 +4747,9 @@
             document.getElementById('in-po-remarks').value = checklist.remarks || '';
             document.getElementById('in-po-status').value = checklist.status || 'Safe to Operate';
 
+            const preopTypeKey = getPreopTypeKey(checklist.type);
+            document.getElementById('in-po-type').value = preopTypeKey;
+
             const assetSelect = document.getElementById('in-po-asset');
             const assetSearch = document.getElementById('in-po-asset-search');
             assetSelect.value = checklist.assetId || '';
@@ -4088,6 +4762,8 @@
                 'po-water': 'pumpChecks',
                 'po-dewatering': 'dewateringChecks',
                 'po-burner': 'burnerChecks',
+                'po-autobox': 'autoboxChecks',
+                'po-tlx': 'tlxChecks',
                 'po-hoses': 'accessoryChecks',
                 'po-functional': 'functionalChecks'
             };
@@ -4100,6 +4776,9 @@
                     input.checked = savedValues.includes(input.value);
                 });
             });
+
+            // Apply the saved Equipment Type filter (only shows relevant checklist items)
+            applyPreopTypeFilter(preopTypeKey);
 
             toggleModal('modal-add-preop', true);
         }
@@ -4209,8 +4888,13 @@
             }
 
             // Helper function to extract checked items from form sections
+            // (skips items hidden by the Equipment Type filter)
             const getChecked = (name) => 
                 Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+                    .filter(cb => {
+                        const row = cb.closest('tr');
+                        return !row || !row.classList.contains('hidden');
+                    })
                     .map(cb => cb.value)
                     .join(', ');
 
@@ -4220,6 +4904,7 @@
                 date: document.getElementById('in-po-date').value,
                 assetId: document.getElementById('in-po-asset').value,
                 tech: document.getElementById('in-po-tech').value,
+                type: document.getElementById('in-po-type')?.value || '',
                 location: document.getElementById('in-po-location')?.value || 'N/A',
                 engineHours: document.getElementById('in-po-hours')?.value || '0',
                 
@@ -4240,6 +4925,12 @@
                 
                 // 6. Hot Water Heater / Burner & Combustion System (Refs 37-40)
                 burnerChecks: getChecked('po-burner') || 'None Passed',
+                
+                // 7a. AutoBox ABX-2L Checklist (Refs 85-89, 54-68 — per Autobox.xlsx)
+                autoboxChecks: getChecked('po-autobox') || 'None Passed',
+                
+                // 7b. TLX Lance System Checklist (Refs 90-94, 69-83 — per TLX.xlsx)
+                tlxChecks: getChecked('po-tlx') || 'None Passed',
                 
                 // 7. Hoses, Reels, Guns, Lances & Accessories (Refs 41-45)
                 accessoryChecks: getChecked('po-hoses') || 'None Passed',
@@ -4297,6 +4988,8 @@
             
             const checkboxes = container.querySelectorAll('input[type="checkbox"].js-preop-item');
             checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                if (row && row.classList.contains('hidden')) return; // skip items filtered out by Equipment Type
                 cb.checked = checked;
             });
 
@@ -4326,7 +5019,11 @@
 
             const selector = `#${targetFormId} input[type="checkbox"].js-pm-item, #${targetFormId} input[type="checkbox"].js-preop-item`;
             const checkboxes = document.querySelectorAll(selector);
-            checkboxes.forEach(cb => cb.checked = checked);
+            checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                if (row && row.classList.contains('hidden')) return; // skip items filtered out by Equipment Type
+                cb.checked = checked;
+            });
 
             // Sync all section-level toggles within the active form
             const sectionToggles = document.querySelectorAll(`#${targetFormId} .chk-pass-all-section`);
@@ -4355,7 +5052,11 @@
             const checkboxes = document.querySelectorAll(
                 `#${targetFormId} input[name="${sectionName}"], #${targetFormId} input[data-section="${sectionName}"]`
             );
-            checkboxes.forEach(cb => cb.checked = checked);
+            checkboxes.forEach(cb => {
+                const row = cb.closest('tr');
+                if (row && row.classList.contains('hidden')) return; // skip items filtered out by Equipment Type
+                cb.checked = checked;
+            });
 
             // Sync section toggle switch state if linked via data-section-toggle attribute
             const sectionToggle = document.querySelector(`#${targetFormId} input[data-section-toggle="${sectionName}"]`);
@@ -4366,12 +5067,47 @@
             }
             
             // Sync global "Pass All" toggle state
-            const allItems = document.querySelectorAll(`#${targetFormId} input[type="checkbox"].js-pm-item, #${targetFormId} input[type="checkbox"].js-preop-item`);
-            const checkedItems = document.querySelectorAll(`#${targetFormId} input[type="checkbox"].js-pm-item:checked, #${targetFormId} input[type="checkbox"].js-preop-item:checked`);
+            const allItems = Array.from(document.querySelectorAll(`#${targetFormId} input[type="checkbox"].js-pm-item, #${targetFormId} input[type="checkbox"].js-preop-item`))
+                .filter(cb => {
+                    const row = cb.closest('tr');
+                    return !row || !row.classList.contains('hidden'); // only visible (type-filtered) items count
+                });
+            const checkedItems = allItems.filter(cb => cb.checked);
             
             const globalToggle = document.getElementById('chk-pass-all-global') || document.getElementById('chk-pm-pass-all');
             if (globalToggle) {
                 globalToggle.checked = (allItems.length > 0 && allItems.length === checkedItems.length);
+            }
+        }
+
+        /**
+         * Toggles every visible checklist item inside the section that contains the clicked
+         * "Pass Section" button. Rows hidden by the Equipment Type filter are skipped, so a
+         * section toggle can never mark non-applicable items.
+         * @param {HTMLElement} btn - The "Pass Section" button inside the target section.
+         * @param {boolean} checked - True to check all, false to uncheck all.
+         */
+        function togglePreopSection(btn, checked) {
+            const section = btn && btn.closest ? btn.closest('[data-preop-group]') : null;
+            if (!section) return;
+
+            section.querySelectorAll('input[type="checkbox"].js-preop-item').forEach(cb => {
+                const row = cb.closest('tr');
+                if (row && row.classList.contains('hidden')) return; // skip filtered-out items
+                cb.checked = checked;
+            });
+
+            // Sync the global "Pass All" toggle with the current visible item states
+            const preopForm = document.getElementById('form-preop');
+            const container = preopForm || document;
+            const visibleItems = Array.from(container.querySelectorAll('input[type="checkbox"].js-preop-item'))
+                .filter(cb => {
+                    const row = cb.closest('tr');
+                    return !row || !row.classList.contains('hidden');
+                });
+            const passAllToggle = document.getElementById('chk-pass-all-global');
+            if (passAllToggle) {
+                passAllToggle.checked = visibleItems.length > 0 && visibleItems.every(cb => cb.checked);
             }
         }
 
@@ -4878,6 +5614,8 @@
         }
 
         function exportAssetRegistryExcel() {
+            closeFleetMenu();
+
             if (typeof XLSX === 'undefined') {
                 alert('Excel export is unavailable because the workbook library did not load.');
                 return;
@@ -4919,6 +5657,145 @@
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Asset Registry');
             XLSX.writeFile(workbook, `asset-registry-${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        // ------------------- ASSET REGISTRY IMPORT / EXPORT MENU (THREE-DOT) -------------------
+        function toggleFleetMenu(event) {
+            if (event) event.stopPropagation();
+            const menu = document.getElementById('menu-fleet-actions');
+            const button = document.getElementById('btn-fleet-menu');
+            if (!menu) return;
+
+            const willOpen = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+            if (button) button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        }
+
+        function closeFleetMenu() {
+            const menu = document.getElementById('menu-fleet-actions');
+            const button = document.getElementById('btn-fleet-menu');
+            if (menu) menu.classList.add('hidden');
+            if (button) button.setAttribute('aria-expanded', 'false');
+        }
+
+        // Close the three-dot menu when the user clicks anywhere outside of it
+        document.addEventListener('click', function(e) {
+            const wrapper = document.getElementById('fleet-menu-wrapper');
+            const menu = document.getElementById('menu-fleet-actions');
+            if (wrapper && menu && !menu.classList.contains('hidden') && !wrapper.contains(e.target)) {
+                closeFleetMenu();
+            }
+        });
+
+        // Escape key also dismisses the three-dot menu
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeFleetMenu();
+        });
+
+        function triggerAssetRegistryImport() {
+            closeFleetMenu();
+            const input = document.getElementById('in-f-excel-file');
+            if (input) input.click();
+        }
+
+        function importAssetRegistryExcel(event) {
+            const input = event.target;
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            if (typeof XLSX === 'undefined') {
+                alert('Excel import is unavailable because the workbook library did not load.');
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+                    if (!json || json.length === 0) {
+                        alert("The uploaded Excel file appears to be empty.");
+                        input.value = '';
+                        return;
+                    }
+
+                    // Tolerant header lookup: accepts the exported column names plus common variants
+                    const readCell = (row, headers) => {
+                        for (const header of headers) {
+                            const value = row[header];
+                            if (value !== undefined && value !== null && String(value).trim() !== '') {
+                                return String(value).trim();
+                            }
+                        }
+                        return '';
+                    };
+
+                    const updates = {};
+                    let skippedRows = 0;
+                    let createdCount = 0;
+                    let updatedCount = 0;
+
+                    json.forEach(row => {
+                        // Asset ID is the primary key (same key the registry table uses)
+                        const assetId = readCell(row, ['Asset ID', 'AssetID', 'Asset Id', 'Primary ID', 'ID']).toUpperCase();
+                        if (!assetId) { skippedRows++; return; }
+
+                        const existing = (memory.assets || []).find(asset => String(asset.id).toUpperCase() === assetId);
+
+                        // Model Number and Make/Brand are mandatory fields on the registration form
+                        const model = readCell(row, ['Model Number', 'Model No', 'Model']) || (existing ? existing.model || '' : '');
+                        const description = readCell(row, ['Make / Brand', 'Make/Brand', 'Make - Brand', 'Make', 'Brand', 'Description']) || (existing ? existing.description || '' : '');
+                        if (!model || !description) { skippedRows++; return; }
+
+                        updates['assets/' + assetId] = {
+                            equipmentName: readCell(row, ['Equipment Name', 'Equipment', 'Name']) || (existing ? existing.equipmentName || '' : ''),
+                            model: model.toUpperCase(),
+                            description: description,
+                            pressure: (readCell(row, ['Capacity / Pressure', 'Capacity/Pressure', 'Max Pressure', 'Capacity', 'Pressure']) || (existing ? existing.pressure || '' : '')).toUpperCase(),
+                            serial: (readCell(row, ['Serial Number', 'Serial No', 'Serial No.', 'Serial', 'S/N']) || (existing ? existing.serial || '' : '')).toUpperCase(),
+                            // Location and Operational Status remain controlled by Operations
+                            location: readCell(row, ['Location', 'Site']) || (existing ? existing.location || 'WORKSHOP' : 'WORKSHOP'),
+                            status: readCell(row, ['Operational Status', 'Status']) || (existing ? existing.status || 'Operational' : 'Operational')
+                        };
+
+                        if (existing) updatedCount++; else createdCount++;
+                    });
+
+                    const totalCount = Object.keys(updates).length;
+                    if (totalCount === 0) {
+                        alert("No valid rows found. Please ensure your Excel file includes an 'Asset ID', 'Model Number', and 'Make / Brand' column.");
+                        input.value = '';
+                        return;
+                    }
+
+                    const skippedNote = skippedRows > 0 ? `\n${skippedRows} row(s) skipped (missing Asset ID, Model Number, or Make/Brand).` : '';
+                    const proceed = confirm(`Ready to import ${totalCount} asset(s) into the Asset Registry:\n\u2022 ${createdCount} new asset(s)\n\u2022 ${updatedCount} existing asset(s) will be overwritten${skippedNote}\n\nProceed with the import?`);
+                    if (!proceed) {
+                        input.value = '';
+                        return;
+                    }
+
+                    cmmsDb.ref().update(updates)
+                        .then(() => {
+                            alert(`Successfully imported ${totalCount} asset(s) into the Asset Registry.${skippedNote}`);
+                            input.value = ''; // Reset the file input
+                        })
+                        .catch(err => {
+                            alert("Firebase upload error: " + err.message);
+                            input.value = '';
+                        });
+                } catch (err) {
+                    alert("Error parsing Excel file: " + err.message);
+                    input.value = '';
+                }
+            };
+            reader.readAsArrayBuffer(file);
         }
 
         // ------------------- DOWNLOAD FORMS MODULE -------------------
@@ -5062,7 +5939,7 @@
 
     <div class="decl-title">OPERATIONAL SAFETY DECLARATION &amp; SIGN-OFF</div>
     <div class="decl-body">
-        I confirm that all high-pressure waterblasting hoses have been physically inspected according to Al Ghaith safety standards. Safety whip-checks are engaged and MWP ratings match pump limits.
+        I confirm that high-pressure waterblasting hoses have been physically inspected according to safety standards. Safety whip-checks are engaged and MWP ratings match pump limits.
     </div>
 
     <table class="sigs">
@@ -5314,6 +6191,8 @@
                     const dateStr = p.date || (p.createdAt ? p.createdAt.split('T')[0] : 'N/A');
                     const location = p.location || matchedAsset.location || 'N/A';
                     const tech = p.tech || p.inspector || 'N/A';
+                    const preopTypeKey = getPreopTypeKey(p.type);
+                    const preopTypeLabel = PREOP_TYPE_LABELS[preopTypeKey] || p.type || 'N/A';
 
                     // Status Styling & Badge
                     const statusText = p.status || 'Safe to Operate';
@@ -5324,7 +6203,7 @@
                     return `
                         <tr class="hover:bg-slate-50 text-xs border-b border-slate-100">
                             <td class="p-4 font-mono font-bold text-slate-900">${assetId}</td>
-                            <td class="p-4 font-medium text-slate-800">${model}</td>
+                            <td class="p-4 font-medium text-slate-800">${model}<div class="mt-1"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">${preopTypeLabel}</span></div></td>
                             <td class="p-4 font-mono text-slate-600">${serialNo}</td>
                             <td class="p-4 text-slate-600 font-mono">${dateStr}</td>
                             <td class="p-4 font-semibold text-slate-600">${location}</td>
@@ -6453,7 +7332,7 @@
                 <tbody>
                     ${passedItems.map(item => `
                         <tr>
-                            <td style="text-align: center; font-weight: bold; font-family: monospace;">${item.ref}</td>
+                            <td style="text-align: center; font-weight: bold; font-family: monospace;">${item.displayRef || item.ref}</td>
                             <td>${item.desc}</td>
                             <td style="color: #64748b; font-size: 10px;">${item.spec}</td>
                             <td style="text-align: center; font-weight: bold; color: #059669;">✓</td>
@@ -6545,6 +7424,84 @@
         { ref: "45", desc: "Nozzle Condition & Quick-Connect Couplers", spec: "StoneAge / NLB / PTC / Landa", criteria: "Nozzle orifices clean, un-eroded; color-coded quick-connect nozzles secure", passed: isPassed(accessoryData, ['nozzle', 'quick-connect', 'coupler', '45']) }
     ];
 
+    // 7a. AutoBox ABX-2L — per Autobox.xlsx (Sections 1-4, master Refs 85-89 & 54-68)
+    const autoboxData = checklist.autoboxChecks || '';
+
+    // AutoBox Section 1 — General & Safety / Hose Clamp Checks (Standards)
+    const autoboxHseItems = [
+        { ref: "85", desc: "Valid Third-Party Inspection Certificate (TPI) available & valid", spec: "Common (AutoBox System)", criteria: "Check TPI expiration date on tag", passed: isPassed(autoboxData, ['tpi', 'certificate', '85']) },
+        { ref: "86", desc: "Pneumatic Safety Whip Checks & Safety Cables Fitted", spec: "AutoBox Pneumatic Safety", criteria: "Installed at hose connection points & air inlet", passed: isPassed(autoboxData, ['whip check', 'safety cable', '86']) },
+        { ref: "87", desc: "Grounding / Earthing Bond Wire Connected", spec: "Common (AutoBox System)", criteria: "Static ground wire connected to earthing point", passed: isPassed(autoboxData, ['grounding', 'earthing', '87']) },
+        { ref: "88", desc: "Emergency Air Shut-off Valve (E-Stop Dump Valve)", spec: "AutoBox Pneumatic System", criteria: "Accessible, functional test, immediate pressure dump", passed: isPassed(autoboxData, ['emergency air shut-off', 'e-stop dump', '88']) },
+        { ref: "89", desc: "Portable Fire Extinguisher & PPE Area Set Up", spec: "Site Safety (AutoBox)", criteria: "Safety barrier, splash shield, and clear safety zone", passed: isPassed(autoboxData, ['fire extinguisher', 'ppe', '89']) }
+    ];
+
+    // AutoBox Section 2 — Mechanical & Frame Inspection (StoneAge AutoBox ABX-2L Assembly)
+    const autoboxMechItems = [
+        { ref: "54", desc: "Positioner / Clamp Plate & Guide Tube Condition", spec: "AutoBox ABX-2L Assembly", criteria: "Securely bolted, proper alignment, no excessive wear", passed: isPassed(autoboxData, ['positioner', 'clamp plate', 'guide tube', '54']) },
+        { ref: "55", desc: "Drive Rollers & Traction Belt Assembly", spec: "AutoBox ABX-2L Assembly", criteria: "Inspect polyurethane/rubber rollers for wear, cracking, or grease", passed: isPassed(autoboxData, ['drive roller', 'traction belt', '55']) },
+        { ref: "56", desc: "Drive Chain / Belt Tension & Lubrication", spec: "AutoBox ABX-2L Assembly", criteria: "Proper tension, lubricated, zero slack or jamming", passed: isPassed(autoboxData, ['drive chain', 'belt tension', '56']) },
+        { ref: "57", desc: "Hose Clamp & Collet Bushing Sizing", spec: "AutoBox ABX-2L Assembly", criteria: "Matched to high-pressure hose outer diameter (OD)", passed: isPassed(autoboxData, ['hose clamp', 'collet bushing', '57']) },
+        { ref: "58", desc: "Pneumatic Cylinder Clamp Pressure Assembly", spec: "AutoBox ABX-2L Assembly", criteria: "Smooth engagement, no air leaks, correct clamping force", passed: isPassed(autoboxData, ['pneumatic cylinder', 'clamp pressure', '58']) },
+        { ref: "59", desc: "Fasteners, Mounting Bolts & Frame Structural Welds", spec: "AutoBox ABX-2L Assembly", criteria: "All hardware torqued, no hairline frame cracks", passed: isPassed(autoboxData, ['fastener', 'mounting bolt', 'frame structural', '59']) }
+    ];
+
+    // AutoBox Section 3 — Pneumatic Control Box & Hose Feed Hydraulics/Pneumatics
+    const autoboxPneuItems = [
+        { ref: "60", desc: "Air Line Lubricator Oil Level & Drip Rate", spec: "Pneumatic Control Box", criteria: "Pneumatic oil filled, set to ~1 droplet/min under flow", passed: isPassed(autoboxData, ['lubricator', 'drip rate', '60']) },
+        { ref: "61", desc: "Air Filter / Regulator (FRL Unit) & Water Trap", spec: "Pneumatic Control Box", criteria: "Drain condensate, clean bowl, pressure set 80–100 PSI", passed: isPassed(autoboxData, ['frl', 'water trap', '61']) },
+        { ref: "62", desc: "Pneumatic Control Box Joysticks & Valves", spec: "Pneumatic Control Box", criteria: "Forward / Reverse / Speed control moves freely & returns to neutral", passed: isPassed(autoboxData, ['joystick', 'control box', '62']) },
+        { ref: "63", desc: "High-Pressure Hose Anti-Withdrawal / Stop Mechanism", spec: "Pneumatic Control Box", criteria: "Backout stop / anti-withdrawal device locked in position", passed: isPassed(autoboxData, ['anti-withdrawal', 'stop mechanism', '63']) },
+        { ref: "64", desc: "Air Hoses & Quick-Disconnect Couplings", spec: "Pneumatic Control Box", criteria: "No cuts/abrasions, safety lock pins inserted on claw couplers", passed: isPassed(autoboxData, ['air hose', 'quick-disconnect', '64']) }
+    ];
+
+    // AutoBox Section 4 — Pre-Operational & Running Test (No-Load / Low-Pressure Feed Test)
+    const autoboxRunItems = [
+        { ref: "65", desc: "Forward & Reverse Drive Feed Functionality", spec: "Running Test (No-Load / Low-Pressure)", criteria: "Smooth hose feed in both directions without slipping", passed: isPassed(autoboxData, ['forward', 'reverse drive feed', '65']) },
+        { ref: "66", desc: "Hose Clamp Tension Adjustment", spec: "Running Test (No-Load / Low-Pressure)", criteria: "Hose held securely without crushing outer cover", passed: isPassed(autoboxData, ['clamp tension', '66']) },
+        { ref: "67", desc: "Variable Feed Speed Control Function", spec: "Running Test (No-Load / Low-Pressure)", criteria: "Responds smoothly to control valve adjustments", passed: isPassed(autoboxData, ['variable feed', 'speed control', '67']) },
+        { ref: "68", desc: "Emergency Air Dump / E-Stop Activation Test", spec: "Running Test (No-Load / Low-Pressure)", criteria: "Immediate stop of drive rollers & air venting on activation", passed: isPassed(autoboxData, ['emergency air dump', 'e-stop activation', '68']) }
+    ];
+
+    // 7b. TLX Lance System — per TLX.xlsx (Sections 1-4, master Refs 90-94 & 69-83)
+    const tlxData = checklist.tlxChecks || checklist.autoboxChecks || '';
+
+    // TLX Section 1 — General & HSE Site Compliance (Standards)
+    const tlxHseItems = [
+        { ref: "90", desc: "Valid Third-Party Inspection Certificate (TPI) available & valid", spec: "Common (TLX System)", criteria: "Check TPI expiration date on tag", passed: isPassed(tlxData, ['tpi', 'certificate', '90']) },
+        { ref: "91", desc: "Pneumatic Safety Whip Checks & Safety Cables Fitted", spec: "TLX Pneumatic Safety", criteria: "Installed at air inlet, control box, and pneumatic supply connections", passed: isPassed(tlxData, ['whip check', 'safety cable', '91']) },
+        { ref: "92", desc: "Grounding / Earthing Bond Wire Connected", spec: "Common (TLX System)", criteria: "Static ground wire connected to earthing point", passed: isPassed(tlxData, ['grounding', 'earthing', '92']) },
+        { ref: "93", desc: "Emergency Air Shut-off Valve (E-Stop Dump Valve)", spec: "TLX Pneumatic System", criteria: "Accessible, functional test, immediate pressure dump", passed: isPassed(tlxData, ['emergency air shut-off', 'e-stop dump', '93']) },
+        { ref: "94", desc: "Safety Zone & Barrier / Shield Setup", spec: "Site Safety (TLX)", criteria: "Safety splash shield mounted at tube sheet; clear work perimeter", passed: isPassed(tlxData, ['safety zone', 'barrier', 'shield', '94']) }
+    ];
+
+    // TLX Section 2 — TLX Mechanical Tractor & Guide Assembly Inspection
+    const tlxMechItems = [
+        { ref: "69", desc: "TLX Carriage & Feed Rail Condition", spec: "TLX Mechanical Tractor", criteria: "Clean, free of debris, guide tracks smooth and free of burrs", passed: isPassed(tlxData, ['carriage', 'feed rail', '69']) },
+        { ref: "70", desc: "Drive Belt / Gearbox & Traction Roller Assembly", spec: "TLX Mechanical Tractor", criteria: "Inspect drive belt/gear engagement; check rollers for wear or grease", passed: isPassed(tlxData, ['drive belt', 'gearbox', 'traction roller', '70']) },
+        { ref: "71", desc: "TLX Collet Cartridge & Lance Clamp Sizing", spec: "TLX Mechanical Tractor", criteria: "Collet/clamp block matched correctly to flex/rigid lance OD", passed: isPassed(tlxData, ['collet cartridge', 'lance clamp', '71']) },
+        { ref: "72", desc: "TLX Snout Assembly & Front Tube Sheet Lock", spec: "TLX Mechanical Tractor", criteria: "Snout plate, locking pins, and guide tube aligned and locked", passed: isPassed(tlxData, ['snout', 'tube sheet lock', '72']) },
+        { ref: "73", desc: "Anti-Withdrawal Device / Backout Stop", spec: "TLX Mechanical Tractor", criteria: "Mechanical backout stop installed to prevent lance exiting tube sheet", passed: isPassed(tlxData, ['anti-withdrawal', 'backout stop', '73']) },
+        { ref: "74", desc: "Fasteners, Mounting Bolts & Structural Weld Condition", spec: "TLX Mechanical Tractor", criteria: "All clamping bolts torqued; structural welds free of fatigue/cracks", passed: isPassed(tlxData, ['fasteners', 'structural weld', '74']) }
+    ];
+
+    // TLX Section 3 — Pneumatic Control Box & Positioner Drive System
+    const tlxPneuItems = [
+        { ref: "75", desc: "Air Line Lubricator Oil Level & Drip Rate", spec: "TLX Pneumatic Control Box", criteria: "Pneumatic oil filled, set to ~1 droplet/min under air flow", passed: isPassed(tlxData, ['lubricator', 'drip rate', '75']) },
+        { ref: "76", desc: "Air Filter / Regulator (FRL Unit) & Water Trap", spec: "TLX Pneumatic Control Box", criteria: "Drain condensate, clean bowl, supply pressure set 80–100 PSI", passed: isPassed(tlxData, ['frl', 'water trap', '76']) },
+        { ref: "77", desc: "TLX Remote Control Box Joysticks & Valves", spec: "TLX Pneumatic Control Box", criteria: "Forward / Reverse / Clamp joysticks move freely & return to neutral", passed: isPassed(tlxData, ['remote control box', 'joystick', '77']) },
+        { ref: "78", desc: "Pneumatic Positioner / Indexing Motor Controls", spec: "TLX Positioner Drive System", criteria: "Pitch adjustment drive and cross-travel motors respond smoothly", passed: isPassed(tlxData, ['positioner', 'indexing motor', '78']) },
+        { ref: "79", desc: "Air Supply Hoses & Quick-Disconnect Couplings", spec: "TLX Pneumatic Control Box", criteria: "No cuts/abrasions, safety lock pins inserted on claw couplers", passed: isPassed(tlxData, ['air supply hose', 'quick-disconnect', '79']) }
+    ];
+
+    // TLX Section 4 — Pre-Operational & Functional Running Test (No-Load Test)
+    const tlxRunItems = [
+        { ref: "80", desc: "TLX Forward & Reverse Stroke Feed Functionality", spec: "Running Test (No-Load)", criteria: "Smooth lance feed and retract strokes without slipping or binding", passed: isPassed(tlxData, ['stroke feed', '80']) },
+        { ref: "81", desc: "TLX Clamp Tension & Feed Force Adjustment", spec: "Running Test (No-Load)", criteria: "Holds lance firmly during feed without crushing outer jacket", passed: isPassed(tlxData, ['clamp tension', 'feed force', '81']) },
+        { ref: "82", desc: "Pneumatic Indexer & Pitch Traverse Operation", spec: "Running Test (No-Load)", criteria: "Smooth X-Y positioning across simulated tube sheet pattern", passed: isPassed(tlxData, ['indexer', 'pitch traverse', '82']) },
+        { ref: "83", desc: "Emergency Air Dump / E-Stop Activation Test", spec: "Running Test (No-Load)", criteria: "Immediate halt of feed motors and instant system pressure venting", passed: isPassed(tlxData, ['emergency air dump', 'e-stop activation', '83']) }
+    ];
+
     // 8. Functional Running Test & Operational Checks (Ref 46 - 53)
     const funcData = checklist.functionalChecks || checklist.runningChecks || '';
     const functionalItems = [
@@ -6560,6 +7517,28 @@
 
     const overallStatus = checklist.status || 'PASSED';
     const currentDateFormatted = typeof formatDateStr === 'function' ? formatDateStr(new Date()) : new Date().toLocaleDateString();
+
+    // Equipment Type — only print the sections applicable to the selected unit type
+    const printTypeKey = getPreopTypeKey(checklist.type);
+    const typeLabel = PREOP_TYPE_LABELS[printTypeKey] || (checklist.type ? String(checklist.type) : 'N/A');
+    let printSectionNo = 0;
+    let printRefNo = 0;
+    const preopPrintSection = (title, items, groupKey = null) => {
+        // Sections owned by a different unit type are skipped entirely, so an AutoBox /
+        // TLX print-out contains exactly the four sections of its Excel checklist.
+        if (groupKey && !groupAppliesToType(groupKey, printTypeKey)) return '';
+        const applicable = items.filter(it => typeAppliesToItem(PREOP_ITEM_APPLICABILITY[String(it.ref).padStart(2, '0')], printTypeKey));
+        if (applicable.length === 0) return '';
+        // Renumber printed sections sequentially (skipped sections don't leave gaps)
+        printSectionNo++;
+        const sectionTitle = `${printSectionNo}. ` + title.replace(/^\s*\d+\.\s*/, '');
+        // Renumber Ref # to match the on-screen type-specific checklist (01, 02, 03, ...)
+        applicable.forEach(it => {
+            printRefNo++;
+            it.displayRef = String(printRefNo).padStart(2, '0');
+        });
+        return `<div class="section-header">${sectionTitle}</div>\n            ${renderChecklistTable(applicable)}`;
+    };
 
     pSec.innerHTML = `
         <style>
@@ -6650,7 +7629,7 @@
                     </td>
                     <td style="vertical-align: middle;">
                         <h1 style="margin: 0; font-size: 14px; font-weight: 800; text-transform: uppercase; color: #0f172a;">Al Ghaith Trading &amp; Industrial Services</h1>
-                        <p style="margin: 2px 0 0 0; color: #475569; font-size: 10.5px; font-weight: 600;">PRE-OPERATIONAL &amp; MOBILIZATION INSPECTION CHECKLIST (STANDARDS)</p>
+                        <p style="margin: 2px 0 0 0; color: #475569; font-size: 10.5px; font-weight: 600;">UNIFIED PRE-OPERATIONAL &amp; MOBILIZATION INSPECTION CHECKLIST (JETTING, BUNDLE PULLERS, DEWATERING, AUTOBOX ABX-2L &amp; TLX LANCE SYSTEMS)</p>
                     </td>
                     <td style="text-align: right; vertical-align: middle;">
                         <div style="font-size: 8.5px; color: #475569; border: 1px solid #cbd5e1; padding: 3px 5px; display: inline-block; text-align: left;">
@@ -6675,9 +7654,13 @@
                     <td>${location}</td>
                 </tr>
                 <tr>
+                    <th>Equipment Type:</th>
+                    <td colspan="3" style="font-weight: bold; text-transform: uppercase;">${typeLabel}</td>
+                </tr>
+                <tr>
                     <th>Serial Number:</th>
                     <td style="font-family: monospace;">${serialNo}</td>
-                    <th>Engine Hours:</th>
+                    <th>Engine / Hydraulic Hours:</th>
                     <td>${hoursDisplay}</td>
                 </tr>
                 <tr>
@@ -6696,37 +7679,37 @@
                 </tr>
             </table>
 
-            <!-- Section 1: HSE Compliance -->
-            <div class="section-header">1. HSE &amp; Mandatory Site Compliance (Standards)</div>
-            ${renderChecklistTable(hseItems)}
+            ${preopPrintSection('1. HSE &amp; Mandatory Site Compliance (Standards)', hseItems, 'po-hse')}
 
-            <!-- Section 2: Engine & Power Pack -->
-            <div class="section-header">2. Diesel / Electric Drive &amp; Hydraulic Power Pack (HPP)</div>
-            ${renderChecklistTable(engineItems)}
+            ${preopPrintSection('2. Diesel / Electric Drive &amp; Hydraulic Power Pack (HPP)', engineItems, 'po-drive')}
 
-            <!-- Section 3: Bundle Puller Hydraulics -->
-            <div class="section-header">3. Puller Hydraulic System, Cylinders &amp; Winch Assembly</div>
-            ${renderChecklistTable(pullerItems)}
+            ${preopPrintSection('3. Puller Hydraulic System, Cylinders &amp; Winch Assembly', pullerItems, 'po-hydraulic')}
 
-            <!-- Section 4: High-Pressure Pump & Water System -->
-            <div class="section-header">4. Water System &amp; High-Pressure / Ultra-High Pressure Pump Heads</div>
-            ${renderChecklistTable(pumpItems)}
+            ${preopPrintSection('4. Water System &amp; High-Pressure / Ultra-High Pressure Pump Heads', pumpItems, 'po-water')}
 
-            <!-- Section 5: Dewatering Pump System -->
-            <div class="section-header">5. Dewatering Pump System &amp; Suction / Discharge Specifications</div>
-            ${renderChecklistTable(dewateringItems)}
+            ${preopPrintSection('5. Dewatering Pump System &amp; Suction / Discharge Specifications', dewateringItems, 'po-dewatering')}
 
-            <!-- Section 6: Burner & Combustion System -->
-            <div class="section-header">6. Hot Water Heater / Burner &amp; Combustion System (PTC &amp; Landa)</div>
-            ${renderChecklistTable(burnerItems)}
+            ${preopPrintSection('6. Hot Water Heater / Burner &amp; Combustion System (PTC &amp; Landa)', burnerItems, 'po-burner')}
 
-            <!-- Section 7: Hoses & Accessories -->
-            <div class="section-header">7. Hoses, Reels, Guns, Lances &amp; Accessories</div>
-            ${renderChecklistTable(accessoryItems)}
+            ${preopPrintSection('1. General &amp; Safety / Hose Clamp Checks (Standards)', autoboxHseItems, 'po-ab-s1')}
 
-            <!-- Section 8: Functional Running Test -->
-            <div class="section-header">8. Functional Running Test &amp; Operational Checks</div>
-            ${renderChecklistTable(functionalItems)}
+            ${preopPrintSection('2. Mechanical &amp; Frame Inspection (StoneAge AutoBox ABX-2L Assembly)', autoboxMechItems, 'po-ab-s2')}
+
+            ${preopPrintSection('3. Pneumatic Control Box &amp; Hose Feed Hydraulics/Pneumatics', autoboxPneuItems, 'po-ab-s3')}
+
+            ${preopPrintSection('4. Pre-Operational &amp; Running Test (No-Load / Low-Pressure Feed Test)', autoboxRunItems, 'po-ab-s4')}
+
+            ${preopPrintSection('1. General &amp; HSE Site Compliance (Standards)', tlxHseItems, 'po-tlx-s1')}
+
+            ${preopPrintSection('2. TLX Mechanical Tractor &amp; Guide Assembly Inspection', tlxMechItems, 'po-tlx-s2')}
+
+            ${preopPrintSection('3. Pneumatic Control Box &amp; Positioner Drive System', tlxPneuItems, 'po-tlx-s3')}
+
+            ${preopPrintSection('4. Pre-Operational &amp; Functional Running Test (No-Load Test)', tlxRunItems, 'po-tlx-s4')}
+
+            ${preopPrintSection('7. Hoses, Reels, Guns, Lances &amp; Accessories', accessoryItems, 'po-hoses')}
+
+            ${preopPrintSection('8. Functional Running Test &amp; Operational Checks', functionalItems, 'po-functional')}
 
             <!-- Signatures -->
             <table class="signature-table">
