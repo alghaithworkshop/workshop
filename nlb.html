@@ -957,6 +957,8 @@
         .nlb-reg-identity .nlb-id-chip { padding: .12rem .4rem; font-size: .62rem; }
         .nlb-reg-identity .nlb-id-mono { padding: .12rem .35rem; font-size: .6rem; }
         .nlb-reg-identity .nlb-id-sep { font-size: .7rem; }
+        /* Serial number drops to its own second line under the main identity run. */
+        .nlb-id-serial { display: block; flex-basis: 100%; margin-top: .2rem; }
 
         /* Asset Details: professional specification sheet */
         .nlb-spec-sheet { border: 1px solid #E2E8F0; border-radius: .75rem; background: #FFFFFF; overflow: hidden; box-shadow: 0 2px 8px rgba(15,23,42,.04); }
@@ -1523,11 +1525,9 @@
                                 <table class="w-full text-left border-collapse text-xs min-w-[700px]">
                                     <thead>
                                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Order ID</th>
-                                            <th class="p-4">Date</th> <!-- New Date Column Added Here -->
+                                            <th class="p-4">Order ID / Date</th>
                                             <th class="p-4">Equipment Asset / Serial</th>
-                                            <th class="p-4">Current Metric</th>
-                                            <th class="p-4">Target Metric</th>
+                                            <th class="p-4">Current / Target Metric</th>
                                             <th class="p-4">Remaining Hours / Info</th>
                                             <th class="p-4">Reason</th>
                                             <th class="p-4">Technician(s)</th>
@@ -6547,6 +6547,8 @@
         //   Equipment Name - Capacity/Pressure - Make/Brand - Model Number - SN: xxxxx
         // Segments with no value are dropped entirely (along with their separator),
         // so partial records never render a dangling " - ".
+        // The serial segment is flagged (serial: true) because getAssetIdentityHtml
+        // pulls it out of the dash-joined run and renders it on its own second line.
         function getAssetIdentitySegments(asset) {
             const clean = (value) => (value === null || value === undefined) ? '' : String(value).trim();
             const serial = clean(asset.serial);
@@ -6556,21 +6558,33 @@
                 { text: clean(asset.pressure),    cls: 'nlb-id-chip' },
                 { text: clean(asset.description), cls: 'nlb-id-chip' },
                 { text: clean(asset.model),       cls: 'nlb-id-mono' },
-                { text: serial ? 'SN: ' + serial : '', cls: 'nlb-id-mono' }
+                { text: serial ? 'SN: ' + serial : '', cls: 'nlb-id-mono', serial: true }
             ].filter(segment => segment.text);
         }
 
-        // Plain-text version (tooltips, print output)
+        // Plain-text version (tooltips, print output) -- stays a single merged line
+        // so the hover title and the printed slip read as one continuous reference.
         function getAssetIdentityText(asset) {
             return getAssetIdentitySegments(asset).map(segment => segment.text).join(' - ');
         }
 
-        // Styled version (list view + details sheet)
+        // Styled version (list view + details sheet + Update Metric popup).
+        // The serial number is lifted onto its own second line rather than sitting
+        // in the dash-joined run, matching the stacked primary/secondary pattern used
+        // by the Order ID / Date and Asset / S/N cells in the work-order list.
         function getAssetIdentityHtml(asset) {
-            return getAssetIdentitySegments(asset).map((segment, i) =>
+            const segments = getAssetIdentitySegments(asset);
+            const mainSegments = segments.filter(segment => !segment.serial);
+            const serialSegment = segments.find(segment => segment.serial);
+
+            const mainHtml = mainSegments.map((segment, i) =>
                 (i ? '<span class="nlb-id-sep">-</span>' : '') +
                 `<span class="${segment.cls}">${segment.text}</span>`
             ).join('');
+
+            if (!serialSegment) return mainHtml;
+
+            return `${mainHtml}<span class="nlb-id-serial"><span class="${serialSegment.cls}">${serialSegment.text}</span></span>`;
         }
 
         // Work Orders list: Edit / Purge collapse into a three-dot menu.
@@ -6768,6 +6782,15 @@
                     let targetInfo = isAccessoryWo ? 'N/A' : (w.type === 'hours' ? `${w.targetHours} Hrs` : (w.type === 'date' ? w.targetDate : 'N/A'));
                     let diffInfo = isAccessoryWo ? 'No Tracking (Accessory)' : (w.type === 'hours' ? `${w.targetHours - w.currentHours} Hours Remaining` : 'Target Schedule Bound');
 
+                    // Combined "Current / Target Metric" cell: the current value leads on the
+                    // first line, the target sits on a second stacked line (same pattern the
+                    // Asset / S/N column uses). Orders with nothing to track -- Accessories, or
+                    // any order whose type is neither hours nor date -- collapse to a single
+                    // muted "N/A" instead of printing a redundant "N/A" + "Target: N/A" pair.
+                    const metricCell = (metricInfo === 'N/A' && targetInfo === 'N/A')
+                        ? '<div class="text-slate-300 italic">N/A</div>'
+                        : `<div class="font-bold text-slate-900">${metricInfo}</div><div class="text-[10px] text-slate-400 font-normal mt-0.5">Target: ${targetInfo}</div>`;
+
                     // Assigned technicians (optional) - show the first, count the rest
                     const techNames = getWoTechnicianNames(w);
                     const techInfo = techNames.length === 0
@@ -6801,11 +6824,9 @@
 
                     container.innerHTML += `
                         <tr class="hover:bg-slate-50">
-                            <td class="p-4 font-bold font-code text-slate-900">${w.id}</td>
-                            <td class="p-4 font-code font-medium">${formatDisplayDate(w.date)}</td>
+                            <td class="p-4" title="${w.id || 'N/A'} - ${formatDisplayDate(w.date) || 'N/A'}"><div class="font-bold font-code text-slate-900">${w.id || 'N/A'}</div><div class="text-[10px] text-slate-400 font-code font-normal mt-0.5">${formatDisplayDate(w.date) || 'N/A'}</div></td>
                             <td class="p-4 font-code font-medium">${isAccessoryWo ? 'Accessory' : w.assetId}<div class="text-[10px] text-slate-400 font-normal mt-0.5">S/N: ${serialNumber}</div></td>
-                            <td class="p-4 font-code">${metricInfo}</td>
-                            <td class="p-4 font-code">${targetInfo}</td>
+                            <td class="p-4 font-code" title="Current: ${metricInfo} | Target: ${targetInfo}">${metricCell}</td>
                             <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
                             <td class="p-4 text-xs">${w.reason || 'N/A'}</td>
                             <td class="p-4 text-xs" title="${techNames.join(', ') || 'No technician assigned'}">${techInfo}</td>
