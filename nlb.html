@@ -835,16 +835,111 @@
         .nlb-registry-view-toggle button:focus-visible { outline: 2px solid var(--brand-lime); outline-offset: 1px; }
         .nlb-registry-view-toggle button.is-active { color: #047857; background: #FFFFFF; box-shadow: 0 1px 3px rgba(15,23,42,.12); }
         .nlb-registry-view-toggle button .material-symbols-outlined { font-size: 1.15rem; line-height: 1; }
-        .nlb-asset-card { min-width: 0; padding: 1rem; border: 1px solid #E2E8F0; border-radius: .75rem; background: #FFFFFF; box-shadow: 0 2px 8px rgba(15,23,42,.04); transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
-        .nlb-asset-card:hover { border-color: #86B79A; box-shadow: 0 10px 24px rgba(15,23,42,.08); transform: translateY(-1px); }
-        .nlb-asset-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; padding-bottom: .75rem; border-bottom: 1px solid #F1F5F9; }
-        .nlb-asset-card-id { color: #64748B; font: 700 .62rem/1.2 'JetBrains Mono', monospace; letter-spacing: .02em; }
-        .nlb-asset-card-title { margin-top: .3rem; color: #0F172A; font-size: .9rem; font-weight: 800; line-height: 1.3; }
-        .nlb-asset-card-description { display: -webkit-box; margin-top: .7rem; overflow: hidden; color: #64748B; font-size: .68rem; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-        .nlb-asset-card-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem .8rem; margin-top: .9rem; }
-        .nlb-asset-card-meta dt { color: #94A3B8; font-size: .55rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-        .nlb-asset-card-meta dd { margin: .2rem 0 0; overflow: hidden; color: #334155; font-size: .66rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
-        .nlb-asset-card-footer { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: 1rem; padding-top: .75rem; border-top: 1px solid #F1F5F9; }
+        /* ---- Asset Registry: GLASS card grid ----------------------------------
+           A frosted-glass treatment layered on the app's light background:
+           a translucent surface, a real backdrop blur, a hairline inner
+           highlight along the top edge, and a status-tinted light that
+           bleeds through the "glass" from the top-left corner.            */
+        .nlb-asset-card {
+            --nlb-glass-tint: rgba(148, 163, 184, .16);
+            position: relative;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 1.05rem 1.1rem .95rem;
+            border: 1px solid rgba(255, 255, 255, .75);
+            border-radius: 1rem;
+            /* The status bloom is painted as a background LAYER rather than an
+               overflowing pseudo-element, so the card never needs to clip its
+               overflow -- which would cut off the three-dot dropdown panel. */
+            background:
+                radial-gradient(125% 95% at 0% 0%, var(--nlb-glass-tint), transparent 62%),
+                linear-gradient(150deg, rgba(255, 255, 255, .78), rgba(248, 250, 252, .58));
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, .9),
+                inset 0 -1px 0 rgba(226, 232, 240, .6),
+                0 1px 2px rgba(15, 23, 42, .04),
+                0 10px 26px -14px rgba(15, 23, 42, .22);
+            backdrop-filter: blur(14px) saturate(1.5);
+            -webkit-backdrop-filter: blur(14px) saturate(1.5);
+            transition: transform .22s cubic-bezier(.4, 0, .2, 1), box-shadow .22s ease, border-color .22s ease;
+        }
+        /* Status stripe across the top edge. Its corners are rounded to match the
+           card, which is what overflow:hidden used to do for us. */
+        .nlb-asset-card::before {
+            content: '';
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 3px;
+            border-radius: 1rem 1rem 0 0;
+            background: var(--nlb-accent, #CBD5E1);
+            box-shadow: 0 0 12px -1px var(--nlb-accent, #CBD5E1);
+            pointer-events: none;
+        }
+        .nlb-asset-card > * { position: relative; z-index: 1; }
+        /* A card's dropdown menu is trapped inside that card's own stacking context
+           (backdrop-filter creates one). Without lifting the card, the NEXT card in
+           the grid paints over the open menu, so Edit/Delete appear to be missing.
+           Raise the card whenever it is hovered, focused, or has a menu open. */
+        .nlb-asset-card:hover,
+        .nlb-asset-card:focus-within,
+        .nlb-asset-card:has(.nlb-row-menu-panel:not(.hidden)) { z-index: 5; }
+        .nlb-asset-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, .95);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, .95),
+                inset 0 -1px 0 rgba(226, 232, 240, .7),
+                0 2px 4px rgba(15, 23, 42, .05),
+                0 22px 44px -18px rgba(15, 23, 42, .3);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .nlb-asset-card, .nlb-asset-card:hover { transform: none; transition: none; }
+        }
+
+        /* Primary action button on a work-order glass card */
+        /* Work-order reasons are long free text: wrap them across as many lines as
+           they need instead of truncating to one ellipsised line. */
+        .nlb-wo-card-reason { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+        .nlb-wo-card-btn { padding: .3rem .65rem; border: 1px solid rgba(255,255,255,.6); border-radius: .4rem; background: rgba(15, 23, 42, .9); color: #FFFFFF; font-size: .62rem; font-weight: 700; cursor: pointer; transition: background .15s ease, transform .15s ease; }
+        .nlb-wo-card-btn:hover { background: #0F172A; transform: translateY(-1px); }
+        .nlb-wo-card-btn--accept { background: rgba(5, 150, 105, .92); }
+        .nlb-wo-card-btn--accept:hover { background: #047857; }
+        #wo-list-wrap.hidden, #wo-grid.hidden { display: none !important; }
+
+        .nlb-asset-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+        .nlb-asset-card-id { display: inline-block; padding: .2rem .45rem; border: 1px solid rgba(226, 232, 240, .9); border-radius: .35rem; background: rgba(248, 250, 252, .72); color: #64748B; font: 700 .6rem/1.3 'JetBrains Mono', monospace; letter-spacing: .03em; }
+        .nlb-asset-card-title { margin-top: .45rem; color: #0F172A; font-size: .95rem; font-weight: 800; line-height: 1.3; letter-spacing: -.01em; }
+
+        /* Identity line, re-using the exact renderer the list + details use */
+        .nlb-asset-card-identity { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .35rem; margin-top: .5rem; }
+        .nlb-asset-card-identity .nlb-id-primary { font-size: .72rem; }
+        .nlb-asset-card-identity .nlb-id-chip { padding: .1rem .38rem; font-size: .6rem; }
+        .nlb-asset-card-identity .nlb-id-mono { padding: .1rem .34rem; font-size: .58rem; }
+        .nlb-asset-card-identity .nlb-id-sep { font-size: .65rem; }
+        .nlb-asset-card-identity .nlb-id-serial { margin-top: .15rem; }
+
+        /* Two-up frosted stat tiles: Current Metric + Remaining Hrs */
+        .nlb-asset-card-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; margin-top: .85rem; }
+        .nlb-asset-card-stat {
+            min-width: 0;
+            padding: .5rem .6rem;
+            border: 1px solid rgba(226, 232, 240, .85);
+            border-radius: .55rem;
+            background: linear-gradient(160deg, rgba(255, 255, 255, .72), rgba(241, 245, 249, .5));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .85);
+        }
+        .nlb-asset-card-stat dt { color: #94A3B8; font-size: .5rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+        .nlb-asset-card-stat dd { margin: .22rem 0 0; overflow: hidden; color: #0F172A; font: 700 .72rem/1.35 'JetBrains Mono', monospace; text-overflow: ellipsis; white-space: nowrap; }
+        /* The Remaining tile reuses the list's tone classes so both views signal
+           due / overdue identically -- only the chip chrome is softened here. */
+        .nlb-asset-card-stat dd[class*="nlb-reg-remaining--"] { display: inline-block; max-width: 100%; padding: .12rem .4rem; border: 1px solid transparent; border-radius: .3rem; font-size: .64rem; }
+
+        .nlb-asset-card-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem .8rem; margin-top: .8rem; padding-top: .7rem; border-top: 1px solid rgba(226, 232, 240, .7); }
+        .nlb-asset-card-meta dt { color: #94A3B8; font-size: .5rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+        .nlb-asset-card-meta dd { margin: .18rem 0 0; overflow: hidden; color: #334155; font-size: .64rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+
+        .nlb-asset-card-footer { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .85rem; padding-top: .7rem; border-top: 1px solid rgba(226, 232, 240, .7); }
         /* Asset Registry: three-dot row action menu */
         .nlb-row-menu { position: relative; display: inline-block; }
         .nlb-row-menu-trigger { display: inline-grid; place-items: center; width: 1.85rem; height: 1.85rem; border: 1px solid transparent; border-radius: .4rem; background: transparent; color: #64748B; cursor: pointer; transition: background .18s ease, color .18s ease, border-color .18s ease; }
@@ -948,6 +1043,12 @@
         .nlb-reg-secondary { color: #64748B; font-size: .68rem; font-weight: 600; line-height: 1.45; }
         .nlb-reg-sep { padding: 0 .1rem; color: #CBD5E1; font-weight: 700; }
         .nlb-reg-metric { display: inline-block; max-width: 100%; padding: .22rem .5rem; border: 1px solid #E2E8F0; border-radius: .35rem; background: #F1F5F9; color: #334155; font: 700 .66rem/1.4 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        /* Remaining hours before the next maintenance target (from the newest log) */
+        .nlb-reg-remaining { display: inline-block; max-width: 100%; padding: .22rem .5rem; border: 1px solid #E2E8F0; border-radius: .35rem; font: 700 .66rem/1.4 'JetBrains Mono', monospace; white-space: nowrap; }
+        .nlb-reg-remaining--ok { background: #F1F5F9; color: #334155; }
+        .nlb-reg-remaining--due { background: #FEF3C7; border-color: #FDE68A; color: #92400E; }
+        .nlb-reg-remaining--overdue { background: #FEE2E2; border-color: #FECACA; color: #991B1B; }
+        .nlb-reg-remaining--none { background: #F8FAFC; border-color: #E2E8F0; color: #CBD5E1; font-style: italic; font-weight: 500; }
         .nlb-reg-loc { color: #475569; font: 700 .6rem/1.4 'JetBrains Mono', monospace; letter-spacing: .04em; text-transform: uppercase; }
         .nlb-reg-dot { width: .4rem; height: .4rem; flex: none; border-radius: 9999px; background: currentColor; }
         .nlb-reg-cert { display: inline-flex; align-items: center; padding: .2rem .55rem; border-radius: 9999px; font-size: .6rem; font-weight: 700; white-space: nowrap; }
@@ -1230,6 +1331,7 @@
                                             <th>Primary ID</th>
                                             <th>Asset Identity</th>
                                             <th>Current Metric</th>
+                                            <th>Remaining Hrs</th>
                                             <th>Location</th>
                                             <th>Cert Status</th>
                                             <th>Status</th>
@@ -1514,13 +1616,24 @@
                                 <h2 class="text-xl font-bold text-slate-900 tracking-tight">Maintenance Work Orders</h2>
                                 <p class="text-xs text-slate-500">Operational tracking and scheduling logs.</p>
                             </div>
-                            <button onclick="openAddWoModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
-                                <span class="material-symbols-outlined text-sm">add_task</span>
-                                <span>Create Work Order</span>
-                            </button>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <span id="wo-view-count" class="hidden sm:inline text-[10px] font-bold uppercase tracking-wider text-slate-400">0 orders</span>
+                                <div class="nlb-registry-view-toggle" role="group" aria-label="Work order layout">
+                                    <button id="wo-view-list" type="button" onclick="setWorkOrderView('list')" aria-pressed="true" title="Show work orders as a list" aria-label="Show work orders as a list" class="is-active">
+                                        <span class="material-symbols-outlined" aria-hidden="true">view_list</span>
+                                    </button>
+                                    <button id="wo-view-grid" type="button" onclick="setWorkOrderView('grid')" aria-pressed="false" title="Show work orders as a grid" aria-label="Show work orders as a grid">
+                                        <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
+                                    </button>
+                                </div>
+                                <button onclick="openAddWoModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2.5 rounded flex items-center justify-center space-x-1.5 transition cursor-pointer shadow-sm">
+                                    <span class="material-symbols-outlined text-sm">add_task</span>
+                                    <span>Create Work Order</span>
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+                        <div id="wo-list-wrap" class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
                             <div class="overflow-x-auto w-full">
                                 <table class="w-full text-left border-collapse text-xs min-w-[700px]">
                                     <thead>
@@ -1539,6 +1652,8 @@
                                 </table>
                             </div>
                         </div>
+
+                        <div id="wo-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" aria-live="polite" aria-label="Work order grid"></div>
                     </section>
 
                     <section id="pane-log" class="pane-view space-y-4 hidden">
@@ -4350,11 +4465,16 @@
         let hasSelectedModule = true;
         let currentAssetDetailsId = null;
         let assetRegistryView = 'list';
+        let workOrderView = 'list';
 
         try {
             const storedAssetView = localStorage.getItem('nlb_asset_registry_view');
             if (storedAssetView === 'grid' || storedAssetView === 'list') {
                 assetRegistryView = storedAssetView;
+            }
+            const storedWoView = localStorage.getItem('nlb_work_order_view');
+            if (storedWoView === 'grid' || storedWoView === 'list') {
+                workOrderView = storedWoView;
             }
         } catch (error) {
             // Storage can be unavailable in private browsing; the in-memory default is fine.
@@ -4388,6 +4508,42 @@
             }
             applyAssetRegistryView();
             if (currentActiveModule === 'fleet' && typeof refreshWorkspaceView === 'function') {
+                refreshWorkspaceView();
+            }
+        }
+
+        // --- WORK ORDER LIST / GRID -------------------------------------------
+        // Deliberately a SEPARATE preference from the Asset Registry: users who
+        // prefer reading assets as cards generally want the same for work orders,
+        // but the two are independent surfaces and should not be coupled.
+        function applyWorkOrderView() {
+            const listView = document.getElementById('wo-list-wrap');
+            const gridView = document.getElementById('wo-grid');
+            const listButton = document.getElementById('wo-view-list');
+            const gridButton = document.getElementById('wo-view-grid');
+            const isGrid = workOrderView === 'grid';
+
+            if (listView) listView.classList.toggle('hidden', isGrid);
+            if (gridView) gridView.classList.toggle('hidden', !isGrid);
+            if (listButton) {
+                listButton.classList.toggle('is-active', !isGrid);
+                listButton.setAttribute('aria-pressed', String(!isGrid));
+            }
+            if (gridButton) {
+                gridButton.classList.toggle('is-active', isGrid);
+                gridButton.setAttribute('aria-pressed', String(isGrid));
+            }
+        }
+
+        function setWorkOrderView(view) {
+            workOrderView = view === 'grid' ? 'grid' : 'list';
+            try {
+                localStorage.setItem('nlb_work_order_view', workOrderView);
+            } catch (error) {
+                // Keep the view usable even when persistence is blocked.
+            }
+            applyWorkOrderView();
+            if (currentActiveModule === 'wo' && typeof refreshWorkspaceView === 'function') {
                 refreshWorkspaceView();
             }
         }
@@ -6367,6 +6523,36 @@
             URL.revokeObjectURL(url);
         }
 
+        // Converts "#10B981" (or a 3/6-digit hex) into an rgba() string so the card
+        // can tint its glass with the asset's status colour.
+        function hexToRgba(hex, alpha) {
+            const match = String(hex || '').trim().match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i);
+            if (!match) return `rgba(148, 163, 184, ${alpha})`;
+
+            let value = match[1];
+            if (value.length === 3) {
+                value = value.split('').map(ch => ch + ch).join('');
+            }
+
+            const r = parseInt(value.slice(0, 2), 16);
+            const g = parseInt(value.slice(2, 4), 16);
+            const b = parseInt(value.slice(4, 6), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        // Status colour used by BOTH registry views (list row accent bar + glass card top
+        // edge). Kept in one place so the two views can never drift apart.
+        function getAssetStatusAccent(asset) {
+            return {
+                'Operational': '#10B981',
+                'In Maintenance': '#F59E0B',
+                'Down': '#EF4444',
+                'Standby': '#6366F1',
+                'Dispatched': '#8B5CF6',
+                'Request Dispatch': '#0EA5E9'
+            }[asset && asset.status] || '#CBD5E1';
+        }
+
         function getAssetRegistryPresentation(asset) {
             const cert = (memory.certificates || []).find(c => String(c.assetId) === String(asset.id));
             return {
@@ -6410,8 +6596,11 @@
         }
 
         /* Generic row-menu helpers - shared by the Asset Registry and Work Orders lists */
-        function rowMenuKey(prefix, id) {
-            return 'nlb-' + prefix + '-menu-' + String(id).replace(/[^a-zA-Z0-9_-]/g, '_');
+        function rowMenuKey(prefix, id, scope) {
+            const safe = String(id).replace(/[^a-zA-Z0-9_-]/g, '_');
+            return scope
+                ? 'nlb-' + prefix + '-menu-' + scope + '-' + safe
+                : 'nlb-' + prefix + '-menu-' + safe;
         }
 
         // Resolve the panel that belongs to a given trigger/element, so two lists rendered
@@ -6554,11 +6743,11 @@
             const serial = clean(asset.serial);
 
             return [
-                { text: clean(asset.equipmentName) || 'Unnamed equipment', cls: 'nlb-id-primary' },
-                { text: clean(asset.pressure),    cls: 'nlb-id-chip' },
-                { text: clean(asset.description), cls: 'nlb-id-chip' },
-                { text: clean(asset.model),       cls: 'nlb-id-mono' },
-                { text: serial ? 'SN: ' + serial : '', cls: 'nlb-id-mono', serial: true }
+                { text: clean(asset.equipmentName) || 'Unnamed equipment', cls: 'nlb-id-primary', primary: true, key: 'name' },
+                { text: clean(asset.pressure),    cls: 'nlb-id-chip', key: 'pressure' },
+                { text: clean(asset.description), cls: 'nlb-id-chip', key: 'make' },
+                { text: clean(asset.model),       cls: 'nlb-id-mono', key: 'model' },
+                { text: serial ? 'SN: ' + serial : '', cls: 'nlb-id-mono', serial: true, key: 'serial' }
             ].filter(segment => segment.text);
         }
 
@@ -6572,8 +6761,19 @@
         // The serial number is lifted onto its own second line rather than sitting
         // in the dash-joined run, matching the stacked primary/secondary pattern used
         // by the Order ID / Date and Asset / S/N cells in the work-order list.
-        function getAssetIdentityHtml(asset) {
-            const segments = getAssetIdentitySegments(asset);
+        //
+        // skip: optional list of segment KEYS to omit, used by the grid card where the
+        // equipment name is already the card title and model / pressure already have
+        // their own tiles -- rendering them again here would duplicate the data.
+        // Keys are per-field (name / pressure / make / model / serial) rather than
+        // per-style, because two different fields share the nlb-id-chip class and
+        // dropping by class would silently delete Make/Brand from the card.
+        function getAssetIdentityHtml(asset, skip) {
+            const dropped = Array.isArray(skip) ? skip : [];
+
+            const segments = getAssetIdentitySegments(asset)
+                .filter(segment => !dropped.includes(segment.key));
+
             const mainSegments = segments.filter(segment => !segment.serial);
             const serialSegment = segments.find(segment => segment.serial);
 
@@ -6587,10 +6787,13 @@
             return `${mainHtml}<span class="nlb-id-serial"><span class="${serialSegment.cls}">${serialSegment.text}</span></span>`;
         }
 
-        // Work Orders list: Edit / Purge collapse into a three-dot menu.
+        // Work Orders three-dot menu (Edit State / Delete).
         // The Accept / Complete action deliberately stays a visible button.
-        function getWorkOrderRowMenuHtml(woId) {
-            const key = rowMenuKey('wo', woId);
+        // scope keeps the DOM id unique: the list AND the grid both render a menu for
+        // the same order, and duplicate ids would make getElementById resolve to
+        // whichever one happens to be first in the document.
+        function getWorkOrderRowMenuHtml(woId, scope) {
+            const key = rowMenuKey('wo', woId, scope || 'list');
             const item = (icon, label, action, extraClass = '') =>
                 `<button type="button" onclick="${action}; closeRowMenu(this);" role="menuitem" class="nlb-row-menu-item ${extraClass}"><span class="material-symbols-outlined">${icon}</span><span>${label}</span></button>`;
 
@@ -6605,27 +6808,98 @@
                 </div>`;
         }
 
+        // --- REMAINING HOURS BEFORE MAINTENANCE ---------------------------------
+        // How many hours are left before the asset reaches its next maintenance target:
+        //   target   = the target hours recorded on the NEWEST maintenance log
+        //   current  = the Asset Registry's Current Metric (the live meter reading)
+        //   remaining = target - current
+        // The newest log is resolved by getRecentLogForAsset, the same helper the
+        // work-order autofill uses, so both features always agree on "latest".
+        // The target field is probed with the SAME priority chain the autofill uses,
+        // so older records using targetHours / runningHours / hours still resolve.
+        function getAssetTargetHoursFromLog(assetId) {
+            const log = getRecentLogForAsset(assetId);
+            if (!log) return null;
+
+            const raw = log.targetHours
+                     || log.runningHours
+                     || log.hours
+                     || log.currentTarget
+                     || log.targetMetric
+                     || log.target;
+
+            if (raw === null || raw === undefined || String(raw).trim() === '') return null;
+
+            return parseNumericMetric(raw);
+        }
+
+        // Returns null when there is nothing to compare against (no log, a log with
+        // no target, or an unreadable current metric) so the caller can render a
+        // neutral "no data" state rather than a misleading "0 Hrs".
+        function getAssetRemainingHours(asset) {
+            if (!asset) return null;
+
+            const target = getAssetTargetHoursFromLog(asset.id);
+            if (target === null) return null;
+
+            const current = parseNumericMetric(asset.currentMetric);
+            if (current === null) return null;
+
+            return target - current;
+        }
+
+        // Turns the raw remaining value into display text + a tone class.
+        // Negative means the asset has already run past its target (overdue),
+        // which is a warning -- it must never render as a normal "0 Hrs".
+        function getRemainingHoursPresentation(remaining) {
+            if (remaining === null || remaining === undefined) {
+                return {
+                    text: '—',
+                    cls: 'nlb-reg-remaining--none',
+                    title: 'No maintenance target recorded yet'
+                };
+            }
+
+            const hours = Math.round(remaining);
+
+            if (hours < 0) {
+                return {
+                    text: `${Math.abs(hours)} Hrs overdue`,
+                    cls: 'nlb-reg-remaining--overdue',
+                    title: `Past the latest maintenance target by ${Math.abs(hours)} hours`
+                };
+            }
+
+            if (hours === 0) {
+                return {
+                    text: 'Due now',
+                    cls: 'nlb-reg-remaining--due',
+                    title: 'The current metric has reached the maintenance target'
+                };
+            }
+
+            return {
+                text: `${hours} Hrs`,
+                cls: 'nlb-reg-remaining--ok',
+                title: `${hours} hours remaining before the next maintenance target`
+            };
+        }
+
         function renderAssetRegistryList(filtered) {
             const container = document.getElementById('rows-fleet');
             if (!container) return;
 
             if (filtered.length === 0) {
-                container.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No assets match the current search.</td></tr>`;
+                container.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400">No assets match the current search.</td></tr>`;
                 return;
             }
 
             container.innerHTML = filtered.map(asset => {
                 const { statusCheck, badgeColorClass } = getAssetRegistryPresentation(asset);
+                const remainingInfo = getRemainingHoursPresentation(getAssetRemainingHours(asset));
 
                 // Colour-coded accent bar down the left of every row
-                const accent = {
-                    'Operational': '#10B981',
-                    'In Maintenance': '#F59E0B',
-                    'Down': '#EF4444',
-                    'Standby': '#6366F1',
-                    'Dispatched': '#8B5CF6',
-                    'Request Dispatch': '#0EA5E9'
-                }[asset.status] || '#CBD5E1';
+                const accent = getAssetStatusAccent(asset);
 
                 return `
                     <tr>
@@ -6636,6 +6910,7 @@
                             <div class="nlb-reg-identity" title="${getAssetIdentityText(asset)}">${getAssetIdentityHtml(asset)}</div>
                         </td>
                         <td><span class="nlb-reg-metric" title="Current metric reading">${asset.currentMetric || 'N/A'}</span></td>
+                        <td><span class="nlb-reg-remaining ${remainingInfo.cls}" title="${remainingInfo.title}">${remainingInfo.text}</span></td>
                         <td><span class="nlb-reg-loc" title="Location">${asset.location || 'WORKSHOP'}</span></td>
                         <td><span class="nlb-reg-cert ${statusCheck.class}" title="Certificate status">${statusCheck.text}</span></td>
                         <td><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${badgeColorClass}"><span class="nlb-reg-dot"></span>${asset.status || 'N/A'}</span></td>
@@ -6655,28 +6930,139 @@
 
             container.innerHTML = filtered.map(asset => {
                 const { statusCheck, badgeColorClass } = getAssetRegistryPresentation(asset);
+                const accent = getAssetStatusAccent(asset);
+                const remainingInfo = getRemainingHoursPresentation(getAssetRemainingHours(asset));
+
+                // A faint wash of the status colour, so the card's "glass" is lit by
+                // the same signal the list uses for its accent bar.
+                const tint = hexToRgba(accent, .18);
+
                 return `
-                    <article class="nlb-asset-card">
+                    <article class="nlb-asset-card" style="--nlb-accent: ${accent}; --nlb-glass-tint: ${tint};">
                         <header class="nlb-asset-card-header">
                             <div class="min-w-0">
-                                <div class="nlb-asset-card-id">${asset.id || 'N/A'}</div>
+                                <span class="nlb-asset-card-id">${asset.id || 'N/A'}</span>
                                 <h3 class="nlb-asset-card-title truncate" title="${asset.equipmentName || 'N/A'}">${asset.equipmentName || 'Unnamed equipment'}</h3>
                             </div>
                             <span class="px-2 py-1 rounded-sm text-[10px] font-bold shrink-0 ${badgeColorClass}">${asset.status || 'N/A'}</span>
                         </header>
-                        <p class="nlb-asset-card-description" title="${asset.description || 'N/A'}">${asset.description || 'No description provided.'}</p>
+
+                        <div class="nlb-asset-card-identity" title="${getAssetIdentityText(asset)}">${getAssetIdentityHtml(asset, ['name', 'pressure', 'model'])}</div>
+
+                        <dl class="nlb-asset-card-stats">
+                            <div class="nlb-asset-card-stat">
+                                <dt>Current Metric</dt>
+                                <dd title="Current metric reading">${asset.currentMetric || 'N/A'}</dd>
+                            </div>
+                            <div class="nlb-asset-card-stat">
+                                <dt>Remaining</dt>
+                                <dd class="${remainingInfo.cls}" title="${remainingInfo.title}">${remainingInfo.text}</dd>
+                            </div>
+                        </dl>
+
                         <dl class="nlb-asset-card-meta">
-                            <div><dt>Model number</dt><dd class="font-code" title="${asset.model || 'N/A'}">${asset.model || 'N/A'}</dd></div>
-                            <div><dt>Capacity / pressure</dt><dd class="font-code" title="${asset.pressure || 'N/A'}">${asset.pressure || 'N/A'}</dd></div>
-                            <div><dt>Serial number</dt><dd class="font-code" title="${asset.serial || 'N/A'}">${asset.serial || 'N/A'}</dd></div>
+                            <div><dt>Model number</dt><dd title="${asset.model || 'N/A'}">${asset.model || 'N/A'}</dd></div>
+                            <div><dt>Capacity / pressure</dt><dd title="${asset.pressure || 'N/A'}">${asset.pressure || 'N/A'}</dd></div>
                             <div><dt>Location</dt><dd class="uppercase" title="${asset.location || 'WORKSHOP'}">${asset.location || 'WORKSHOP'}</dd></div>
                         </dl>
+
                         <div class="nlb-asset-card-footer">
                             <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${statusCheck.class}" title="Certificate status">${statusCheck.text}</span>
                             ${getAssetRegistryActionsHtml(asset.id, 'grid')}
                         </div>
                     </article>`;
             }).join('');
+        }
+
+        // Work Orders grid: status accent colours. Kept separate from the asset
+        // palette because a work order status is a different vocabulary.
+        function getWorkOrderStatusAccent(status) {
+            return {
+                'Pending': '#F59E0B',
+                'In Progress': '#3B82F6',
+                'Check-up/Inspection': '#8B5CF6',
+                'Completed': '#10B981',
+                'Cancelled': '#EF4444'
+            }[status] || '#CBD5E1';
+        }
+
+        function getWorkOrderStatusBadgeClass(status) {
+            switch (status) {
+                case 'Pending': return 'bg-slate-100 text-slate-700 border border-slate-300';
+                case 'In Progress': return 'bg-blue-100 text-blue-800 border border-blue-200';
+                case 'Check-up/Inspection': return 'bg-amber-100 text-amber-800 border border-amber-200';
+                case 'Completed': return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+                case 'Cancelled': return 'bg-rose-100 text-rose-800 border border-rose-200';
+                default: return 'bg-slate-100 text-slate-700 border border-slate-200';
+            }
+        }
+
+        function renderWorkOrderGrid(filtered) {
+            const container = document.getElementById('wo-grid');
+            if (!container) return;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="nlb-registry-empty"><strong>No work orders to show</strong><p>Create a work order to start tracking maintenance.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(w => {
+                const isAccessoryWo = String(w.category || '').toLowerCase() === 'accessories' || !w.assetId;
+                const asset = (memory.assets || []).find(a => String(a.id) === String(w.assetId));
+                const serialNumber = isAccessoryWo ? '—' : (asset && asset.serial ? asset.serial : 'N/A');
+
+                const statusKey = String(w.status || '').trim().toLowerCase();
+                const accent = getWorkOrderStatusAccent(w.status);
+
+                // Same three outcomes as the list: Accessories complete directly,
+                // Equipment completes through the Add Maintenance Log form.
+                let primaryAction = '';
+                if (statusKey === 'in progress') {
+                    primaryAction = isAccessoryWo
+                        ? `<button onclick="completeAccessoryWo('${w.id}')" class="nlb-wo-card-btn" title="Complete Accessory Work Order">Complete</button>`
+                        : `<button onclick="completeEquipmentWo('${w.id}')" class="nlb-wo-card-btn" title="Open the Add Maintenance Log form to complete this work order">Complete</button>`;
+                } else if (statusKey === 'pending') {
+                    primaryAction = `<button onclick="openAcceptWoModal('${w.id}')" class="nlb-wo-card-btn nlb-wo-card-btn--accept" title="Accept Work Order">Accept</button>`;
+                }
+
+                const techNames = getWoTechnicianNames(w);
+                const techInfo = techNames.length === 0
+                    ? '<span class="text-slate-300 italic">Unassigned</span>'
+                    : `<div class="font-semibold text-slate-700 truncate">${techNames[0]}</div>` +
+                      (techNames.length > 1 ? `<div class="text-[10px] text-slate-400 mt-0.5">+${techNames.length - 1} more</div>` : '');
+
+                return `
+                    <article class="nlb-asset-card" style="--nlb-accent: ${accent}; --nlb-glass-tint: ${hexToRgba(accent, .18)};">
+                        <header class="nlb-asset-card-header">
+                            <div class="min-w-0">
+                                <span class="nlb-asset-card-id">${w.id || 'N/A'}</span>
+                                <h3 class="nlb-asset-card-title nlb-wo-card-reason" title="${w.reason || 'No reason recorded'}">${w.reason || 'No reason recorded'}</h3>
+                            </div>
+                            <span class="px-2 py-1 rounded-sm text-[10px] font-bold shrink-0 ${getWorkOrderStatusBadgeClass(w.status)}">${w.status || 'N/A'}</span>
+                        </header>
+
+                        <dl class="nlb-asset-card-meta" style="margin-top: .6rem; padding-top: 0; border-top: 0;">
+                            <div><dt>Date</dt><dd class="font-code" title="${formatDisplayDate(w.date)}">${formatDisplayDate(w.date)}</dd></div>
+                            <div><dt>Asset</dt><dd class="font-code" title="${isAccessoryWo ? 'Accessory order' : w.assetId}">${isAccessoryWo ? 'Accessory' : (w.assetId || 'N/A')}</dd></div>
+                            <div><dt>Serial</dt><dd class="font-code" title="${serialNumber}">${serialNumber}</dd></div>
+                            <div><dt>Technician(s)</dt><dd title="${techNames.join(', ') || 'No technician assigned'}">${techInfo}</dd></div>
+                        </dl>
+
+                        <div class="nlb-asset-card-footer">
+                            ${primaryAction || '<span class="text-slate-300 text-[10px] italic font-normal">No Action</span>'}
+                            ${getWorkOrderRowMenuHtml(w.id, 'grid')}
+                        </div>
+                    </article>`;
+            }).join('');
+        }
+
+        function renderWorkOrderViews(filtered) {
+            const countLabel = document.getElementById('wo-view-count');
+            if (countLabel) {
+                const count = filtered.length;
+                countLabel.textContent = `${count} order${count === 1 ? '' : 's'}`;
+            }
+            applyWorkOrderView();
         }
 
         function renderAssetRegistryViews(filtered) {
@@ -6834,12 +7220,16 @@
                             <td class="p-4 text-center">
                                 <div class="nlb-wo-actions">
                                     ${woActionButton}
-                                    ${getWorkOrderRowMenuHtml(w.id)}
+                                    ${getWorkOrderRowMenuHtml(w.id, 'list')}
                                 </div>
                             </td>
                         </tr>
                     `;
                 });
+
+                // Keep the glass grid in sync with the list so switching views is instant.
+                renderWorkOrderGrid(memory.workOrders);
+                renderWorkOrderViews(memory.workOrders);
             }
 
             if (currentActiveModule === "log") {
