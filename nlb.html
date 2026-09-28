@@ -826,6 +826,154 @@
                 padding: 1.75rem;
             }
         }
+        /* Asset Registry: list / grid presentation layer */
+        #fleet-registry-list.hidden,
+        #fleet-registry-grid.hidden { display: none !important; }
+        .nlb-registry-view-toggle { display: inline-flex; align-items: center; gap: .15rem; padding: .2rem; border: 1px solid #CBD5E1; border-radius: .5rem; background: #F1F5F9; }
+        .nlb-registry-view-toggle button { display: inline-grid; place-items: center; width: 2rem; height: 2rem; border: 0; border-radius: .35rem; color: #64748B; background: transparent; cursor: pointer; transition: background .18s ease, color .18s ease, box-shadow .18s ease; }
+        .nlb-registry-view-toggle button:hover { color: #0F172A; background: rgba(255,255,255,.7); }
+        .nlb-registry-view-toggle button:focus-visible { outline: 2px solid var(--brand-lime); outline-offset: 1px; }
+        .nlb-registry-view-toggle button.is-active { color: #047857; background: #FFFFFF; box-shadow: 0 1px 3px rgba(15,23,42,.12); }
+        .nlb-registry-view-toggle button .material-symbols-outlined { font-size: 1.15rem; line-height: 1; }
+        .nlb-asset-card { min-width: 0; padding: 1rem; border: 1px solid #E2E8F0; border-radius: .75rem; background: #FFFFFF; box-shadow: 0 2px 8px rgba(15,23,42,.04); transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+        .nlb-asset-card:hover { border-color: #86B79A; box-shadow: 0 10px 24px rgba(15,23,42,.08); transform: translateY(-1px); }
+        .nlb-asset-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; padding-bottom: .75rem; border-bottom: 1px solid #F1F5F9; }
+        .nlb-asset-card-id { color: #64748B; font: 700 .62rem/1.2 'JetBrains Mono', monospace; letter-spacing: .02em; }
+        .nlb-asset-card-title { margin-top: .3rem; color: #0F172A; font-size: .9rem; font-weight: 800; line-height: 1.3; }
+        .nlb-asset-card-description { display: -webkit-box; margin-top: .7rem; overflow: hidden; color: #64748B; font-size: .68rem; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+        .nlb-asset-card-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem .8rem; margin-top: .9rem; }
+        .nlb-asset-card-meta dt { color: #94A3B8; font-size: .55rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+        .nlb-asset-card-meta dd { margin: .2rem 0 0; overflow: hidden; color: #334155; font-size: .66rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+        .nlb-asset-card-footer { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: 1rem; padding-top: .75rem; border-top: 1px solid #F1F5F9; }
+        /* Asset Registry: three-dot row action menu */
+        .nlb-row-menu { position: relative; display: inline-block; }
+        .nlb-row-menu-trigger { display: inline-grid; place-items: center; width: 1.85rem; height: 1.85rem; border: 1px solid transparent; border-radius: .4rem; background: transparent; color: #64748B; cursor: pointer; transition: background .18s ease, color .18s ease, border-color .18s ease; }
+        .nlb-row-menu-trigger:hover { color: #0F172A; background: #F1F5F9; border-color: #E2E8F0; }
+        .nlb-row-menu-trigger:focus-visible { outline: 2px solid var(--brand-lime); outline-offset: 1px; }
+        .nlb-row-menu-trigger .material-symbols-outlined { font-size: 1.15rem; line-height: 1; }
+        .nlb-row-menu-panel { position: absolute; right: 0; top: calc(100% + .3rem); z-index: 40; min-width: 12.5rem; padding: .3rem; border: 1px solid #E2E8F0; border-radius: .55rem; background: #FFFFFF; box-shadow: 0 12px 28px rgba(15,23,42,.16); }
+        .nlb-row-menu-panel.hidden { display: none; }
+        .nlb-row-menu-panel--up { top: auto; bottom: calc(100% + .3rem); }
+        .nlb-row-menu-item { display: flex; align-items: center; gap: .55rem; width: 100%; padding: .5rem .55rem; border: 0; border-radius: .35rem; background: transparent; color: #334155; font-size: .72rem; font-weight: 600; text-align: left; white-space: nowrap; cursor: pointer; transition: background .15s ease, color .15s ease; }
+        .nlb-row-menu-item:hover { background: #F1F5F9; color: #0F172A; }
+        .nlb-row-menu-item .material-symbols-outlined { font-size: 1.05rem; line-height: 1; color: #94A3B8; }
+        .nlb-row-menu-item:hover .material-symbols-outlined { color: currentColor; }
+        .nlb-row-menu-item--accent { color: #047857; }
+        .nlb-row-menu-item--danger { color: #E11D48; }
+        .nlb-row-menu-item--danger:hover { background: #FFF1F2; color: #BE123C; }
+        .nlb-row-menu-sep { height: 1px; margin: .25rem .35rem; background: #F1F5F9; }
+        /* Work Orders list: the visible Accept/Complete button plus the overflow menu */
+        .nlb-wo-actions { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; }
+
+        /* Dashboard: clickable KPI shortcut cards */
+        .nlb-kpi-card { position: relative; cursor: pointer; text-align: left; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease; }
+        .nlb-kpi-card:hover { border-color: #0F172A; box-shadow: 0 10px 24px rgba(15,23,42,.10); transform: translateY(-2px); }
+        .nlb-kpi-card:focus-visible { outline: 2px solid #0F172A; outline-offset: 2px; border-color: #0F172A; }
+        .nlb-kpi-card:active { transform: translateY(0); }
+        .nlb-kpi-go { display: inline-block; color: #CBD5E1; font-size: .8rem; line-height: 1; transition: color .18s ease, transform .18s ease; }
+        .nlb-kpi-card:hover .nlb-kpi-go,
+        .nlb-kpi-card:focus-visible .nlb-kpi-go { color: #0F172A; transform: translateX(3px); }
+
+        /* Work Order form: sectioned, professional layout */
+        .nlb-wo-modal { display: flex; flex-direction: column; max-height: 92vh; }
+        /* The <form> is a flex child of .nlb-wo-modal: it must be allowed to shrink
+           (min-height:0) or the body never scrolls and the footer gets clipped. */
+        .nlb-wo-form { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+        .nlb-wo-head { flex: none; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid #E2E8F0; background: linear-gradient(#F8FAFC, #F1F5F9); }
+        .nlb-wo-head-icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; flex: none; border-radius: .55rem; background: #0F172A; color: #FFFFFF; }
+        .nlb-wo-head-icon .material-symbols-outlined { font-size: 1.25rem; line-height: 1; }
+        .nlb-wo-head-sub { margin-top: .2rem; color: #64748B; font-size: .7rem; }
+        .nlb-wo-close { flex: none; color: #94A3B8; font-size: 1.35rem; font-weight: 700; line-height: 1; cursor: pointer; background: transparent; border: 0; border-radius: .4rem; padding: .15rem .35rem; }
+        .nlb-wo-close:hover { color: #0F172A; background: #E2E8F0; }
+        .nlb-wo-body { min-height: 0; flex: 1 1 auto; overflow-y: auto; padding: 1rem 1.25rem; }
+        .nlb-wo-section + .nlb-wo-section { margin-top: .9rem; }
+        .nlb-wo-section-title { display: flex; align-items: center; gap: .4rem; margin-bottom: .7rem; color: #94A3B8; font-size: .58rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+        .nlb-wo-section-title .material-symbols-outlined { font-size: .95rem; line-height: 1; }
+        .nlb-wo-grid { display: grid; grid-template-columns: 1fr; gap: .75rem .9rem; }
+        @media (min-width: 640px) { .nlb-wo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        .nlb-wo-field { min-width: 0; }
+        .nlb-wo-label { display: flex; align-items: center; gap: .25rem; margin-bottom: .3rem; color: #475569; font-size: .68rem; font-weight: 700; }
+        .nlb-wo-req { color: #DC2626; font-weight: 800; }
+        .nlb-wo-control { display: block; width: 100%; padding: .5rem .65rem; border: 1px solid #CBD5E1; border-radius: .45rem; background: #F8FAFC; color: #0F172A; font-size: .78rem; line-height: 1.5; transition: border-color .15s ease, box-shadow .15s ease, background .15s ease; }
+        .nlb-wo-control:hover { border-color: #94A3B8; }
+        .nlb-wo-control:focus { outline: none; border-color: #0F172A; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(15,23,42,.08); }
+        .nlb-wo-control:disabled { color: #94A3B8; background: #F1F5F9; cursor: not-allowed; }
+        .nlb-wo-control::placeholder { color: #CBD5E1; }
+        .nlb-wo-mono { font-family: 'JetBrains Mono', monospace; }
+        .nlb-wo-upper { text-transform: uppercase; }
+        .nlb-wo-select { appearance: none; padding-right: 2rem; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right .55rem center; background-size: .95rem; }
+        .nlb-wo-multi { min-height: 5.2rem; height: auto; }
+        .nlb-wo-help { margin-top: .3rem; color: #94A3B8; font-size: .62rem; line-height: 1.45; }
+        .nlb-wo-hint { display: none; align-items: center; gap: .3rem; margin-top: .35rem; color: #047857; font-size: .62rem; }
+        .nlb-wo-hint.is-shown { display: flex; }
+        .nlb-wo-hint.is-warn { color: #B45309; }
+        .nlb-wo-hint .material-symbols-outlined { font-size: .85rem; line-height: 1; }
+        .nlb-wo-foot { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: .85rem 1.25rem; border-top: 1px solid #E2E8F0; background: #FCFDFD; }
+        .nlb-wo-btn { display: inline-flex; align-items: center; gap: .35rem; padding: .5rem 1rem; border-radius: .45rem; font-size: .75rem; font-weight: 700; cursor: pointer; transition: background .15s ease, color .15s ease, border-color .15s ease; }
+        .nlb-wo-btn-ghost { color: #475569; background: #FFFFFF; border: 1px solid #CBD5E1; }
+        .nlb-wo-btn-ghost:hover { background: #F1F5F9; color: #0F172A; }
+        .nlb-wo-btn-primary { color: #FFFFFF; background: #0F172A; border: 1px solid #0F172A; }
+        .nlb-wo-btn-primary:hover { background: #1E293B; }
+        .nlb-wo-btn .material-symbols-outlined { font-size: 1rem; line-height: 1; }
+
+        /* Update Current Metric popup */
+        .nlb-um-target { padding: .6rem .75rem; border: 1px solid #E2E8F0; border-radius: .5rem; background: #F8FAFC; }
+        .nlb-um-target-value { margin-top: .3rem; color: #0F172A; font-size: .72rem; font-weight: 700; line-height: 1.5; }
+        .nlb-um-target-value .nlb-id-primary { font-size: .78rem; }
+        .nlb-um-target-value .nlb-id-chip { padding: .1rem .4rem; font-size: .6rem; }
+        .nlb-um-target-value .nlb-id-mono { padding: .1rem .35rem; font-size: .58rem; }
+        .nlb-registry-empty { grid-column: 1 / -1; padding: 3rem 1rem; border: 1px dashed #CBD5E1; border-radius: .75rem; color: #94A3B8; background: #F8FAFC; text-align: center; }
+        .nlb-registry-empty strong { display: block; color: #475569; font-size: .8rem; }
+        .nlb-registry-empty p { margin: .35rem 0 0; font-size: .68rem; }
+        @media (max-width: 640px) { .nlb-asset-card-meta { grid-template-columns: 1fr; } }
+
+        /* Asset Registry: professional list view */
+        .nlb-registry-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: .75rem; }
+        .nlb-registry-table thead th {
+            padding: .7rem 1rem;
+            border-bottom: 1px solid #E2E8F0;
+            background: linear-gradient(#F8FAFC, #F1F5F9);
+            color: #64748B; font-size: .6rem; font-weight: 800;
+            letter-spacing: .09em; text-transform: uppercase; text-align: left; white-space: nowrap;
+        }
+        .nlb-registry-table thead th.nlb-reg-th-right { text-align: right; }
+        .nlb-registry-table tbody td { padding: .75rem 1rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .nlb-registry-table tbody tr { background: #FFFFFF; transition: background .15s ease; }
+        .nlb-registry-table tbody tr:nth-child(even) { background: #FAFCFB; }
+        .nlb-registry-table tbody tr:hover { background: #F0FDF4; }
+        .nlb-registry-table tbody tr:last-child td { border-bottom: 0; }
+        .nlb-reg-id { display: inline-block; padding: .22rem .45rem; border: 1px solid #E2E8F0; border-radius: .35rem; background: #F8FAFC; color: #0F172A; font: 700 .68rem/1.4 'JetBrains Mono', monospace; letter-spacing: .01em; }
+        .nlb-reg-primary { color: #0F172A; font-size: .72rem; font-weight: 700; line-height: 1.45; }
+        .nlb-reg-mono { color: #334155; font: 700 .68rem/1.45 'JetBrains Mono', monospace; }
+        .nlb-reg-secondary { color: #64748B; font-size: .68rem; font-weight: 600; line-height: 1.45; }
+        .nlb-reg-sep { padding: 0 .1rem; color: #CBD5E1; font-weight: 700; }
+        .nlb-reg-metric { display: inline-block; max-width: 100%; padding: .22rem .5rem; border: 1px solid #E2E8F0; border-radius: .35rem; background: #F1F5F9; color: #334155; font: 700 .66rem/1.4 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .nlb-reg-loc { color: #475569; font: 700 .6rem/1.4 'JetBrains Mono', monospace; letter-spacing: .04em; text-transform: uppercase; }
+        .nlb-reg-dot { width: .4rem; height: .4rem; flex: none; border-radius: 9999px; background: currentColor; }
+        .nlb-reg-cert { display: inline-flex; align-items: center; padding: .2rem .55rem; border-radius: 9999px; font-size: .6rem; font-weight: 700; white-space: nowrap; }
+        /* Compact scale for the identity line inside a table row */
+        .nlb-reg-identity { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .35rem; }
+        .nlb-reg-identity .nlb-id-primary { font-size: .78rem; }
+        .nlb-reg-identity .nlb-id-chip { padding: .12rem .4rem; font-size: .62rem; }
+        .nlb-reg-identity .nlb-id-mono { padding: .12rem .35rem; font-size: .6rem; }
+        .nlb-reg-identity .nlb-id-sep { font-size: .7rem; }
+
+        /* Asset Details: professional specification sheet */
+        .nlb-spec-sheet { border: 1px solid #E2E8F0; border-radius: .75rem; background: #FFFFFF; overflow: hidden; box-shadow: 0 2px 8px rgba(15,23,42,.04); }
+        .nlb-spec-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; padding: .7rem 1rem; background: linear-gradient(#F8FAFC, #F1F5F9); border-bottom: 1px solid #E2E8F0; }
+        .nlb-spec-head-label { color: #94A3B8; font-size: .6rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+        .nlb-identity { padding: 1rem; }
+        .nlb-identity-label { color: #94A3B8; font-size: .58rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+        .nlb-identity-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem .5rem; margin-top: .45rem; }
+        .nlb-id-primary { color: #0F172A; font-size: 1.05rem; font-weight: 800; line-height: 1.35; }
+        .nlb-id-chip { padding: .2rem .55rem; border: 1px solid #E2E8F0; border-radius: 9999px; background: #F8FAFC; color: #475569; font-size: .72rem; font-weight: 700; }
+        .nlb-id-mono { padding: .2rem .5rem; border: 1px solid #E2E8F0; border-radius: .35rem; background: #F1F5F9; color: #334155; font: 700 .7rem/1.4 'JetBrains Mono', monospace; }
+        .nlb-id-sep { color: #CBD5E1; font-weight: 800; }
+        .nlb-spec-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: #E2E8F0; border-top: 1px solid #E2E8F0; }
+        .nlb-spec-stat { min-width: 0; padding: .75rem 1rem; background: #FCFDFD; }
+        .nlb-spec-stat-label { color: #94A3B8; font-size: .56rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+        .nlb-spec-stat-value { margin-top: .3rem; color: #0F172A; font-size: .8rem; font-weight: 700; word-break: break-word; }
+
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -1035,6 +1183,17 @@
                                     <span class="material-symbols-outlined text-slate-400 absolute left-2.5 text-lg pointer-events-none">search</span>
                                     <input type="text" id="in-f-search" oninput="refreshWorkspaceView()" placeholder="Search ID, name, type, model..." class="bg-white border border-slate-300 text-slate-800 rounded text-xs pl-8 pr-3 py-2 focus:outline-none focus:border-slate-900 w-full md:w-64 shadow-xs">
                                 </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span id="asset-registry-view-count" class="hidden sm:inline text-[10px] font-bold uppercase tracking-wider text-slate-400">0 assets</span>
+                                    <div class="nlb-registry-view-toggle" role="group" aria-label="Asset registry layout">
+                                        <button id="asset-view-list" type="button" onclick="setAssetRegistryView('list')" aria-pressed="true" title="Show asset registry as a list" aria-label="Show asset registry as a list" class="is-active">
+                                            <span class="material-symbols-outlined" aria-hidden="true">view_list</span>
+                                        </button>
+                                        <button id="asset-view-grid" type="button" onclick="setAssetRegistryView('grid')" aria-pressed="false" title="Show asset registry as a grid" aria-label="Show asset registry as a grid">
+                                            <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
+                                        </button>
+                                    </div>
+                                </div>
                                 <!-- Hidden Excel File Input (Asset Registry Import) -->
                                 <input type="file" id="in-f-excel-file" accept=".xlsx, .xls, .csv" class="hidden" onchange="importAssetRegistryExcel(event)">
 
@@ -1061,27 +1220,25 @@
                             </div>
                         </div>
 
-                        <div class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+                        <div id="fleet-registry-list" class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
                             <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[950px]">
+                                <table class="nlb-registry-table min-w-[1000px]">
                                     <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Primary ID</th>
-                                                <th class="p-4">Equipment Name</th>
-                                            <th class="p-4">Model Number</th>
-                                            <th class="p-4">Make/Brand</th>
-                                            <th class="p-4">Capacity/Pressure</th>
-                                            <th class="p-4">Serial Number</th>
-                                            <th class="p-4">Location</th>
-                                            <th class="p-4">Cert Status</th>
-                                            <th class="p-4">Status</th>
-                                            <th class="p-4 text-center w-36">Actions</th>
+                                        <tr>
+                                            <th>Primary ID</th>
+                                            <th>Asset Identity</th>
+                                            <th>Current Metric</th>
+                                            <th>Location</th>
+                                            <th>Cert Status</th>
+                                            <th>Status</th>
+                                            <th class="nlb-reg-th-right">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="rows-fleet" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                                    <tbody id="rows-fleet" class="text-slate-700"></tbody>
                                 </table>
                             </div>
                         </div>
+                        <div id="fleet-registry-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" aria-live="polite" aria-label="Asset registry grid"></div>
                     </section>
 
                     <section id="pane-dashboard" class="pane-view space-y-6">
@@ -1098,53 +1255,53 @@
 
                         <!-- KPI Cards -->
                         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                            <div role="button" tabindex="0" onclick="goToDashboardKpi('fleet')" onkeydown="handleDashboardKpiKey(event, 'fleet')" title="Go to Asset Registry" aria-label="Total Assets. Go to Asset Registry." class="nlb-kpi-card bg-white border border-slate-200 p-4 rounded-md shadow-sm group">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="w-8 h-8 grid place-items-center rounded bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">local_shipping</span></span>
+                                    <span class="w-8 h-8 grid place-items-center rounded bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">analytics</span></span>
                                     <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">Fleet</span>
                                 </div>
                                 <h3 id="dash-fleet-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
-                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">Total Assets</p>
+                                <p class="mt-1.5 flex items-center gap-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Total Assets <span class="nlb-kpi-go material-symbols-outlined">arrow_forward</span></p>
                             </div>
-                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                            <div role="button" tabindex="0" onclick="goToDashboardKpi('wo')" onkeydown="handleDashboardKpiKey(event, 'wo')" title="Go to Maintenance Work Orders" aria-label="Pending Work Orders. Go to Maintenance Work Orders." class="nlb-kpi-card bg-white border border-slate-200 p-4 rounded-md shadow-sm group">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="w-8 h-8 grid place-items-center rounded bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">build</span></span>
                                     <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">Open</span>
                                 </div>
                                 <h3 id="dash-wo-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
-                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">Pending Work Orders</p>
+                                <p class="mt-1.5 flex items-center gap-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Pending Work Orders <span class="nlb-kpi-go material-symbols-outlined">arrow_forward</span></p>
                             </div>
-                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                            <div role="button" tabindex="0" onclick="goToDashboardKpi('maintenance')" onkeydown="handleDashboardKpiKey(event, 'maintenance')" title="Go to Asset Registry" aria-label="In Maintenance or Down. Go to Asset Registry." class="nlb-kpi-card bg-white border border-slate-200 p-4 rounded-md shadow-sm group">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="w-8 h-8 grid place-items-center rounded bg-rose-50 text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">engineering</span></span>
                                     <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">Down</span>
                                 </div>
                                 <h3 id="dash-maintenance-down-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
-                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">In Maintenance / Down</p>
+                                <p class="mt-1.5 flex items-center gap-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">In Maintenance / Down <span class="nlb-kpi-go material-symbols-outlined">arrow_forward</span></p>
                             </div>
-                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                            <div role="button" tabindex="0" onclick="goToDashboardKpi('dispatch')" onkeydown="handleDashboardKpiKey(event, 'dispatch')" title="Go to Mobilization" aria-label="Active Dispatches. Go to Mobilization." class="nlb-kpi-card bg-white border border-slate-200 p-4 rounded-md shadow-sm group">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="w-8 h-8 grid place-items-center rounded bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">local_shipping</span></span>
                                     <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">On Site</span>
                                 </div>
                                 <h3 id="dash-total-dispatch-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
-                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">Active Dispatches</p>
+                                <p class="mt-1.5 flex items-center gap-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Active Dispatches <span class="nlb-kpi-go material-symbols-outlined">arrow_forward</span></p>
                             </div>
-                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                            <div role="button" tabindex="0" onclick="goToDashboardKpi('mobRequest')" onkeydown="handleDashboardKpiKey(event, 'mobRequest')" title="Go to Mobilization Request" aria-label="Mobilization Requests. Go to Mobilization Request." class="nlb-kpi-card bg-white border border-slate-200 p-4 rounded-md shadow-sm group">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="w-8 h-8 grid place-items-center rounded bg-sky-50 text-sky-600 group-hover:bg-sky-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">assignment_turned_in</span></span>
                                     <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">Moves</span>
                                 </div>
                                 <h3 id="dash-mobilization-request-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
-                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">Mobilization Requests</p>
+                                <p class="mt-1.5 flex items-center gap-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Mobilization Requests <span class="nlb-kpi-go material-symbols-outlined">arrow_forward</span></p>
                             </div>
-                            <div class="bg-white border border-slate-200 p-4 rounded-md shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-default group">
+                            <div role="button" tabindex="0" onclick="goToDashboardKpi('cert')" onkeydown="handleDashboardKpiKey(event, 'cert')" title="Go to Third-Party Certificates" aria-label="Certificate Expiry in 30 days. Go to Third-Party Certificates." class="nlb-kpi-card bg-white border border-slate-200 p-4 rounded-md shadow-sm group">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="w-8 h-8 grid place-items-center rounded bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-lg">event_busy</span></span>
                                     <span class="text-[9px] font-bold text-slate-300 uppercase tracking-wider">30 Days</span>
                                 </div>
                                 <h3 id="dash-certificate-expiry-count" class="text-2xl font-black text-slate-900 font-code leading-none">0</h3>
-                                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1.5">Certificate Expiry</p>
+                                <p class="mt-1.5 flex items-center gap-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Certificate Expiry <span class="nlb-kpi-go material-symbols-outlined">arrow_forward</span></p>
                             </div>
                         </div>
 
@@ -1373,6 +1530,7 @@
                                             <th class="p-4">Target Metric</th>
                                             <th class="p-4">Remaining Hours / Info</th>
                                             <th class="p-4">Reason</th>
+                                            <th class="p-4">Technician(s)</th>
                                             <th class="p-4">Status</th>
                                             <th class="p-4 text-center w-56">Actions</th>
                                         </tr>
@@ -1874,6 +2032,10 @@
                     <input type="text" id="in-f-serial" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. SN-987654">
                 </div>
                 <div>
+                    <label class="block text-slate-600 font-medium mb-1 font-code">Current Metric</label>
+                    <input type="text" id="in-f-current-metric" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. 1,250 Hrs">
+                </div>
+                <div>
                     <label class="block text-slate-400 font-medium mb-1 font-code">Location (Controlled by Operations)</label>
                     <input type="text" id="in-f-location" readonly class="w-full bg-slate-100 border border-slate-300 rounded p-2 text-slate-500 uppercase font-code cursor-not-allowed outline-none" placeholder="WORKSHOP">
                 </div>
@@ -1896,6 +2058,33 @@
         </div>
     </div>
 
+    <div id="modal-update-metric" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-sm p-6 space-y-4 shadow-xl">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-slate-700">speed</span> Update Current Metric
+                </h3>
+                <button onclick="closeUpdateMetricModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">&times;</button>
+            </div>
+            <form id="form-update-metric" onsubmit="executeUpdateMetric(event)" class="space-y-3.5 text-xs">
+                <input type="hidden" id="in-um-asset-id" value="">
+                <div class="nlb-um-target">
+                    <p class="nlb-spec-head-label">Asset</p>
+                    <p id="in-um-asset-label" class="nlb-um-target-value"></p>
+                </div>
+                <div>
+                    <label class="block text-slate-600 font-medium mb-1 font-code">Current Metric *</label>
+                    <input type="text" id="in-um-current-metric" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. 1,250 Hrs">
+                    <p class="text-[10px] text-slate-400 mt-1 leading-relaxed">Only the Current Metric is saved. All other asset details (model, serial, location, status...) stay untouched.</p>
+                </div>
+                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeUpdateMetricModal()" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
+                    <button type="submit" id="btn-um-submit" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Save Metric</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="modal-view-asset" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
         <div class="bg-white border border-slate-200 rounded-lg w-full max-w-5xl p-6 space-y-4 shadow-xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center pb-3 border-b border-slate-100">
@@ -1913,7 +2102,7 @@
                     <button type="button" onclick="toggleModal('modal-view-asset', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
                 </div>
             </div>
-            <div id="asset-details-summary" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+            <div id="asset-details-summary"></div>
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
                 <section class="border border-slate-200 rounded overflow-hidden">
                     <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between"><h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Dispatch History</h4><span id="asset-dispatch-history-count" class="text-[10px] text-slate-500"></span></div>
@@ -2105,91 +2294,122 @@
     </div>
 
     <div id="modal-add-wo" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <h3 id="modal-wo-title" class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-slate-700">playlist_add</span> Create Maintenance Work Order
-                </h3>
-                <button onclick="toggleModal('modal-add-wo', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
+        <div class="nlb-wo-modal bg-white border border-slate-200 rounded-xl w-full max-w-3xl shadow-2xl overflow-hidden">
+            <div class="nlb-wo-head">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="nlb-wo-head-icon"><span class="material-symbols-outlined" id="wo-head-icon">playlist_add</span></span>
+                    <div class="min-w-0">
+                        <h3 id="modal-wo-title" class="text-sm font-extrabold text-slate-900 uppercase tracking-wide">Create Maintenance Work Order</h3>
+                        <p class="nlb-wo-head-sub" id="wo-head-sub">Capture the job, its tracking metrics and who is assigned to it.</p>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleModal('modal-add-wo', false)" class="nlb-wo-close" title="Close">&times;</button>
             </div>
-            <form id="form-wo" onsubmit="executeWoSubmission(event)" class="space-y-3.5 text-xs">
+            <form id="form-wo" onsubmit="executeWoSubmission(event)" class="nlb-wo-form">
                 <input type="hidden" id="in-w-mode" value="create">
                 <input type="hidden" id="in-w-old-id" value="">
-                
-                <!-- Grouped Order ID and Date in a Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1 font-code">Order ID *</label>
-                        <input type="text" id="in-w-id" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code outline-none font-bold focus:border-slate-900 focus:outline-none" placeholder="e.g. WO-1001">
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Creation Date *</label>
-                        <input type="date" id="in-w-date" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Type *</label>
-                    <select id="in-w-category" onchange="toggleWoCategory(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                        <option value="Equipment">Equipment</option>
-                        <option value="Accessories">Accessories</option>
-                    </select>
-                </div>
+                <div class="nlb-wo-body">
 
-                <div id="wrapper-wo-asset">
-                    <label class="block text-slate-600 font-medium mb-1">Target Equipment Asset *</label>
-                    <div class="relative mb-1">
-                        <input type="text" id="in-w-search-asset" oninput="filterDropdownSearch('in-w-search-asset', 'in-w-asset')" placeholder="Type to filter equipment list below..." class="w-full bg-slate-100 border border-slate-300 rounded p-1.5 text-slate-800 text-[11px] focus:outline-none focus:border-slate-500">
-                    </div>
-                    <select id="in-w-asset" required onchange="autoFillTargetMetricFromRecentLog()" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 font-code focus:outline-none focus:border-slate-900"></select>
-                </div>                
+                    <section class="nlb-wo-section">
+                        <h4 class="nlb-wo-section-title"><span class="material-symbols-outlined">description</span>Order Details</h4>
+                        <div class="nlb-wo-grid">
+                            <div class="nlb-wo-field">
+                                <label class="nlb-wo-label" for="in-w-id">Order ID <span class="nlb-wo-req">*</span></label>
+                                <input type="text" id="in-w-id" required class="nlb-wo-control nlb-wo-mono nlb-wo-upper font-bold" placeholder="e.g. WO-1001">
+                            </div>
+                            <div class="nlb-wo-field">
+                                <label class="nlb-wo-label" for="in-w-date">Creation Date <span class="nlb-wo-req">*</span></label>
+                                <input type="date" id="in-w-date" required class="nlb-wo-control nlb-wo-mono">
+                            </div>
+                
+                            <div class="nlb-wo-field">
+                                <label class="nlb-wo-label" for="in-w-category">Work Order Type <span class="nlb-wo-req">*</span></label>
+                                <select id="in-w-category" onchange="toggleWoCategory(this.value)" class="nlb-wo-control nlb-wo-select">
+                                    <option value="Equipment">Equipment</option>
+                                    <option value="Accessories">Accessories</option>
+                                </select>
+                            </div>
+                            <div class="nlb-wo-field">
+                                <label class="nlb-wo-label" for="in-w-status">Order Status <span class="nlb-wo-req">*</span></label>
+                                <select id="in-w-status" required class="nlb-wo-control nlb-wo-select">
+                                    <option value="Pending">Pending</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Check-up/Inspection">Check-up/Inspection</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
 
-                <!-- Tracking Type Selection -->
-                <div id="wrapper-wo-tracking">
-                    <label class="block text-slate-600 font-medium mb-1">Tracking Type *</label>
-                    <select id="in-w-type" onchange="toggleMetricInputs(this.value); autoFillTargetMetricFromRecentLog();" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                        <option value="hours">Running Hours</option>
-                        <option value="date">Calendar Date Target</option>
-                        <option value="none">None</option>
-                    </select>
+                    <section class="nlb-wo-section">
+                        <h4 class="nlb-wo-section-title"><span class="material-symbols-outlined">build_circle</span>Equipment &amp; Tracking</h4>
+                        <div class="nlb-wo-grid">
+
+                            <div class="nlb-wo-field" id="wrapper-wo-asset" style="grid-column: 1 / -1;">
+                                <label class="nlb-wo-label" for="in-w-asset">Target Equipment Asset <span class="nlb-wo-req">*</span></label>
+                                <input type="text" id="in-w-search-asset" oninput="filterDropdownSearch('in-w-search-asset', 'in-w-asset')" placeholder="Type to filter the equipment list..." class="nlb-wo-control nlb-wo-mono" style="margin-bottom: .4rem;">
+                                <select id="in-w-asset" required onchange="autoFillCurrentMetricFromAsset(); autoFillTargetMetricFromRecentLog();" class="nlb-wo-control nlb-wo-select nlb-wo-mono"></select>
+                            </div>
+
+                            <div class="nlb-wo-field" id="wrapper-wo-tracking" style="grid-column: 1 / -1;">
+                                <label class="nlb-wo-label" for="in-w-type">Tracking Type <span class="nlb-wo-req">*</span></label>
+                                <select id="in-w-type" onchange="toggleMetricInputs(this.value); autoFillCurrentMetricFromAsset(); autoFillTargetMetricFromRecentLog();" class="nlb-wo-control nlb-wo-select">
+                                    <option value="hours">Running Hours</option>
+                                    <option value="date">Calendar Date Target</option>
+                                    <option value="none">None</option>
+                                </select>
+                            </div>
+                            <div class="nlb-wo-field" id="wrapper-hours-inputs" style="grid-column: 1 / -1;">
+                                <div class="nlb-wo-grid">
+                                    <div class="nlb-wo-field">
+                                        <label class="nlb-wo-label" for="in-w-current-hours">Current Hours Reading <span class="nlb-wo-req">*</span></label>
+                                        <input type="number" id="in-w-current-hours" min="0" class="nlb-wo-control nlb-wo-mono" placeholder="e.g. 1250">
+                                        <p id="in-w-current-hint" class="nlb-wo-hint"><span class="material-symbols-outlined">auto_awesome</span><span id="in-w-current-hint-text"></span></p>
+                                    </div>
+                                    <div class="nlb-wo-field">
+                                        <label class="nlb-wo-label" for="in-w-target-hours">Target Hours Maintenance <span class="nlb-wo-req">*</span></label>
+                                        <input type="number" id="in-w-target-hours" min="0" class="nlb-wo-control nlb-wo-mono" placeholder="e.g. 1500">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="nlb-wo-field hidden" id="wrapper-date-inputs" style="grid-column: 1 / -1;">
+                                <div class="nlb-wo-grid">
+                                    <div class="nlb-wo-field">
+                                        <label class="nlb-wo-label" for="in-w-current-date">Current Date Logging <span class="nlb-wo-req">*</span></label>
+                                        <input type="date" id="in-w-current-date" class="nlb-wo-control nlb-wo-mono">
+                                    </div>
+                                    <div class="nlb-wo-field">
+                                        <label class="nlb-wo-label" for="in-w-target-date">Target Date Maintenance <span class="nlb-wo-req">*</span></label>
+                                        <input type="date" id="in-w-target-date" class="nlb-wo-control nlb-wo-mono">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="nlb-wo-section">
+                        <h4 class="nlb-wo-section-title"><span class="material-symbols-outlined">handyman</span>Job &amp; Assignment</h4>
+                        <div class="nlb-wo-grid">
+                            <div class="nlb-wo-field" style="grid-column: 1 / -1;">
+                                <label class="nlb-wo-label" for="in-w-reason">Reason for Work Order <span class="nlb-wo-req">*</span></label>
+                                <input type="text" id="in-w-reason" required class="nlb-wo-control" placeholder="e.g. Scheduled 500h Service or Unexpected Leak Repair">
+                            </div>
+                            <div class="nlb-wo-field" style="grid-column: 1 / -1;">
+                                <label class="nlb-wo-label" for="in-w-tech">Assigned Technician(s)</label>
+                                <select id="in-w-tech" multiple class="nlb-wo-control nlb-wo-multi"></select>
+                                <p class="nlb-wo-help">Optional &mdash; hold Ctrl/Cmd to select more than one. Technicians can also be assigned when the order is accepted.</p>
+                            </div>
+                        </div>
+                    </section>
+
                 </div>
-                <div id="wrapper-hours-inputs" class="space-y-3">
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Current Hours Reading *</label>
-                        <input type="number" id="in-w-current-hours" min="0" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. 1250">
+                <div class="nlb-wo-foot">
+                    <p class="nlb-wo-help" style="margin: 0;">Fields marked <span class="nlb-wo-req">*</span> are required. Metrics can be auto-filled from the asset's current reading.</p>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="toggleModal('modal-add-wo', false)" class="nlb-wo-btn nlb-wo-btn-ghost">Cancel</button>
+                        <button type="submit" id="btn-wo-submit-text" class="nlb-wo-btn nlb-wo-btn-primary"><span class="material-symbols-outlined">check</span><span id="btn-wo-submit-label">Commit Work Order</span></button>
                     </div>
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Target Hours Maintenance *</label>
-                        <input type="number" id="in-w-target-hours" min="0" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. 1500">
-                    </div>
-                </div>
-                <div id="wrapper-date-inputs" class="space-y-3 hidden">
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Current Date Logging *</label>
-                        <input type="date" id="in-w-current-date" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 font-medium mb-1">Target Date Maintenance *</label>
-                        <input type="date" id="in-w-target-date" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Reason for Work Order *</label>
-                    <input type="text" id="in-w-reason" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. Scheduled 500h Service or Unexpected Leak Repair">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Order Status *</label>
-                    <select id="in-w-status" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900">
-                        <option value="Pending">Pending</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Check-up/Inspection">Check-up/Inspection</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Cancelled">Cancelled</option>
-                    </select>
-                </div>
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="toggleModal('modal-add-wo', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" id="btn-wo-submit-text" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Commit Work Order</button>
                 </div>
             </form>
         </div>
@@ -2209,10 +2429,11 @@
                     <label class="block text-slate-600 font-medium mb-1">Assign Technician(s) *</label>
                     <select id="in-accept-tech" required multiple class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900 h-20"></select>
                     <p class="text-[10px] text-slate-400 mt-1">Hold Ctrl/Cmd to select multiple technicians.</p>
+                    <p id="accept-wo-note" class="text-[10px] text-slate-600 bg-slate-50 border border-slate-200 rounded p-2 mt-2 leading-relaxed"></p>
                 </div>
                 <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
                     <button type="button" onclick="toggleModal('modal-accept-wo', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" id="btn-accept-submit" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Accept & Add to Log</button>
+                    <button type="submit" id="btn-accept-submit" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Accept Work Order</button>
                 </div>
             </form>
         </div>
@@ -2228,6 +2449,8 @@
             </div>
             <form id="form-log" onsubmit="executeLogSubmission(event)" class="space-y-3.5 text-xs">
                 <input type="hidden" id="in-l-mode" value="create">
+                <!-- Set to a work order ID when this form is opened from that order's "Complete" button -->
+                <input type="hidden" id="in-l-complete-wo" value="">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-slate-600 font-medium mb-1 font-code">Maintenance Log ID *</label>
@@ -4126,6 +4349,48 @@
         let preopEditingId = null;
         let hasSelectedModule = true;
         let currentAssetDetailsId = null;
+        let assetRegistryView = 'list';
+
+        try {
+            const storedAssetView = localStorage.getItem('nlb_asset_registry_view');
+            if (storedAssetView === 'grid' || storedAssetView === 'list') {
+                assetRegistryView = storedAssetView;
+            }
+        } catch (error) {
+            // Storage can be unavailable in private browsing; the in-memory default is fine.
+        }
+
+        function applyAssetRegistryView() {
+            const listView = document.getElementById('fleet-registry-list');
+            const gridView = document.getElementById('fleet-registry-grid');
+            const listButton = document.getElementById('asset-view-list');
+            const gridButton = document.getElementById('asset-view-grid');
+            const isGrid = assetRegistryView === 'grid';
+
+            if (listView) listView.classList.toggle('hidden', isGrid);
+            if (gridView) gridView.classList.toggle('hidden', !isGrid);
+            if (listButton) {
+                listButton.classList.toggle('is-active', !isGrid);
+                listButton.setAttribute('aria-pressed', String(!isGrid));
+            }
+            if (gridButton) {
+                gridButton.classList.toggle('is-active', isGrid);
+                gridButton.setAttribute('aria-pressed', String(isGrid));
+            }
+        }
+
+        function setAssetRegistryView(view) {
+            assetRegistryView = view === 'grid' ? 'grid' : 'list';
+            try {
+                localStorage.setItem('nlb_asset_registry_view', assetRegistryView);
+            } catch (error) {
+                // Keep the view usable even when persistence is blocked.
+            }
+            applyAssetRegistryView();
+            if (currentActiveModule === 'fleet' && typeof refreshWorkspaceView === 'function') {
+                refreshWorkspaceView();
+            }
+        }
 
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -4150,6 +4415,103 @@
         // global scope, so a failure further down this file must not remove it.
         window.toggleMobileSidebar = toggleMobileSidebar;
 
+        // ------------------- AUTOMATIC SESSION TIMEOUT (8 HOURS) -------------------
+        // Firebase keeps a saved sign-in alive indefinitely, so the portal enforces a
+        // hard 8-hour window that starts on the first authenticated load of a session.
+        // Once the window elapses the user is signed out and sent back to the login page.
+        const SESSION_MAX_DURATION_MS = 8 * 60 * 60 * 1000; // 8 hours
+        const SESSION_START_KEY = 'cmms_session_started_at';
+        let sessionTimeoutHandle = null;
+        let sessionSweepHandle = null;
+        let sessionWindowActive = false;
+        let isSessionTerminating = false;
+        let inMemorySessionStart = null;
+
+        function readSessionStart() {
+            try {
+                const stored = parseInt(localStorage.getItem(SESSION_START_KEY), 10);
+                if (!isNaN(stored) && stored > 0) return stored;
+            } catch (err) {
+                // localStorage unavailable (private mode) - fall back to the in-memory value
+            }
+            return inMemorySessionStart;
+        }
+
+        function writeSessionStart(timestamp) {
+            inMemorySessionStart = timestamp;
+            try { localStorage.setItem(SESSION_START_KEY, String(timestamp)); } catch (err) { /* ignored */ }
+        }
+
+        function clearSessionStart() {
+            inMemorySessionStart = null;
+            try { localStorage.removeItem(SESSION_START_KEY); } catch (err) { /* ignored */ }
+        }
+
+        // Stops every timer and forgets the window (refresh cannot restore access)
+        function endSessionTracking() {
+            clearTimeout(sessionTimeoutHandle);
+            clearInterval(sessionSweepHandle);
+            sessionTimeoutHandle = null;
+            sessionSweepHandle = null;
+            sessionWindowActive = false;
+            clearSessionStart();
+        }
+
+        function isSessionExpired() {
+            const startedAt = readSessionStart();
+            if (!startedAt) return true;
+            return (Date.now() - startedAt) >= SESSION_MAX_DURATION_MS;
+        }
+
+        function beginSessionWindow() {
+            let startedAt = readSessionStart();
+            if (!startedAt || startedAt > Date.now()) {
+                // First authenticated load of this session: start the 8-hour clock
+                startedAt = Date.now();
+                writeSessionStart(startedAt);
+            }
+
+            const remaining = SESSION_MAX_DURATION_MS - (Date.now() - startedAt);
+            if (remaining <= 0) {
+                terminateSession();
+                return;
+            }
+
+            sessionWindowActive = true;
+
+            // Fire exactly when the 8 hours are up
+            clearTimeout(sessionTimeoutHandle);
+            sessionTimeoutHandle = setTimeout(terminateSession, remaining);
+
+            // Minute-by-minute sweep keeps the window accurate after sleep/throttling
+            clearInterval(sessionSweepHandle);
+            sessionSweepHandle = setInterval(function() {
+                if (isSessionExpired()) terminateSession();
+            }, 60 * 1000);
+        }
+
+        function terminateSession() {
+            if (isSessionTerminating) return;
+            isSessionTerminating = true;
+
+            endSessionTracking();
+
+            const finish = () => window.location.replace('loginn.html?reason=session-expired');
+
+            if (auth && typeof auth.signOut === 'function') {
+                auth.signOut().then(finish).catch(finish);
+            } else {
+                finish();
+            }
+        }
+
+        // Re-check the moment the tab regains focus (covers machines waking from sleep)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden && sessionWindowActive && !isSessionTerminating && isSessionExpired()) {
+                terminateSession();
+            }
+        });
+
         // UPDATED: Bind DB pipeline to authentication state
         window.onload = function() {
             auth.onAuthStateChanged((user) => {
@@ -4165,6 +4527,9 @@
 
                     // Logged in: Hide overlay, show app, and init DB listeners
                     document.getElementById('app-container').classList.remove('hidden');
+
+                    // Enforce the 8-hour automatic session timeout
+                    beginSessionWindow();
                     if (!isDataInitialized) {
                         initDataPipeline();
                         isDataInitialized = true;
@@ -4173,6 +4538,8 @@
                 } else {
                     // Logged out: return to the standalone login page
                     document.body.classList.remove('hide-delete');
+                    // No signed-in user means no active 8-hour window
+                    endSessionTracking();
                     window.location.replace('loginn.html');
                 }
             });
@@ -4202,6 +4569,8 @@
 
         // ADDED: Logout Handler
         function handleLogout() {
+            // A manual sign-out also closes the 8-hour session window
+            endSessionTracking();
             auth.signOut().then(() => {
                 window.location.reload(); // Hard reset UI state and memory cache
             });
@@ -5152,6 +5521,38 @@
             refreshWorkspaceView();
         }
 
+        // --- DASHBOARD KPI SHORTCUTS -------------------------------------------
+        // Each dashboard KPI card is a shortcut into the workspace area that owns that
+        // number. Keys are semantic so the markup stays readable.
+        const DASHBOARD_KPI_TARGETS = {
+            fleet:      { module: 'fleet',       label: 'Asset Registry' },
+            wo:         { module: 'wo',          label: 'Maintenance Work Orders' },
+            maintenance:{ module: 'fleet',       label: 'Asset Registry' },
+            dispatch:   { module: 'dispatch',    label: 'Mobilization' },
+            mobRequest: { module: 'mob-request', label: 'Mobilization Request' },
+            cert:       { module: 'cert',        label: 'Third-Party Certificates' }
+        };
+
+        function goToDashboardKpi(kpiKey) {
+            const target = DASHBOARD_KPI_TARGETS[kpiKey];
+            if (!target) return;
+
+            const pane = document.getElementById(`pane-${target.module}`);
+            if (!pane) {
+                console.warn(`goToDashboardKpi: no pane found for "${target.module}"`);
+                return;
+            }
+            setModule(target.module);
+        }
+
+        // Keyboard activation so the cards behave like real buttons (Enter / Space).
+        function handleDashboardKpiKey(event, kpiKey) {
+            if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+                event.preventDefault();
+                goToDashboardKpi(kpiKey);
+            }
+        }
+
         function toggleModal(modalId, displayState) {
             const el = document.getElementById(modalId);
             if (!el) return;
@@ -5643,6 +6044,7 @@
                     'Make / Brand': asset.description || '',
                     'Capacity / Pressure': asset.pressure || '',
                     'Serial Number': asset.serial || '',
+                    'Current Metric': asset.currentMetric || '',
                     'Location': asset.location || 'WORKSHOP',
                     'Certificate Status': certificate ? checkCertificateStatusAlarm(certificate.expiryDate).text : 'No Cert Assigned',
                     'Operational Status': asset.status || ''
@@ -5652,7 +6054,7 @@
             const worksheet = XLSX.utils.json_to_sheet(rows);
             worksheet['!cols'] = [
                 { wch: 16 }, { wch: 26 }, { wch: 24 }, { wch: 20 }, { wch: 30 },
-                { wch: 20 }, { wch: 20 }, { wch: 18 }, { wch: 24 }, { wch: 20 }
+                { wch: 20 }, { wch: 22 }, { wch: 20 }, { wch: 18 }, { wch: 24 }, { wch: 20 }
             ];
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Asset Registry');
@@ -5759,6 +6161,7 @@
                             description: description,
                             pressure: (readCell(row, ['Capacity / Pressure', 'Capacity/Pressure', 'Max Pressure', 'Capacity', 'Pressure']) || (existing ? existing.pressure || '' : '')).toUpperCase(),
                             serial: (readCell(row, ['Serial Number', 'Serial No', 'Serial No.', 'Serial', 'S/N']) || (existing ? existing.serial || '' : '')).toUpperCase(),
+                            currentMetric: (readCell(row, ['Current Metric', 'Current Metric Reading', 'CurrentMeter', 'Meter Reading']) || (existing ? existing.currentMetric || '' : '')).toUpperCase(),
                             // Location and Operational Status remain controlled by Operations
                             location: readCell(row, ['Location', 'Site']) || (existing ? existing.location || 'WORKSHOP' : 'WORKSHOP'),
                             status: readCell(row, ['Operational Status', 'Status']) || (existing ? existing.status || 'Operational' : 'Operational')
@@ -5964,56 +6367,339 @@
             URL.revokeObjectURL(url);
         }
 
+        function getAssetRegistryPresentation(asset) {
+            const cert = (memory.certificates || []).find(c => String(c.assetId) === String(asset.id));
+            return {
+                cert,
+                statusCheck: cert
+                    ? checkCertificateStatusAlarm(cert.expiryDate)
+                    : { text: "No Cert Assigned", class: "bg-slate-100 text-slate-500 border border-slate-200" },
+                badgeColorClass: getAssetStatusBadgeClass(asset.status)
+            };
+        }
+
+        // DOM-id-safe, VIEW-SCOPED key. The registry renders the list AND the grid at the
+        // same time (one is hidden with display:none), so without the scope every asset
+        // would emit duplicate ids and getElementById() would always return the hidden one.
+        function assetMenuKey(assetId, scope) {
+            return 'nlb-asset-menu-' + (scope || 'list') + '-' + String(assetId).replace(/[^a-zA-Z0-9_-]/g, '_');
+        }
+
+        // Asset Registry actions, collapsed into a three-dot (kebab) menu.
+        // Shared by BOTH the list view and the grid card view, with a per-view id scope.
+        function getAssetRegistryActionsHtml(assetId, scope) {
+            const key = assetMenuKey(assetId, scope);
+            // closeAssetRowMenu(this) resolves the panel from the clicked item's own
+            // .nlb-row-menu container, so it never depends on a global id lookup.
+            const item = (icon, label, action, extraClass = '') =>
+                `<button type="button" onclick="${action}; closeAssetRowMenu(this);" role="menuitem" class="nlb-row-menu-item ${extraClass}"><span class="material-symbols-outlined">${icon}</span><span>${label}</span></button>`;
+
+            return `
+                <div class="nlb-row-menu">
+                    <button type="button" onclick="toggleAssetRowMenu(event, '${assetId}', '${scope || 'list'}')" class="nlb-row-menu-trigger" title="More actions" aria-label="More actions for ${assetId}" aria-haspopup="true" aria-expanded="false"><span class="material-symbols-outlined">more_vert</span></button>
+                    <div id="${key}" class="nlb-row-menu-panel hidden" role="menu">
+                        ${item('visibility', 'View Details', `openAssetDetails('${assetId}')`)}
+                        ${item('local_shipping', 'Request Dispatch', `requestDispatch('${assetId}')`)}
+                        <div class="nlb-row-menu-sep"></div>
+                        ${item('speed', 'Update Metric', `openUpdateMetricModal('${assetId}')`, 'nlb-row-menu-item--accent')}
+                        ${item('edit', 'Edit Asset', `openEditModal('${assetId}')`)}
+                        <div class="nlb-row-menu-sep"></div>
+                        ${item('delete', 'Delete Asset', `dropAssetSpec('${assetId}')`, 'nlb-row-menu-item--danger')}
+                    </div>
+                </div>`;
+        }
+
+        /* Generic row-menu helpers - shared by the Asset Registry and Work Orders lists */
+        function rowMenuKey(prefix, id) {
+            return 'nlb-' + prefix + '-menu-' + String(id).replace(/[^a-zA-Z0-9_-]/g, '_');
+        }
+
+        // Resolve the panel that belongs to a given trigger/element, so two lists rendered
+        // at the same time can never interfere with each other.
+        function getRowMenuPanel(source) {
+            const menu = source && source.closest ? source.closest('.nlb-row-menu') : null;
+            return menu ? menu.querySelector('.nlb-row-menu-panel') : null;
+        }
+
+        function setRowMenuOpen(panel, isOpen) {
+            if (!panel) return;
+            panel.classList.toggle('hidden', !isOpen);
+            const menu = panel.closest('.nlb-row-menu');
+            const trigger = menu ? menu.querySelector('.nlb-row-menu-trigger') : null;
+            if (trigger) trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+
+        function toggleRowMenu(event, key) {
+            if (event) event.stopPropagation();
+
+            const panel = getRowMenuPanel(event && event.currentTarget) || document.getElementById(key);
+            if (!panel) return;
+
+            const willOpen = panel.classList.contains('hidden');
+            closeAllRowMenus(panel);
+            setRowMenuOpen(panel, willOpen);
+
+            // Flip upward when there is not enough room below (common near the page bottom)
+            if (willOpen && panel.getBoundingClientRect && typeof window !== 'undefined') {
+                panel.classList.remove('nlb-row-menu-panel--up');
+                if (panel.getBoundingClientRect().bottom > window.innerHeight - 8) {
+                    panel.classList.add('nlb-row-menu-panel--up');
+                }
+            }
+        }
+
+        // Accepts the clicked element, a panel key string, or nothing (closes everything).
+        function closeRowMenu(source) {
+            if (source === undefined || source === null) return closeAllRowMenus(null);
+            if (typeof source === 'string') return setRowMenuOpen(document.getElementById(source), false);
+            setRowMenuOpen(getRowMenuPanel(source), false);
+        }
+
+        function closeAllRowMenus(exceptPanel) {
+            document.querySelectorAll('.nlb-row-menu-panel').forEach(panel => {
+                if (panel === exceptPanel) return;
+                panel.classList.add('hidden');
+                panel.classList.remove('nlb-row-menu-panel--up');
+                const menu = panel.closest('.nlb-row-menu');
+                const trigger = menu ? menu.querySelector('.nlb-row-menu-trigger') : null;
+                if (trigger) trigger.setAttribute('aria-expanded', 'false');
+            });
+        }
+
+        // --- Asset Registry specific wrappers (kept for the registry's own menus) ---
+        function assetMenuKey(assetId, scope) {
+            return rowMenuKey('asset-' + (scope || 'list'), assetId);
+        }
+        function getAssetRowMenuPanel(source) { return getRowMenuPanel(source); }
+        function setAssetRowMenuOpen(panel, isOpen) { return setRowMenuOpen(panel, isOpen); }
+        function toggleAssetRowMenu(event, assetId, scope) { toggleRowMenu(event, assetMenuKey(assetId, scope)); }
+        function closeAssetRowMenu(source) {
+            if (typeof source === 'string') {
+                return setRowMenuOpen(
+                    document.getElementById(assetMenuKey(source, 'list')) ||
+                    document.getElementById(assetMenuKey(source, 'grid')), false);
+            }
+            return closeRowMenu(source);
+        }
+        function closeAllAssetRowMenus(exceptPanel) { return closeAllRowMenus(exceptPanel); }
+
+        // Click anywhere outside a row menu closes every open menu
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest || !e.target.closest('.nlb-row-menu')) {
+                closeAllAssetRowMenus(null);
+            }
+        });
+
+        // Escape closes any open row menu
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeAllAssetRowMenus(null);
+        });
+
+        // --- CURRENT METRIC QUICK UPDATE ---------------------------------------
+        // A focused popup that writes ONLY the currentMetric node. Every other
+        // asset field (model, serial, location, status, ...) is left untouched.
+        function openUpdateMetricModal(assetId) {
+            const asset = (memory.assets || []).find(item => String(item.id) === String(assetId));
+            if (!asset) return alert('Asset not found in memory cache.');
+
+            document.getElementById('in-um-asset-id').value = asset.id;
+            document.getElementById('in-um-asset-label').innerHTML = getAssetIdentityHtml(asset);
+            const input = document.getElementById('in-um-current-metric');
+            input.value = asset.currentMetric || '';
+            input.classList.remove('border-rose-400');
+            toggleModal('modal-update-metric', true);
+        }
+
+        function closeUpdateMetricModal() {
+            toggleModal('modal-update-metric', false);
+        }
+
+        function executeUpdateMetric(e) {
+            e.preventDefault();
+
+            const assetId = document.getElementById('in-um-asset-id').value;
+            const input = document.getElementById('in-um-current-metric');
+            const value = input.value.trim().toUpperCase();
+
+            if (!assetId) return alert('No asset selected.');
+
+            if (!value) {
+                input.classList.add('border-rose-400');
+                input.focus();
+                return alert('Please enter a Current Metric value.');
+            }
+
+            // Targeted path write - nothing else on the asset is overwritten.
+            cmmsDb.ref('assets/' + assetId + '/currentMetric').set(value)
+                .then(() => {
+                    closeUpdateMetricModal();
+                    alert(`Current Metric for ${assetId} updated to ${value}.`);
+                })
+                .catch(err => {
+                    console.error('Error updating current metric:', err);
+                    alert('Database Error: Could not update the current metric.');
+                });
+        }
+
+        // --- SHARED ASSET IDENTITY ---------------------------------------------
+        // One combined identity line shared by the registry list AND the Asset
+        // Details sheet, so both always read identically:
+        //   Equipment Name - Capacity/Pressure - Make/Brand - Model Number - SN: xxxxx
+        // Segments with no value are dropped entirely (along with their separator),
+        // so partial records never render a dangling " - ".
+        function getAssetIdentitySegments(asset) {
+            const clean = (value) => (value === null || value === undefined) ? '' : String(value).trim();
+            const serial = clean(asset.serial);
+
+            return [
+                { text: clean(asset.equipmentName) || 'Unnamed equipment', cls: 'nlb-id-primary' },
+                { text: clean(asset.pressure),    cls: 'nlb-id-chip' },
+                { text: clean(asset.description), cls: 'nlb-id-chip' },
+                { text: clean(asset.model),       cls: 'nlb-id-mono' },
+                { text: serial ? 'SN: ' + serial : '', cls: 'nlb-id-mono' }
+            ].filter(segment => segment.text);
+        }
+
+        // Plain-text version (tooltips, print output)
+        function getAssetIdentityText(asset) {
+            return getAssetIdentitySegments(asset).map(segment => segment.text).join(' - ');
+        }
+
+        // Styled version (list view + details sheet)
+        function getAssetIdentityHtml(asset) {
+            return getAssetIdentitySegments(asset).map((segment, i) =>
+                (i ? '<span class="nlb-id-sep">-</span>' : '') +
+                `<span class="${segment.cls}">${segment.text}</span>`
+            ).join('');
+        }
+
+        // Work Orders list: Edit / Purge collapse into a three-dot menu.
+        // The Accept / Complete action deliberately stays a visible button.
+        function getWorkOrderRowMenuHtml(woId) {
+            const key = rowMenuKey('wo', woId);
+            const item = (icon, label, action, extraClass = '') =>
+                `<button type="button" onclick="${action}; closeRowMenu(this);" role="menuitem" class="nlb-row-menu-item ${extraClass}"><span class="material-symbols-outlined">${icon}</span><span>${label}</span></button>`;
+
+            return `
+                <div class="nlb-row-menu">
+                    <button type="button" onclick="toggleRowMenu(event, '${key}')" class="nlb-row-menu-trigger" title="More actions" aria-label="More actions for ${woId}" aria-haspopup="true" aria-expanded="false"><span class="material-symbols-outlined">more_vert</span></button>
+                    <div id="${key}" class="nlb-row-menu-panel hidden" role="menu">
+                        ${item('edit', 'Edit State', `openEditWoModal('${woId}')`)}
+                        <div class="nlb-row-menu-sep"></div>
+                        ${item('delete', 'Delete Work Order', `dropWorkOrder('${woId}')`, 'nlb-row-menu-item--danger')}
+                    </div>
+                </div>`;
+        }
+
+        function renderAssetRegistryList(filtered) {
+            const container = document.getElementById('rows-fleet');
+            if (!container) return;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No assets match the current search.</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(asset => {
+                const { statusCheck, badgeColorClass } = getAssetRegistryPresentation(asset);
+
+                // Colour-coded accent bar down the left of every row
+                const accent = {
+                    'Operational': '#10B981',
+                    'In Maintenance': '#F59E0B',
+                    'Down': '#EF4444',
+                    'Standby': '#6366F1',
+                    'Dispatched': '#8B5CF6',
+                    'Request Dispatch': '#0EA5E9'
+                }[asset.status] || '#CBD5E1';
+
+                return `
+                    <tr>
+                        <td style="box-shadow: inset 3px 0 0 ${accent};">
+                            <span class="nlb-reg-id" title="Asset ID">${asset.id || 'N/A'}</span>
+                        </td>
+                        <td>
+                            <div class="nlb-reg-identity" title="${getAssetIdentityText(asset)}">${getAssetIdentityHtml(asset)}</div>
+                        </td>
+                        <td><span class="nlb-reg-metric" title="Current metric reading">${asset.currentMetric || 'N/A'}</span></td>
+                        <td><span class="nlb-reg-loc" title="Location">${asset.location || 'WORKSHOP'}</span></td>
+                        <td><span class="nlb-reg-cert ${statusCheck.class}" title="Certificate status">${statusCheck.text}</span></td>
+                        <td><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${badgeColorClass}"><span class="nlb-reg-dot"></span>${asset.status || 'N/A'}</span></td>
+                        <td style="text-align: right;">${getAssetRegistryActionsHtml(asset.id, 'list')}</td>
+                    </tr>`;
+            }).join('');
+        }
+
+        function renderAssetRegistryGrid(filtered) {
+            const container = document.getElementById('fleet-registry-grid');
+            if (!container) return;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="nlb-registry-empty"><strong>No assets match the current search</strong><p>Try a different asset ID, equipment name, model, or location.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(asset => {
+                const { statusCheck, badgeColorClass } = getAssetRegistryPresentation(asset);
+                return `
+                    <article class="nlb-asset-card">
+                        <header class="nlb-asset-card-header">
+                            <div class="min-w-0">
+                                <div class="nlb-asset-card-id">${asset.id || 'N/A'}</div>
+                                <h3 class="nlb-asset-card-title truncate" title="${asset.equipmentName || 'N/A'}">${asset.equipmentName || 'Unnamed equipment'}</h3>
+                            </div>
+                            <span class="px-2 py-1 rounded-sm text-[10px] font-bold shrink-0 ${badgeColorClass}">${asset.status || 'N/A'}</span>
+                        </header>
+                        <p class="nlb-asset-card-description" title="${asset.description || 'N/A'}">${asset.description || 'No description provided.'}</p>
+                        <dl class="nlb-asset-card-meta">
+                            <div><dt>Model number</dt><dd class="font-code" title="${asset.model || 'N/A'}">${asset.model || 'N/A'}</dd></div>
+                            <div><dt>Capacity / pressure</dt><dd class="font-code" title="${asset.pressure || 'N/A'}">${asset.pressure || 'N/A'}</dd></div>
+                            <div><dt>Serial number</dt><dd class="font-code" title="${asset.serial || 'N/A'}">${asset.serial || 'N/A'}</dd></div>
+                            <div><dt>Location</dt><dd class="uppercase" title="${asset.location || 'WORKSHOP'}">${asset.location || 'WORKSHOP'}</dd></div>
+                        </dl>
+                        <div class="nlb-asset-card-footer">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${statusCheck.class}" title="Certificate status">${statusCheck.text}</span>
+                            ${getAssetRegistryActionsHtml(asset.id, 'grid')}
+                        </div>
+                    </article>`;
+            }).join('');
+        }
+
+        function renderAssetRegistryViews(filtered) {
+            renderAssetRegistryList(filtered);
+            renderAssetRegistryGrid(filtered);
+            const countLabel = document.getElementById('asset-registry-view-count');
+            if (countLabel) {
+                const count = filtered.length;
+                countLabel.textContent = `${count} asset${count === 1 ? '' : 's'}`;
+            }
+            applyAssetRegistryView();
+        }
+
         function refreshWorkspaceView() {
             if (currentActiveModule === "forms") {
                 renderForms();
             }
 
             if (currentActiveModule === "fleet") {
-                // Added a fallback in case the element doesn't exist yet
                 const searchInput = document.getElementById('in-f-search');
-                const search = searchInput ? searchInput.value.toLowerCase() : "";
-                
-                const container = document.getElementById('rows-fleet');
-                container.innerHTML = "";
-                
-                // Safely filter using optional chaining (?.)
-                const filtered = memory.assets.filter(a => 
-                    a.id?.toLowerCase().includes(search) || 
-                    a.equipmentName?.toLowerCase().includes(search) ||
-                    a.model?.toLowerCase().includes(search) || 
-                    a.description?.toLowerCase().includes(search) || 
-                    a.status?.toLowerCase().includes(search) || 
-                    a.location?.toLowerCase().includes(search)
-                );
-
-                filtered.forEach(a => {
-                    const cert = memory.certificates.find(c => c.assetId === a.id);
-                    const statusCheck = cert ? checkCertificateStatusAlarm(cert.expiryDate) : { text: "No Cert Assigned", class: "bg-slate-100 text-slate-500 border border-slate-200" };
-                    const badgeColorClass = getAssetStatusBadgeClass(a.status);
-
-                    container.innerHTML += `
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="p-4 font-bold font-code text-slate-900">${a.id || 'N/A'}</td>
-                            <td class="p-4 font-semibold text-slate-800">${a.equipmentName || 'N/A'}</td>
-                            <td class="p-4 font-code">${a.model || 'N/A'}</td>
-                            <td class="p-4 max-w-xs truncate">${a.description || 'N/A'}</td>
-                            <td class="p-4 font-code text-slate-600">${a.pressure || 'N/A'}</td>
-                            <td class="p-4 font-code text-slate-500">${a.serial || 'N/A'}</td>
-                            <td class="p-4 uppercase font-semibold text-slate-600">${a.location || 'WORKSHOP'}</td>
-                            <td class="p-4"><span class="px-2 py-0.5 rounded text-[11px] font-semibold ${statusCheck.class}">${statusCheck.text}</span></td>
-                            <td class="p-4"><span class="px-2.5 py-1 rounded-sm text-[11px] font-bold ${badgeColorClass}">${a.status || 'N/A'}</span></td>
-                            <td class="p-4 text-center">
-                                <div class="inline-flex items-center gap-1">
-                                    <button onclick="openAssetDetails('${a.id}')" class="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded cursor-pointer" title="View asset details" aria-label="View asset details"><span class="material-symbols-outlined text-[18px]">visibility</span></button>
-                                    <button onclick="requestDispatch('${a.id}')" class="p-1.5 text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded cursor-pointer" title="Request dispatch" aria-label="Request dispatch"><span class="material-symbols-outlined text-[18px]">local_shipping</span></button>
-                                    <button onclick="openEditModal('${a.id}')" class="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded cursor-pointer" title="Edit asset" aria-label="Edit asset"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-                                    <button onclick="dropAssetSpec('${a.id}')" class="p-1.5 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded cursor-pointer" title="Delete asset" aria-label="Delete asset"><span class="material-symbols-outlined text-[18px]">delete</span></button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
+                const search = searchInput ? searchInput.value.toLowerCase().trim() : "";
+                const filtered = (memory.assets || []).filter(asset => {
+                    const searchable = [
+                        asset.id,
+                        asset.equipmentName,
+                        asset.model,
+                        asset.description,
+                        asset.status,
+                        asset.location,
+                        asset.serial,
+                        asset.pressure,
+                        asset.currentMetric
+                    ].filter(Boolean).join(' ').toLowerCase();
+                    return !search || searchable.includes(search);
                 });
+
+                renderAssetRegistryViews(filtered);
             }
         
 
@@ -6082,12 +6768,28 @@
                     let targetInfo = isAccessoryWo ? 'N/A' : (w.type === 'hours' ? `${w.targetHours} Hrs` : (w.type === 'date' ? w.targetDate : 'N/A'));
                     let diffInfo = isAccessoryWo ? 'No Tracking (Accessory)' : (w.type === 'hours' ? `${w.targetHours - w.currentHours} Hours Remaining` : 'Target Schedule Bound');
 
-                    // Action button: Accessories show 'Accept' first, then switch to 'Complete' once In Progress
+                    // Assigned technicians (optional) - show the first, count the rest
+                    const techNames = getWoTechnicianNames(w);
+                    const techInfo = techNames.length === 0
+                        ? '<span class="text-slate-300 italic">Unassigned</span>'
+                        : `<div class="font-semibold text-slate-700 truncate">${techNames[0]}</div>` +
+                          (techNames.length > 1 ? `<div class="text-[10px] text-slate-400 mt-0.5">+${techNames.length - 1} more</div>` : '');
+
+                    // Action button: 'Accept' while Pending, then it switches to 'Complete' once In Progress.
+                    // Equipment orders are completed through the Add Maintenance Log modal, while
+                    // Accessories are completed directly (they never generate a maintenance log).
+                    const woStatusKey = String(w.status || '').trim().toLowerCase();
                     let woActionButton = '';
-                    if (isAccessoryWo && w.status === 'In Progress') {
-                        woActionButton = `<button onclick="completeAccessoryWo('${w.id}')" class="bg-slate-900 hover:bg-slate-800 text-white px-2 py-1 rounded transition text-[10px] font-bold shadow-sm" title="Complete Accessory Work Order">Complete</button>`;
-                    } else {
+                    if (woStatusKey === 'in progress') {
+                        if (isAccessoryWo) {
+                            woActionButton = `<button onclick="completeAccessoryWo('${w.id}')" class="bg-slate-900 hover:bg-slate-800 text-white px-2 py-1 rounded transition text-[10px] font-bold shadow-sm" title="Complete Accessory Work Order">Complete</button>`;
+                        } else {
+                            woActionButton = `<button onclick="completeEquipmentWo('${w.id}')" class="bg-slate-900 hover:bg-slate-800 text-white px-2 py-1 rounded transition text-[10px] font-bold shadow-sm" title="Open the Add Maintenance Log form to complete this work order">Complete</button>`;
+                        }
+                    } else if (woStatusKey === 'pending') {
                         woActionButton = `<button onclick="openAcceptWoModal('${w.id}')" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-2 py-1 rounded transition text-[10px] font-bold shadow-sm" title="Accept Work Order">Accept</button>`;
+                    } else {
+                        woActionButton = `<span class="text-slate-300 font-normal italic pointer-events-none">No Action</span>`;
                     }
                     
                     let woStatusClass = "bg-slate-100 text-slate-700 border border-slate-200";
@@ -6106,11 +6808,13 @@
                             <td class="p-4 font-code">${targetInfo}</td>
                             <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
                             <td class="p-4 text-xs">${w.reason || 'N/A'}</td>
+                            <td class="p-4 text-xs" title="${techNames.join(', ') || 'No technician assigned'}">${techInfo}</td>
                             <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woStatusClass}">${w.status}</span></td>
-                            <td class="p-4 text-center space-x-2">
-                                <button onclick="openEditWoModal('${w.id}')" class="text-slate-600 hover:text-slate-900 font-semibold cursor-pointer">Edit State</button>
-                                <button onclick="dropWorkOrder('${w.id}')" class="text-rose-600 hover:text-rose-900 font-semibold cursor-pointer">Purge</button>
-                                ${woActionButton}
+                            <td class="p-4 text-center">
+                                <div class="nlb-wo-actions">
+                                    ${woActionButton}
+                                    ${getWorkOrderRowMenuHtml(w.id)}
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -6370,6 +7074,7 @@
             document.getElementById('in-f-description').value = asset.description;
             document.getElementById('in-f-pressure').value = asset.pressure || "";
             document.getElementById('in-f-serial').value = asset.serial || "";
+            document.getElementById('in-f-current-metric').value = asset.currentMetric || "";
             document.getElementById('in-f-location').value = asset.location || "WORKSHOP";
             document.getElementById('in-f-status').value = asset.status || "Operational";
             toggleModal('modal-add-fleet', true);
@@ -6387,18 +7092,35 @@
                 .filter(item => String(item.assetId || '') === String(assetId))
                 .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
-            document.getElementById('asset-details-subtitle').textContent = `${asset.id} | ${asset.model || 'No model recorded'}`;
-            document.getElementById('asset-details-summary').innerHTML = [
-                ['Asset ID', asset.id || 'N/A'],
-                ['Equipment Name', asset.equipmentName || 'N/A'],
-                ['Model', asset.model || 'N/A'],
-                ['Serial Number', asset.serial || 'N/A'],
-                ['Status', asset.status || 'N/A'],
-                ['Description', asset.description || 'N/A'],
-                ['Pressure', asset.pressure || 'N/A'],
-                ['Location', asset.location || 'WORKSHOP'],
-                ['Certificate', memory.certificates?.some(cert => String(cert.assetId) === String(assetId)) ? 'Assigned' : 'None']
-            ].map(([label, value]) => `<div class="p-3 bg-slate-50 border border-slate-200 rounded"><p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">${label}</p><p class="mt-1 text-xs font-semibold text-slate-800 break-words">${value}</p></div>`).join('');
+            const { badgeColorClass } = getAssetRegistryPresentation(asset);
+
+            const hasCert = memory.certificates?.some(cert => String(cert.assetId) === String(assetId));
+            const statTile = (label, value, valueClass = '') => `
+                <div class="nlb-spec-stat">
+                    <p class="nlb-spec-stat-label">${label}</p>
+                    <p class="nlb-spec-stat-value ${valueClass}">${value}</p>
+                </div>`;
+
+            document.getElementById('asset-details-subtitle').textContent = asset.equipmentName || 'Unnamed equipment';
+            document.getElementById('asset-details-summary').innerHTML = `
+                <div class="nlb-spec-sheet">
+                    <div class="nlb-spec-head">
+                        <span class="inline-flex items-center gap-2">
+                            <span class="nlb-spec-head-label">Asset ID</span>
+                            <span class="nlb-reg-id">${asset.id || 'N/A'}</span>
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold ${badgeColorClass}"><span class="nlb-reg-dot"></span>${asset.status || 'N/A'}</span>
+                    </div>
+                    <div class="nlb-identity">
+                        <p class="nlb-identity-label">Asset Identity</p>
+                        <div class="nlb-identity-line" title="${getAssetIdentityText(asset)}">${getAssetIdentityHtml(asset)}</div>
+                    </div>
+                    <div class="nlb-spec-stats">
+                        ${statTile('Current Metric', asset.currentMetric || 'N/A', 'nlb-reg-metric')}
+                        ${statTile('Location', asset.location || 'WORKSHOP', 'nlb-reg-loc')}
+                        ${statTile('Certificate', hasCert ? 'Assigned' : 'None')}
+                    </div>
+                </div>`;
 
             document.getElementById('asset-dispatch-history-count').textContent = `${dispatchHistory.length} record${dispatchHistory.length === 1 ? '' : 's'}`;
             document.getElementById('asset-maintenance-history-count').textContent = `${maintenanceHistory.length} record${maintenanceHistory.length === 1 ? '' : 's'}`;
@@ -6424,17 +7146,24 @@
                 .filter(item => String(item.assetId || '') === String(assetId))
                 .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
             const certificateStatus = memory.certificates?.some(cert => String(cert.assetId) === String(assetId)) ? 'Assigned' : 'None';
-            const summary = [
-                ['Asset ID', asset.id || 'N/A'],
-                ['Equipment Name', asset.equipmentName || 'N/A'],
-                ['Model', asset.model || 'N/A'],
-                ['Serial Number', asset.serial || 'N/A'],
-                ['Status', asset.status || 'N/A'],
-                ['Description', asset.description || 'N/A'],
-                ['Pressure', asset.pressure || 'N/A'],
+
+            // ONE combined identity line (shared with the registry list view):
+            // Equipment Name - Capacity/Pressure - Make/Brand - Model Number - SN: xxxxx
+            const identityPlain = getAssetIdentityText(asset);
+
+            const stats = [
+                ['Current Metric', asset.currentMetric || 'N/A'],
                 ['Location', asset.location || 'WORKSHOP'],
-                ['Certificate', certificateStatus]
+                ['Certificate', certificateStatus],
+                ['Status', asset.status || 'N/A']
             ];
+            const printLabelStyle = 'display:block; font:700 9px/1 Arial, sans-serif; letter-spacing:.08em; text-transform:uppercase; color:#94a3b8; margin-bottom:4px;';
+            const printStatCells = stats.map(([label, value]) =>
+                '<td style="padding:8px 12px; border-right:1px solid #e2e8f0;">' +
+                '<span style="' + printLabelStyle + '">' + label + '</span>' +
+                '<span style="font-weight:700; color:#0f172a;">' + value + '</span></td>'
+            ).join('');
+
             const historyRows = (items, columns, emptyMessage) => items.length
                 ? items.map(item => `<tr>${columns.map(column => `<td>${column(item)}</td>`).join('')}</tr>`).join('')
                 : `<tr><td colspan="${columns.length}" class="empty">${emptyMessage}</td></tr>`;
@@ -6455,20 +7184,19 @@
                         </div>
                     </div>
 
-                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px;">
-                        <tr>
-                            <td style="vertical-align: top; width: 50%; padding-right: 20px;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    ${summary.slice(0, 4).map(([label, value]) => `<tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 42%;">${label}:</td><td style="padding: 5px 0; font-weight: 600;">${value}</td></tr>`).join('')}
-                                </table>
-                            </td>
-                            <td style="vertical-align: top; width: 50%; padding-left: 20px; border-left: 1px solid #e2e8f0;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    ${summary.slice(4).map(([label, value]) => `<tr><td style="padding: 5px 0; font-weight: bold; color: #64748b; width: 42%;">${label}:</td><td style="padding: 5px 0; font-weight: 600;">${value}</td></tr>`).join('')}
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
+                    <div style="border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                            <span style="font: 700 9px/1 Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #94a3b8;">Asset ID</span>
+                            <span style="font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; color: #0f172a;">${asset.id || 'N/A'}</span>
+                        </div>
+                        <div style="padding: 10px 12px;">
+                            <span style="${printLabelStyle}">Asset Identity</span>
+                            <span style="font-size: 13px; font-weight: bold; color: #0f172a;">${identityPlain}</span>
+                        </div>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px; border-top: 1px solid #e2e8f0; background: #fcfdfd;">
+                            <tr>${printStatCells}</tr>
+                        </table>
+                    </div>
 
                     <div style="font-size: 12px; border-top: 1px solid #cbd5e1; padding-top: 16px; margin-bottom: 18px;">
                         <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Dispatch History:</strong>
@@ -6542,6 +7270,7 @@
                 description: description,
                 pressure: document.getElementById('in-f-pressure').value.trim().toUpperCase(),
                 serial: document.getElementById('in-f-serial').value.trim().toUpperCase(),
+                currentMetric: document.getElementById('in-f-current-metric').value.trim().toUpperCase(),
                 location: document.getElementById('in-f-location').value,
                 status: document.getElementById('in-f-status').value
             };
@@ -6633,6 +7362,122 @@
                     if (hoursInput) hoursInput.value = '';
                 }
             }
+        }
+
+        // Extract a plain number from readings like "1,250 HRS", "1250", 1250, ...
+        function parseNumericMetric(value) {
+            if (value === null || value === undefined) return null;
+            if (typeof value === 'number') return isFinite(value) ? value : null;
+            const cleaned = String(value).replace(/,/g, '').replace(/[^0-9.]/g, '');
+            if (!cleaned) return null;
+            const num = parseFloat(cleaned);
+            return isNaN(num) ? null : num;
+        }
+
+        // Best available CURRENT meter reading for an asset, plus where it came from.
+        // Priority: Asset Registry Current Metric > newest maintenance log > newest work order.
+        function getLatestAssetMetric(assetId) {
+            if (!assetId) return null;
+
+            // 1. The asset's own Current Metric (kept current from the Asset Registry)
+            const asset = (memory.assets || []).find(a => String(a.id) === String(assetId));
+            const fromAsset = parseNumericMetric(asset && asset.currentMetric);
+            if (fromAsset !== null) return { value: fromAsset, source: 'Asset Registry' };
+
+            // 2. The newest maintenance log for this asset
+            const log = getRecentLogForAsset(assetId);
+            const fromLog = parseNumericMetric(log && (
+                log.currentMetric || log.currentHours || log.runningHours || log.hours || log.current
+            ));
+            if (fromLog !== null) return { value: fromLog, source: `Log ${log.id || ''}`.trim() };
+
+            // 3. The newest work order for this asset
+            const wo = (memory.workOrders || [])
+                .filter(w => String(w.assetId || '') === String(assetId))
+                .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))[0];
+            const fromWo = parseNumericMetric(wo && wo.currentHours);
+            if (fromWo !== null) return { value: fromWo, source: `Work Order ${wo.id || ''}`.trim() };
+
+            return null;
+        }
+
+        // Auto-fill the CURRENT reading when a work order is created, and whenever the
+        // selected asset or tracking type changes. The technician can still overwrite it.
+        // Build the technician options for the work order form, marking any pre-selected ones.
+        // Values are the plain technician names, so they match the comma-joined
+        // "assignedTechnicians" string stored on the work order.
+        function populateWoTechSelect(preselected) {
+            const techSelect = document.getElementById('in-w-tech');
+            if (!techSelect) return;
+
+            const technicians = memory.technicians || [];
+            techSelect.innerHTML = technicians.length
+                ? technicians.map(t => {
+                    const techName = t.name || t.fullName || t.techName || t.id || 'Unknown Tech';
+                    const techLabel = t.designation ? `${techName} (${t.designation})` : techName;
+                    return `<option value="${techName}">${techLabel}</option>`;
+                }).join('')
+                : '<option value="">No technicians available</option>';
+
+            const saved = String(preselected || '').split(',').map(t => t.trim()).filter(Boolean);
+            Array.from(techSelect.options).forEach(opt => {
+                opt.selected = saved.includes(opt.value);
+            });
+        }
+
+        function getWoTechnicianNames(workOrder) {
+            return String((workOrder && workOrder.assignedTechnicians) || '')
+                .split(',')
+                .map(t => t.trim())
+                .filter(Boolean);
+        }
+
+        function autoFillCurrentMetricFromAsset() {
+            const assetSelect = document.getElementById('in-w-asset');
+            const typeSelect = document.getElementById('in-w-type');
+            const hoursInput = document.getElementById('in-w-current-hours');
+            const dateInput = document.getElementById('in-w-current-date');
+            const hint = document.getElementById('in-w-current-hint');
+            const hintText = document.getElementById('in-w-current-hint-text');
+
+            const setHint = (text, tone) => {
+                if (hintText) hintText.textContent = text || '';
+                if (hint) {
+                    hint.classList.toggle('is-shown', Boolean(text));
+                    hint.classList.toggle('is-warn', tone === 'warn');
+                }
+            };
+
+            // Accessories have no asset and therefore no metric
+            if (!assetSelect || !assetSelect.value) {
+                if (hoursInput) hoursInput.value = '';
+                if (dateInput) dateInput.value = '';
+                setHint('');
+                return;
+            }
+
+            const trackingType = typeSelect ? typeSelect.value : 'hours';
+
+            if (trackingType === 'date') {
+                if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+                setHint("Auto-filled with today's date.");
+                return;
+            }
+
+            if (trackingType !== 'hours') {
+                if (hoursInput) hoursInput.value = '';
+                setHint('');
+                return;
+            }
+
+            const latest = getLatestAssetMetric(assetSelect.value);
+            if (hoursInput) hoursInput.value = latest ? latest.value : '';
+            setHint(
+                latest
+                    ? `Auto-filled from ${latest.source} - change it if the machine has moved.`
+                    : 'No previous reading found - please enter the current hours.',
+                latest ? 'ok' : 'warn'
+            );
         }
 
         const formatDateStr = (rawDate) => {
@@ -6821,14 +7666,29 @@
         }
 
         // --- MAINTENANCE WORK ORDER MATRIX FUNCTIONS ---
+        // Shared header/footer wiring for the Add and Edit variants of the work order form.
+        function setWoModalChrome(mode) {
+            const isEdit = mode === 'edit';
+            const titleEl = document.getElementById('modal-wo-title');
+            const iconEl = document.getElementById('wo-head-icon');
+            const subEl = document.getElementById('wo-head-sub');
+            const labelEl = document.getElementById('btn-wo-submit-label');
+
+            if (titleEl) titleEl.textContent = isEdit ? 'Modify Work Order' : 'Create Maintenance Work Order';
+            if (iconEl) iconEl.textContent = isEdit ? 'edit_note' : 'playlist_add';
+            if (subEl) {
+                subEl.textContent = isEdit
+                    ? "Update this order's details, tracking metrics or assignment."
+                    : 'Capture the job, its tracking metrics and who is assigned to it.';
+            }
+            if (labelEl) labelEl.textContent = isEdit ? 'Save Changes' : 'Commit Work Order';
+        }
+
         function openAddWoModal() {
             document.getElementById('form-wo').reset();
             document.getElementById('in-w-date').valueAsDate = new Date();
             document.getElementById('in-w-mode').value = 'create';
-            document.getElementById('modal-wo-title').innerHTML = `
-                <span class="material-symbols-outlined text-slate-700">playlist_add</span> Create Maintenance Work Order
-            `;
-            document.getElementById('btn-wo-submit-text').innerText = 'Commit Work Order';
+            setWoModalChrome('create');
 
             // 1. SAFE AUTO-GENERATE: Prevents errors if memory.workOrders doesn't exist yet
             const woArray = memory?.workOrders || []; 
@@ -6865,8 +7725,12 @@
             toggleWoCategory('Equipment');
             toggleMetricInputs(document.getElementById('in-w-type').value);
 
-            // Auto-fill target metric from the latest maintenance log
+            // Auto-fill the CURRENT reading and the target metric for the new work order
+            autoFillCurrentMetricFromAsset();
             autoFillTargetMetricFromRecentLog();
+
+            // New orders start with no technicians assigned (they can be set at acceptance)
+            populateWoTechSelect('');
 
             toggleModal('modal-add-wo', true);
         }
@@ -6876,6 +7740,8 @@
             if (!wo) return;
             
             document.getElementById('in-w-mode').value = "edit";
+            document.getElementById('in-w-old-id').value = wo.id;
+            setWoModalChrome('edit');
             document.getElementById('in-w-id').value = wo.id;
             document.getElementById('in-w-id').disabled = true;
             
@@ -6902,21 +7768,46 @@
                 document.getElementById('in-w-target-date').value = wo.targetDate || "";
             }
 
+            // Editing loads stored values, so no auto-fill hint should be shown
+            const editHint = document.getElementById('in-w-current-hint');
+            const editHintText = document.getElementById('in-w-current-hint-text');
+            if (editHintText) editHintText.textContent = '';
+            if (editHint) { editHint.classList.remove('is-shown', 'is-warn'); }
+
             document.getElementById('in-w-reason').value = wo.reason;
             document.getElementById('in-w-status').value = wo.status;
-            
+
+            // Restore the technicians already assigned to this work order
+            populateWoTechSelect(wo.assignedTechnicians);
+
             toggleModal('modal-add-wo', true);
         }
 
         function executeWoSubmission(e) {
             e.preventDefault();
-            
+
+            // NOTE: mode/oldId were previously referenced further down but never declared,
+            // so those checks were silently always false. Read them properly here.
+            const mode = document.getElementById('in-w-mode')?.value || 'create';
+            const oldId = document.getElementById('in-w-old-id')?.value || '';
+
             const id = document.getElementById('in-w-id').value.trim().toUpperCase();
             const category = document.getElementById('in-w-category')?.value || 'Equipment';
             const isAccessory = String(category).toLowerCase() === 'accessories';
             const type = isAccessory ? 'none' : document.getElementById('in-w-type').value;
             const assetId = isAccessory ? '' : document.getElementById('in-w-asset').value; 
             const woStatus = document.getElementById('in-w-status').value || "";
+
+            // The record currently on file, so edits can preserve fields left blank on the form
+            const existingWo = mode === 'edit'
+                ? memory.workOrders.find(w => String(w.id) === String(oldId || id))
+                : null;
+
+            // Assigned technicians (optional) - comma-joined names
+            const techSelect = document.getElementById('in-w-tech');
+            const selectedTechs = techSelect
+                ? Array.from(techSelect.selectedOptions).map(opt => opt.value).filter(Boolean).join(', ')
+                : '';
 
             // 1. Guard check: Ensure IDs exist before attempting a database write
             if (!id) {
@@ -6952,6 +7843,16 @@
                 targetDate: type === 'date' ? (document.getElementById('in-w-target-date').value || "") : ""
             };
 
+            // Technicians chosen on the form; if none were picked here, keep whatever is
+            // already on the record so editing an order never wipes an assignment.
+            if (selectedTechs) {
+                payload.assignedTechnicians = selectedTechs;
+            } else if (mode === 'edit' && existingWo && existingWo.assignedTechnicians) {
+                payload.assignedTechnicians = existingWo.assignedTechnicians;
+            } else {
+                payload.assignedTechnicians = '';
+            }
+
             // Determine the dynamic asset status and color based on work order completion
             // (Accessories work orders are not linked to an asset, so no asset update is performed)
             const isCompleted = woStatus === "Completed";
@@ -6980,7 +7881,7 @@
         }
 
         function dropWorkOrder(id) {
-            if (confirm(`Purge Work Order ${id}?`)) {
+            if (confirm(`Delete Work Order ${id}?`)) {
                 const woRef = cmmsDb.ref('workOrders/' + id);
 
                 // 1. Fetch the work order to find the associated assetId and status
@@ -7020,8 +7921,16 @@
         }  
 
         // --- MAINTENANCE LOG EXECUTION OPERATIONS ---
-        function openAddLogModal() {
+        // Pass a work order ID to open this form in "completion mode": the order reference is
+        // locked to that work order and saving the log marks the work order as 'Completed'.
+        function openAddLogModal(presetWoId) {
             document.getElementById('form-log').reset();
+
+            // Clear any leftover PM checklist selection from a previous entry
+            document.querySelectorAll('input[name="pm-checks"]').forEach(cb => { cb.checked = false; });
+            const pmAllToggle = document.getElementById('chk-pm-all');
+            if (pmAllToggle) pmAllToggle.checked = false;
+
             let nextNum = 5001;
             if (memory.maintenanceLogs && memory.maintenanceLogs.length > 0) {
                 memory.maintenanceLogs.forEach(l => {
@@ -7047,7 +7956,44 @@
             const techSelect = document.getElementById('in-l-tech');
             techSelect.innerHTML = memory.technicians.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
             techSelect.selectedIndex = -1; // clear multiple selection by default
-            
+
+            // --- DEFAULT MODE: a plain "Log Maintenance" entry ---
+            const logTitleEl = document.getElementById('modal-log-title');
+            const logSubmitBtn = document.getElementById('btn-log-submit-text');
+            const completeFlag = document.getElementById('in-l-complete-wo');
+            woSelect.disabled = false;
+            if (logTitleEl) logTitleEl.innerHTML = `<span class="material-symbols-outlined text-slate-700">history_edu</span> Log Maintenance Execution`;
+            if (logSubmitBtn) logSubmitBtn.innerText = 'Save Log Entry';
+            if (completeFlag) completeFlag.value = '';
+
+            // --- COMPLETION MODE: opened from a work order's "Complete" button ---
+            const presetWo = presetWoId
+                ? memory.workOrders.find(w => String(w.id) === String(presetWoId))
+                : null;
+
+            if (presetWo) {
+                if (logTitleEl) logTitleEl.innerHTML = `<span class="material-symbols-outlined text-slate-700">task_alt</span> Complete Work Order ${presetWo.id}`;
+                if (logSubmitBtn) logSubmitBtn.innerText = 'Complete Work Order & Save Log';
+                if (completeFlag) completeFlag.value = presetWo.id;
+
+                // Lock the order reference - this log must belong to that work order
+                woSelect.value = presetWo.id;
+                woSelect.disabled = true;
+
+                // Carry over the technicians that were assigned at acceptance time
+                const assignedTechs = String(presetWo.assignedTechnicians || '')
+                    .split(',').map(t => t.trim()).filter(Boolean);
+                if (assignedTechs.length > 0) {
+                    Array.from(techSelect.options).forEach(opt => {
+                        opt.selected = assignedTechs.some(t => t === opt.value || t.split(' (')[0] === opt.value);
+                    });
+                }
+
+                // Pre-fill the fault report from the work order reason
+                document.getElementById('in-l-fault').value =
+                    presetWo.fault || presetWo.reason || presetWo.issue || presetWo.description || '';
+            }
+
             if (woSelect.value) syncMetricsFromWorkOrder(woSelect.value);
             toggleModal('modal-add-log', true);
         }
@@ -7059,8 +8005,16 @@
             document.getElementById('in-l-mode').value = "edit";
             document.getElementById('in-l-id').value = log.id;
             document.getElementById('in-l-date').value = log.date;
-            
+
+            // Editing is never a "completion" action - reset that state
+            document.getElementById('in-l-complete-wo').value = '';
+            const logTitleEl = document.getElementById('modal-log-title');
+            if (logTitleEl) logTitleEl.innerHTML = `<span class="material-symbols-outlined text-slate-700">history_edu</span> Log Maintenance Execution`;
+            const logSubmitBtn = document.getElementById('btn-log-submit-text');
+            if (logSubmitBtn) logSubmitBtn.innerText = 'Save Log Entry';
+
             const woSelect = document.getElementById('in-l-wo');
+            woSelect.disabled = false;
             woSelect.innerHTML = memory.workOrders.map(w => {
                 const asset = memory.assets.find(a => a.id === w.assetId);
                 const serialText = w.serial || (asset ? asset.serial : 'N/A');
@@ -7160,10 +8114,17 @@
                 remarks: document.getElementById('in-l-remarks').value
             };
             
+            // When this form was opened from a work order's "Complete" button, saving the log is
+            // what actually closes the order out - regardless of the asset's operational status.
+            const completingWoId = (document.getElementById('in-l-complete-wo') || {}).value || '';
+
             cmmsDb.ref('maintenanceLogs/' + id).set(payload, (error) => {
                 if (!error) {
-                    if (opStatus === "Operational") {
-                        cmmsDb.ref('workOrders/' + woId + '/status').set('Completed');
+                    const targetWoId = completingWoId || woId;
+                    const shouldCompleteWo = Boolean(completingWoId) || opStatus === "Operational";
+
+                    if (shouldCompleteWo && targetWoId) {
+                        cmmsDb.ref('workOrders/' + targetWoId + '/status').set('Completed');
                     }
                     
                     // Check current asset status; skip update if it is "Dispatched"
@@ -7173,6 +8134,10 @@
                     }
 
                     toggleModal('modal-add-log', false);
+
+                    if (completingWoId) {
+                        alert(`Maintenance Log ${id} saved. Work Order ${completingWoId} marked as Completed.`);
+                    }
                 }
             });
         }
@@ -9392,7 +10357,8 @@
             document.getElementById('in-accept-wo-id').value = woId;
             const techSelect = document.getElementById('in-accept-tech');
 
-            // Accessories skip the log, but the action itself is still an "Accept"
+            // Accessories skip the log entirely; Equipment orders get their log later,
+            // from the "Complete" button. Accepting itself never creates a log.
             const isAccessoryWo = String(workOrder.category || '').toLowerCase() === 'accessories' || !workOrder.assetId;
             const acceptTitleEl = document.getElementById('modal-accept-wo-title');
             if (acceptTitleEl) {
@@ -9402,7 +10368,14 @@
             }
             const acceptSubmitBtn = document.getElementById('btn-accept-submit');
             if (acceptSubmitBtn) {
-                acceptSubmitBtn.innerText = isAccessoryWo ? 'Accept Work Order' : 'Accept & Add to Log';
+                acceptSubmitBtn.innerText = 'Accept Work Order';
+            }
+
+            const acceptNoteEl = document.getElementById('accept-wo-note');
+            if (acceptNoteEl) {
+                acceptNoteEl.textContent = isAccessoryWo
+                    ? 'Accepting moves this order to "In Progress". Accessory orders never generate a maintenance log - use the Complete button to close it.'
+                    : 'Accepting moves this order to "In Progress" and assigns the technicians. No maintenance log is created yet - use the Complete button afterwards to record the maintenance log and close the order.';
             }
 
             // Clear and populate technicians from memory cache
@@ -9415,6 +10388,14 @@
                     const techName = t.name || t.fullName || t.techName || t.id || 'Unknown Tech';
                     return `<option value="${techName}">${techName} (${t.id || 'N/A'})</option>`;
                 }).join('');
+
+                // Pre-select technicians already assigned on the work order
+                const preAssigned = getWoTechnicianNames(workOrder);
+                if (preAssigned.length) {
+                    Array.from(techSelect.options).forEach(opt => {
+                        opt.selected = preAssigned.includes(opt.value);
+                    });
+                }
             } else {
                 techSelect.innerHTML = `<option value="">No technicians available</option>`;
             }
@@ -9422,7 +10403,8 @@
             toggleModal('modal-accept-wo', true); //[cite: 1]
         }
 
-        // Executes the form submission to automate the log creation
+        // Accepts the work order: assigns the technicians and moves it to 'In Progress'.
+        // NO maintenance log is created here - the log is recorded from the 'Complete' button.
         function executeAcceptWo(e) {
             e.preventDefault();
             
@@ -9438,77 +10420,30 @@
             if (!wo) return alert("Work order not found in memory cache.");
 
             const isAccessoryWo = String(wo.category || '').toLowerCase() === 'accessories' || !wo.assetId;
+            const foundAsset = wo.assetId || wo.asset || wo.equipment || '';
 
-            // ACCESSORY WORK ORDERS: no maintenance log is created.
-            // Step 1: Accepting an accessory work order sets it to 'In Progress'.
-            // Step 2: The row button then switches to 'Complete' (completeAccessoryWo) to mark it 'Completed'.
-            if (isAccessoryWo) {
-                cmmsDb.ref('workOrders/' + wo.id).update({ status: 'In Progress' })
-                    .then(() => {
-                        toggleModal('modal-accept-wo', false);
-                        alert('Accessory Work Order Accepted! (No maintenance log was generated). Use the Complete button to finish it.');
-                    })
-                    .catch(err => {
-                        console.error("Error accepting Accessory Work Order:", err);
-                        alert("Database Error: Could not accept work order.");
+            // 1. Move the work order to 'In Progress' and remember who was assigned to it
+            cmmsDb.ref('workOrders/' + wo.id).update({
+                status: 'In Progress',
+                assignedTechnicians: selectedTechs,
+                acceptedDate: new Date().toISOString().split('T')[0]
+            })
+                .then(() => {
+                    // 2. Equipment orders are tied to an asset - flag it as being worked on.
+                    //    Accessories have no asset, and 'Dispatched' assets must not be touched.
+                    if (isAccessoryWo || !foundAsset) return null;
+
+                    const currentAsset = memory.assets?.find(a => a.id === foundAsset);
+                    if (currentAsset && currentAsset.status === 'Dispatched') return null;
+
+                    return cmmsDb.ref('assets/' + foundAsset).update({
+                        status: 'In Maintenance',
+                        statusColor: '#FF9800'
                     });
-                return;
-            }
-
-            const logId = 'LOG-' + Math.floor(100000 + Math.random() * 900000); 
-            const currentDate = new Date().toISOString().split('T')[0];
-
-            // --- EXACT PROPERTY MAPPING MATCHED TO YOUR DB SCHEMA ---
-            const foundAsset = wo.assetId || wo.asset || wo.equipment || 'Unknown Asset';
-            const foundFault = wo.fault || wo.reason || wo.issue || wo.description || 'Work order dispatched';
-            
-            // Handles formatting current hours using your actual property name
-            let currentRaw = wo.currentHours !== undefined ? wo.currentHours : (wo.current || wo.meter || 'N/A');
-            let currentMetric = currentRaw !== 'N/A' && !String(currentRaw).toLowerCase().includes('hrs') ? currentRaw + ' Hrs' : currentRaw;
-
-            // Handles formatting target hours using your actual property name
-            let targetRaw = wo.targetHours !== undefined ? wo.targetHours : (wo.target || wo.due || 'N/A');
-            let targetMetric = targetRaw !== 'N/A' && !String(targetRaw).toLowerCase().includes('hrs') ? targetRaw + ' Hrs' : targetRaw;
-
-            // Calculate remaining hours if possible to prevent undefined in the table
-            let remaining = 'N/A';
-            const cNum = parseFloat(currentRaw);
-            const tNum = parseFloat(targetRaw);
-            if (!isNaN(cNum) && !isNaN(tNum)) {
-                remaining = (tNum - cNum) + ' Hrs';
-            }
-
-            const logData = {
-                id: logId,
-                date: currentDate,
-                woId: wo.id, 
-                assetId: foundAsset,          
-                currentMetric: currentMetric,  
-                targetMetric: targetMetric,    
-                remainingHours: remaining,     
-                fault: foundFault,
-                action: 'Work Order Accepted & Initialized',
-                parts: 'N/A',
-                technician: selectedTechs,     
-                status: 'In Maintenance', 
-                remarks: 'Auto-generated from WO acceptance portal'
-            };
-
-            // 1. Update Work Order status
-            cmmsDb.ref('workOrders/' + wo.id).update({ status: 'In Progress' })
-                .then(() => {
-                    // 2. Save Log
-                    return cmmsDb.ref('maintenanceLogs/' + logId).set(logData);
-                })
-                .then(() => {
-                    // 3. Update Asset status if valid
-                    if (foundAsset && foundAsset !== 'Unknown Asset') {
-                        return cmmsDb.ref('assets/' + foundAsset).update({ status: 'In Maintenance' });
-                    }
                 })
                 .then(() => {
                     toggleModal('modal-accept-wo', false);
-                    alert('Work Order Accepted & Log Generated Successfully!');
+                    alert('Work Order Accepted! No maintenance log was generated.\nUse the Complete button to record the maintenance log and close the order.');
                 })
                 .catch(err => {
                     console.error("Error accepting Work Order:", err);
@@ -9542,6 +10477,33 @@
                     console.error("Error completing Accessory Work Order:", err);
                     alert("Database Error: Could not complete work order.");
                 });
+        }
+
+        // Step 2 for Equipment work orders: once accepted ('In Progress'), the Complete button
+        // opens the Add Maintenance Log form pre-filled for that order. Saving the log is what
+        // records the executed work and moves the work order to 'Completed'.
+        function completeEquipmentWo(id) {
+            const wo = memory.workOrders.find(w => String(w.id) === String(id));
+            if (!wo) return alert("Work order not found in memory cache.");
+
+            const woStatus = String(wo.status || '').trim().toLowerCase();
+            if (woStatus === 'completed') {
+                alert("This work order is already completed.");
+                return;
+            }
+            if (woStatus !== 'in progress') {
+                alert(`Action denied. Accept the work order first. Only 'In Progress' work orders can be completed. Current status: ${wo.status}`);
+                return;
+            }
+
+            // Safety net: an accessory order must never open a maintenance log
+            const isAccessoryWo = String(wo.category || '').toLowerCase() === 'accessories' || !wo.assetId;
+            if (isAccessoryWo) {
+                completeAccessoryWo(id);
+                return;
+            }
+
+            openAddLogModal(wo.id);
         }
 
         // Open the PM Checklist Modal
