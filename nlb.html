@@ -237,10 +237,27 @@
             transition: background 0.2s ease, transform 0.2s ease;
         }
 
-        .login-submit:hover {
-            background: var(--brand-forest-dark);
-            transform: translateY(-1px);
+        .login-submit {
+            background: linear-gradient(180deg, rgba(26, 62, 48, .92), rgba(5, 28, 18, .88));
+            border: 1px solid rgba(255, 255, 255, .16);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), 0 1px 2px rgba(5, 28, 18, .2), 0 14px 28px -16px rgba(5, 28, 18, .6);
+            backdrop-filter: blur(14px) saturate(1.6);
+            -webkit-backdrop-filter: blur(14px) saturate(1.6);
         }
+
+        .login-submit:hover {
+            background: linear-gradient(180deg, rgba(26, 62, 48, .99), rgba(5, 28, 18, .95));
+            border-color: rgba(180, 241, 5, .45);
+            transform: translateY(-1px);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .24), 0 18px 32px -16px rgba(5, 28, 18, .6);
+        }
+
+        .login-submit:focus-visible {
+            outline: 2px solid var(--brand-lime);
+            outline-offset: 2px;
+        }
+
+        .login-submit:active { transform: translateY(0); }
 
         .login-submit .material-symbols-outlined {
             color: var(--brand-lime);
@@ -831,9 +848,9 @@
         #fleet-registry-grid.hidden { display: none !important; }
         .nlb-registry-view-toggle { display: inline-flex; align-items: center; gap: .15rem; padding: .2rem; border: 1px solid #CBD5E1; border-radius: .5rem; background: #F1F5F9; }
         .nlb-registry-view-toggle button { display: inline-grid; place-items: center; width: 2rem; height: 2rem; border: 0; border-radius: .35rem; color: #64748B; background: transparent; cursor: pointer; transition: background .18s ease, color .18s ease, box-shadow .18s ease; }
-        .nlb-registry-view-toggle button:hover { color: #0F172A; background: rgba(255,255,255,.7); }
+        .nlb-registry-view-toggle button:hover { color: #0F172A; background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(241,245,249,.8)); border-color: rgba(255,255,255,.9); box-shadow: 0 1px 2px rgba(15,23,42,.06); }
         .nlb-registry-view-toggle button:focus-visible { outline: 2px solid var(--brand-lime); outline-offset: 1px; }
-        .nlb-registry-view-toggle button.is-active { color: #047857; background: #FFFFFF; box-shadow: 0 1px 3px rgba(15,23,42,.12); }
+        .nlb-registry-view-toggle button.is-active { color: #047857; background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.9)); border-color: rgba(255,255,255,.99); box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 1px 3px rgba(15,23,42,.12), 0 8px 18px -10px rgba(15,23,42,.35); }
         .nlb-registry-view-toggle button .material-symbols-outlined { font-size: 1.15rem; line-height: 1; }
         /* ---- Asset Registry: GLASS card grid ----------------------------------
            A frosted-glass treatment layered on the app's light background:
@@ -901,10 +918,12 @@
         /* Work-order reasons are long free text: wrap them across as many lines as
            they need instead of truncating to one ellipsised line. */
         .nlb-wo-card-reason { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
-        .nlb-wo-card-btn { padding: .3rem .65rem; border: 1px solid rgba(255,255,255,.6); border-radius: .4rem; background: rgba(15, 23, 42, .9); color: #FFFFFF; font-size: .62rem; font-weight: 700; cursor: pointer; transition: background .15s ease, transform .15s ease; }
-        .nlb-wo-card-btn:hover { background: #0F172A; transform: translateY(-1px); }
-        .nlb-wo-card-btn--accept { background: rgba(5, 150, 105, .92); }
-        .nlb-wo-card-btn--accept:hover { background: #047857; }
+        .nlb-wo-card-btn { padding: .3rem .65rem; border: 1px solid rgba(255,255,255,.2); border-radius: .4rem; background: linear-gradient(180deg, rgba(16,185,129,.92), rgba(5,150,105,.88)); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 1px 2px rgba(4,120,87,.2), 0 10px 22px -12px rgba(4,120,87,.5); backdrop-filter: blur(10px) saturate(1.5); -webkit-backdrop-filter: blur(10px) saturate(1.5); color: #FFFFFF; font-size: .62rem; font-weight: 700; cursor: pointer; transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease; }
+        .nlb-wo-card-btn:hover { background: linear-gradient(180deg, rgba(16,185,129,.99), rgba(5,150,105,.95)); border-color: rgba(255,255,255,.32); transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 14px 26px -12px rgba(4,120,87,.55); }
+        .nlb-wo-card-btn--accept { background: linear-gradient(180deg, rgba(16,185,129,.92), rgba(5,150,105,.88)); border-color: rgba(255,255,255,.2); }
+        .nlb-wo-card-btn--accept:hover { background: linear-gradient(180deg, rgba(5,150,105,.99), rgba(4,120,87,.95)); border-color: rgba(255,255,255,.34); }
+        .nlb-wo-card-btn:focus-visible { outline: 2px solid var(--brand-lime); outline-offset: 2px; }
+        .nlb-wo-card-btn:active { transform: translateY(0); }
         #wo-list-wrap.hidden, #wo-grid.hidden { display: none !important; }
 
         .nlb-asset-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
@@ -942,24 +961,252 @@
         .nlb-asset-card-footer { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .85rem; padding-top: .7rem; border-top: 1px solid rgba(226, 232, 240, .7); }
         /* Asset Registry: three-dot row action menu */
         .nlb-row-menu { position: relative; display: inline-block; }
-        .nlb-row-menu-trigger { display: inline-grid; place-items: center; width: 1.85rem; height: 1.85rem; border: 1px solid transparent; border-radius: .4rem; background: transparent; color: #64748B; cursor: pointer; transition: background .18s ease, color .18s ease, border-color .18s ease; }
-        .nlb-row-menu-trigger:hover { color: #0F172A; background: #F1F5F9; border-color: #E2E8F0; }
+        .nlb-row-menu-trigger { display: inline-grid; place-items: center; width: 1.85rem; height: 1.85rem; border: 1px solid rgba(255,255,255,.8); border-radius: .4rem; background: linear-gradient(180deg, rgba(255,255,255,.72), rgba(248,250,252,.5)); box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 1px 2px rgba(15,23,42,.06); backdrop-filter: blur(10px) saturate(1.5); -webkit-backdrop-filter: blur(10px) saturate(1.5); color: #64748B; cursor: pointer; transition: transform .18s cubic-bezier(.4,0,.2,1), background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease; }
+        .nlb-row-menu-trigger:hover { color: #0F172A; background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(241,245,249,.8)); border-color: rgba(255,255,255,.99); transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 2px 4px rgba(15,23,42,.08), 0 12px 22px -12px rgba(15,23,42,.4); }
         .nlb-row-menu-trigger:focus-visible { outline: 2px solid var(--brand-lime); outline-offset: 1px; }
         .nlb-row-menu-trigger .material-symbols-outlined { font-size: 1.15rem; line-height: 1; }
-        .nlb-row-menu-panel { position: absolute; right: 0; top: calc(100% + .3rem); z-index: 40; min-width: 12.5rem; padding: .3rem; border: 1px solid #E2E8F0; border-radius: .55rem; background: #FFFFFF; box-shadow: 0 12px 28px rgba(15,23,42,.16); }
+        .nlb-row-menu-panel { position: absolute; right: 0; top: calc(100% + .3rem); z-index: 40; min-width: 12.5rem; padding: .3rem; border: 1px solid rgba(255,255,255,.85); border-radius: .55rem; background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(248,250,252,.82)); box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 12px 28px rgba(15,23,42,.18), 0 24px 48px -20px rgba(15,23,42,.28); backdrop-filter: blur(18px) saturate(1.7); -webkit-backdrop-filter: blur(18px) saturate(1.7); }
         .nlb-row-menu-panel.hidden { display: none; }
         .nlb-row-menu-panel--up { top: auto; bottom: calc(100% + .3rem); }
-        .nlb-row-menu-item { display: flex; align-items: center; gap: .55rem; width: 100%; padding: .5rem .55rem; border: 0; border-radius: .35rem; background: transparent; color: #334155; font-size: .72rem; font-weight: 600; text-align: left; white-space: nowrap; cursor: pointer; transition: background .15s ease, color .15s ease; }
-        .nlb-row-menu-item:hover { background: #F1F5F9; color: #0F172A; }
+        .nlb-row-menu-item { display: flex; align-items: center; gap: .55rem; width: 100%; padding: .5rem .55rem; border: 1px solid transparent; border-radius: .35rem; background: transparent; color: #334155; font-size: .72rem; font-weight: 600; text-align: left; white-space: nowrap; cursor: pointer; transition: background .15s ease, color .15s ease, border-color .15s ease; }
+        .nlb-row-menu-item:hover { background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(241,245,249,.8)); border-color: rgba(255,255,255,.9); color: #0F172A; box-shadow: 0 1px 2px rgba(15,23,42,.06); }
         .nlb-row-menu-item .material-symbols-outlined { font-size: 1.05rem; line-height: 1; color: #94A3B8; }
         .nlb-row-menu-item:hover .material-symbols-outlined { color: currentColor; }
         .nlb-row-menu-item--accent { color: #047857; }
         .nlb-row-menu-item--danger { color: #E11D48; }
-        .nlb-row-menu-item--danger:hover { background: #FFF1F2; color: #BE123C; }
-        .nlb-row-menu-sep { height: 1px; margin: .25rem .35rem; background: #F1F5F9; }
+        .nlb-row-menu-item--danger:hover { background: linear-gradient(180deg, rgba(255,241,242,.95), rgba(255,228,230,.8)); border-color: rgba(255,255,255,.9); color: #BE123C; }
+        .nlb-row-menu-sep { height: 1px; margin: .25rem .35rem; background: rgba(226,232,240,.8); }
         /* Work Orders list: the visible Accept/Complete button plus the overflow menu */
         .nlb-wo-actions { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; }
 
+        /* ============================================================
+           WORK ORDER LIST -- professional table treatment
+           ------------------------------------------------------------
+           Layout lives here rather than in utility classes because the
+           row markup is shared with the print pipeline, and two of the
+           cell class attributes are read verbatim by the flow tests.
+           Everything below restyles those pinned cells by hooking the
+           `p-4` / `font-code` classes they already carry, so the
+           renderer needs no edits to get consistent density.
+           ============================================================ */
+        .nlb-wo-table-shell {
+            border: 1px solid #E2E8F0;
+            border-radius: .9rem;
+            background: #FFFFFF;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 14px 32px -20px rgba(15, 23, 42, .24);
+            overflow: hidden;
+        }
+        /* The list scrolls inside its own frame so the header can stay
+           pinned. Delete the max-height line to hand scrolling back to
+           the page (the header then scrolls away, as it always did). */
+        .nlb-wo-scroll { max-height: min(70vh, 44rem); overflow: auto; overscroll-behavior: contain; }
+        .nlb-wo-table { width: 100%; min-width: 1140px; border-collapse: separate; border-spacing: 0; font-size: .8rem; }
+
+        /* Fixed proportions stop one long reason from squeezing every
+           other column down to ellipses. Reason is the only flex column. */
+        .nlb-wo-col-id { width: 9.5rem; }
+        .nlb-wo-col-asset { width: 10.5rem; }
+        .nlb-wo-col-metric { width: 9.5rem; }
+        .nlb-wo-col-remain { width: 9rem; }
+        .nlb-wo-col-tech { width: 9rem; }
+        .nlb-wo-col-status { width: 8.5rem; }
+        .nlb-wo-col-act { width: 11rem; }
+
+        /* Pinned frosted header: labels stay put while a long list
+           scrolls underneath, in the same glass language as the buttons. */
+        .nlb-wo-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            padding: .65rem 1rem;
+            border-bottom: 1px solid #E2E8F0;
+            background: rgba(248, 250, 252, .9);
+            backdrop-filter: blur(10px) saturate(1.4);
+            -webkit-backdrop-filter: blur(10px) saturate(1.4);
+            color: #64748B;
+            font-size: .62rem;
+            font-weight: 800;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .nlb-wo-table thead th.nlb-wo-th-act { text-align: right; }
+
+        .nlb-wo-table tbody td { padding: .8rem 1rem; border-bottom: 1px solid #F1F5F9; vertical-align: middle; color: #334155; }
+        .nlb-wo-table tbody tr:last-child td { border-bottom: 0; }
+        .nlb-wo-table tbody tr.nlb-wo-row { --nlb-wo-accent: #CBD5E1; transition: background .15s ease; }
+        .nlb-wo-table tbody tr.nlb-wo-row:nth-child(even) { background: #FCFDFD; }
+        .nlb-wo-table tbody tr.nlb-wo-row:hover { background: #F1F8F4; }
+
+        /* Status rail: a 3px colour-coded edge lets a long list be
+           triaged without reading a single badge. The colour comes from
+           getWorkOrderStatusAccent() -- the same source the grid cards
+           use, so list and grid can never disagree. */
+        .nlb-wo-table tbody td:first-child { position: relative; padding-left: 1.15rem; }
+        .nlb-wo-table tbody td:first-child::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: .5rem;
+            bottom: .5rem;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+            background: var(--nlb-wo-accent, #CBD5E1);
+        }
+
+        .nlb-wo-table tbody td.font-code { font-family: 'JetBrains Mono', monospace; }
+        .nlb-wo-remain { color: #64748B; font-size: .72rem; white-space: nowrap; }
+        .nlb-wo-tech { font-size: .75rem; }
+        /* Wrap to two lines rather than clip to one: a truncated reason
+           hides the single most useful field on the row. Full text stays
+           available in the cell tooltip. */
+        .nlb-wo-reason {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            overflow-wrap: anywhere;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        /* Reshaped badge -- the colour palette still comes from
+           getWorkOrderStatusBadgeClass(); only the shape is new. */
+        .nlb-wo-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            padding: .2rem .55rem;
+            border-radius: 9999px;
+            font-size: .66rem;
+            font-weight: 700;
+            line-height: 1.5;
+            white-space: nowrap;
+        }
+        .nlb-wo-pill i { width: 5px; height: 5px; flex: none; border-radius: 9999px; background: currentColor; }
+
+        .nlb-wo-table tbody tr.nlb-wo-empty-row td { padding: 0; border-bottom: 0; }
+        .nlb-wo-empty { padding: 3.25rem 1.5rem; text-align: center; color: #94A3B8; }
+        .nlb-wo-empty strong { display: block; color: #475569; font-size: .85rem; font-weight: 700; }
+        .nlb-wo-empty p { margin: .35rem 0 0; font-size: .72rem; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .nlb-wo-table tbody tr { transition: none; }
+        }
+        @media print {
+            .nlb-wo-scroll { max-height: none; overflow: visible; }
+            .nlb-wo-table thead th { position: static; backdrop-filter: none; -webkit-backdrop-filter: none; }
+        }
+
+        /* ============================================================
+           REGISTER ASSET SPECIFICATIONS -- specification sheet
+           ------------------------------------------------------------
+           Ten identical full-width rows hid the one thing that
+           mattered most here: the last two fields are owned by
+           Operations and cannot be edited from this form. They now sit
+           in their own dashed "managed" section instead of reading as
+           two broken grey boxes. Identity / Specification / Tracking
+           are grouped so a 10-field form scans as three short blocks
+           rather than one long list.
+           ============================================================ */
+        .nlb-fleet-overlay {
+            background: rgba(15, 23, 42, .5);
+            backdrop-filter: blur(6px) saturate(1.2);
+            -webkit-backdrop-filter: blur(6px) saturate(1.2);
+        }
+        .nlb-fleet-panel {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 46rem;
+            max-height: 90vh;
+            border: 1px solid #E2E8F0;
+            border-radius: .9rem;
+            background: #FFFFFF;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, .06), 0 28px 60px -24px rgba(15, 23, 42, .45);
+            overflow: hidden;
+            /* Keeps the native select glyphs on the light theme. */
+            color-scheme: light;
+        }
+        .nlb-fleet-head {
+            flex: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 1.4rem;
+            border-bottom: 1px solid #E2E8F0;
+            background: linear-gradient(180deg, #FFFFFF, #F8FAFC);
+        }
+        /* No icon wrapper here on purpose: openAddModal() replaces this
+           element's innerHTML wholesale, so any wrapper would be
+           destroyed the first time the form opens. */
+        .nlb-fleet-title { display: flex; align-items: center; gap: .55rem; margin: 0; color: #0F172A; font-size: .8rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; line-height: 1.35; }
+        .nlb-fleet-form { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 1.1rem; align-content: start; padding: 1.25rem 1.4rem .4rem; }
+        .nlb-fleet-foot {
+            position: sticky;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: .3rem -1.4rem 0;
+            padding: .9rem 1.4rem;
+            border-top: 1px solid #E2E8F0;
+            background: rgba(255, 255, 255, .94);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .nlb-fleet-foot-note { display: flex; align-items: center; gap: .4rem; color: #94A3B8; font-size: .66rem; font-weight: 600; }
+        .nlb-fleet-foot-actions { display: flex; gap: .55rem; margin-left: auto; }
+        /* Sizing only -- the surface comes from the shared glass button
+           system, so these match every other button in the app. */
+        .nlb-fleet-btn { display: inline-flex; align-items: center; justify-content: center; padding: .5rem 1.1rem; border-radius: .5rem; font-size: .78rem; font-weight: 700; }
+
+        .nlb-fleet-section { display: grid; gap: .7rem; }
+        .nlb-fleet-section-head { display: flex; align-items: center; gap: .6rem; }
+        .nlb-fleet-section-head h4 { margin: 0; color: #334155; font-size: .62rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+        .nlb-fleet-section-head::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; }
+        .nlb-fleet-grid { display: grid; gap: .75rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .nlb-fleet-field--wide { grid-column: 1 / -1; }
+
+        .nlb-fleet-label { display: block; margin-bottom: .3rem; color: #475569; font-size: .64rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+        .nlb-fleet-label .nlb-fleet-req { color: #DC2626; }
+        .nlb-fleet-label .nlb-fleet-hint { color: #94A3B8; font-size: .92em; font-weight: 600; letter-spacing: 0; text-transform: none; }
+        .nlb-fleet-input {
+            display: block;
+            width: 100%;
+            padding: .5rem .7rem;
+            border: 1px solid #CBD5E1;
+            border-radius: .5rem;
+            background: #FFFFFF;
+            color: #0F172A;
+            font: inherit;
+            font-size: .82rem;
+            outline: none;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+        .nlb-fleet-input::placeholder { color: #CBD5E1; }
+        .nlb-fleet-input:hover:not([readonly]):not(:disabled) { border-color: #94A3B8; }
+        .nlb-fleet-input:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16, 185, 129, .16); }
+        .nlb-fleet-input--mono { font-family: 'JetBrains Mono', monospace; letter-spacing: .01em; }
+        .nlb-fleet-input--lock { color: #64748B; background: #F1F5F9; border-color: #E2E8F0; cursor: not-allowed; }
+
+        /* Operations-owned fields. Dashed rather than solid so the border
+           reads as "not yours to fill in", not as a second card. */
+        .nlb-fleet-locked { display: grid; gap: .75rem; padding: .85rem .9rem .9rem; border: 1px dashed #CBD5E1; border-radius: .7rem; background: #F8FAFC; }
+        .nlb-fleet-locked-note { display: flex; align-items: center; gap: .4rem; color: #64748B; font-size: .64rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+        .nlb-fleet-locked-note .material-symbols-outlined { font-size: 1rem; }
+
+        @media (max-width: 640px) {
+            .nlb-fleet-grid { grid-template-columns: minmax(0, 1fr); }
+            .nlb-fleet-panel { max-height: 94vh; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .nlb-fleet-input { transition: none; }
+        }
+
+        .nlb-wo-table tbody tr.nlb-wo-empty-row td { padding: 0; border-bottom: 0; }
         /* Dashboard: clickable KPI shortcut cards */
         .nlb-kpi-card { position: relative; cursor: pointer; text-align: left; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease; }
         .nlb-kpi-card:hover { border-color: #0F172A; box-shadow: 0 10px 24px rgba(15,23,42,.10); transform: translateY(-2px); }
@@ -978,8 +1225,9 @@
         .nlb-wo-head-icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; flex: none; border-radius: .55rem; background: #0F172A; color: #FFFFFF; }
         .nlb-wo-head-icon .material-symbols-outlined { font-size: 1.25rem; line-height: 1; }
         .nlb-wo-head-sub { margin-top: .2rem; color: #64748B; font-size: .7rem; }
-        .nlb-wo-close { flex: none; color: #94A3B8; font-size: 1.35rem; font-weight: 700; line-height: 1; cursor: pointer; background: transparent; border: 0; border-radius: .4rem; padding: .15rem .35rem; }
-        .nlb-wo-close:hover { color: #0F172A; background: #E2E8F0; }
+        .nlb-wo-close { flex: none; color: #64748B; font-size: 1.35rem; font-weight: 700; line-height: 1; cursor: pointer; background: linear-gradient(180deg, rgba(255,255,255,.7), rgba(248,250,252,.5)); border: 1px solid rgba(255,255,255,.8); border-radius: .4rem; padding: .15rem .35rem; box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 1px 2px rgba(15,23,42,.06); backdrop-filter: blur(10px) saturate(1.5); -webkit-backdrop-filter: blur(10px) saturate(1.5); transition: transform .15s ease, color .15s ease, background .15s ease, box-shadow .15s ease; }
+        .nlb-wo-close:hover { color: #0F172A; background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(241,245,249,.82)); transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 10px 20px -12px rgba(15,23,42,.4); }
+        .nlb-wo-close:focus-visible { outline: 2px solid var(--brand-lime); outline-offset: 2px; }
         .nlb-wo-body { min-height: 0; flex: 1 1 auto; overflow-y: auto; padding: 1rem 1.25rem; }
         .nlb-wo-section + .nlb-wo-section { margin-top: .9rem; }
         .nlb-wo-section-title { display: flex; align-items: center; gap: .4rem; margin-bottom: .7rem; color: #94A3B8; font-size: .58rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
@@ -1003,12 +1251,177 @@
         .nlb-wo-hint.is-shown { display: flex; }
         .nlb-wo-hint.is-warn { color: #B45309; }
         .nlb-wo-hint .material-symbols-outlined { font-size: .85rem; line-height: 1; }
+
+        /* ---- Equipment picker (combobox) for the Work Order form -------
+           Replaces the stacked "filter box + native select" pair with one
+           control. The native equipment select is kept underneath as the
+           value holder: populateEquipmentDropdown(), the onchange autofills
+           and `required` all keep working, because the select is only
+           visually collapsed and never display:none (which would drop it
+           from constraint validation). */
+        .nlb-epick { position: relative; }
+        .nlb-epick__control {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            min-height: 2.35rem;
+            padding: .3rem .5rem .3rem .55rem;
+            background: #F8FAFC;
+            border: 1px solid #CBD5E1;
+            border-radius: .45rem;
+            cursor: text;
+            transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+        }
+        .nlb-epick__control:hover { border-color: #94A3B8; }
+        .nlb-epick.is-open .nlb-epick__control,
+        .nlb-epick__control:focus-within {
+            background: #FFFFFF;
+            border-color: #0F172A;
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, .08);
+        }
+        .nlb-epick.is-invalid .nlb-epick__control {
+            background: #FFFFFF;
+            border-color: #BE123C;
+            box-shadow: 0 0 0 3px rgba(190, 18, 60, .10);
+        }
+
+        .nlb-epick__lead { flex: none; font-size: 1.05rem; color: #94A3B8; }
+        .nlb-epick__input {
+            flex: 1 1 auto;
+            min-width: 0;
+            border: 0;
+            padding: .1rem 0;
+            background: transparent;
+            color: #0F172A;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: .78rem;
+            line-height: 1.5;
+            outline: none;
+        }
+        .nlb-epick__input::placeholder { color: #CBD5E1; font-family: 'Inter', sans-serif; }
+        .nlb-epick__caret { flex: none; font-size: 1.05rem; color: #64748B; transition: transform .15s ease; }
+        .nlb-epick.is-open .nlb-epick__caret { transform: rotate(180deg); }
+
+        .nlb-epick__clear {
+            display: none;
+            flex: none;
+            align-items: center;
+            justify-content: center;
+            width: 1.15rem;
+            height: 1.15rem;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            background: #E2E8F0;
+            color: #475569;
+            cursor: pointer;
+            transition: background .15s ease, color .15s ease;
+        }
+        .nlb-epick__clear .material-symbols-outlined { font-size: .8rem; line-height: 1; }
+        .nlb-epick__clear:hover { background: #CBD5E1; color: #0F172A; }
+        .nlb-epick.has-value .nlb-epick__clear { display: inline-flex; }
+
+        .nlb-epick__menu {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(100% + .25rem);
+            z-index: 30;
+            max-height: 16.5rem;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding: .25rem;
+            background: #FFFFFF;
+            border: 1px solid #CBD5E1;
+            border-radius: .55rem;
+            box-shadow: 0 18px 40px -22px rgba(15, 23, 42, .40), 0 2px 6px rgba(15, 23, 42, .06);
+        }
+        .nlb-epick__menu[hidden] { display: none; }
+
+        .nlb-epick__opt {
+            display: block;
+            padding: .4rem .5rem;
+            border-radius: .4rem;
+            cursor: pointer;
+        }
+        .nlb-epick__opt:hover,
+        .nlb-epick__opt.is-active { background: #F1F5F9; }
+        .nlb-epick__opt[aria-selected="true"] { background: #ECFDF5; box-shadow: inset 2px 0 0 #047857; }
+
+        .nlb-epick__opt-top { display: flex; align-items: center; gap: .4rem; }
+        .nlb-epick__opt-id {
+            flex: none;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: .7rem;
+            font-weight: 700;
+            color: #0F172A;
+        }
+        .nlb-epick__opt-name {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: .74rem;
+            font-weight: 600;
+            color: #0F172A;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .nlb-epick__opt-status {
+            flex: none;
+            padding: .08rem .35rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 999px;
+            background: #F8FAFC;
+            color: #64748B;
+            font-size: .55rem;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+        .nlb-epick__opt-sub {
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+            margin-top: .12rem;
+            font-size: .64rem;
+            color: #64748B;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .nlb-epick__opt-sub .font-code { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+        .nlb-epick__opt mark { background: #FEF08A; color: inherit; border-radius: 2px; padding: 0 1px; }
+        .nlb-epick__opt-check { flex: none; font-size: 1rem; color: #047857; }
+
+        .nlb-epick__none { padding: .8rem .5rem; font-size: .74rem; color: #64748B; text-align: center; }
+        .nlb-epick__hint { margin-top: .3rem; font-size: .62rem; color: #64756D; }
+        .nlb-epick__hint:empty { display: none; }
+        .nlb-epick__hint.is-error { color: #BE123C; }
+
+        /* Collapsed but NOT display:none, so the select stays a candidate
+           for native constraint validation and keeps submitting its value. */
+        .nlb-epick__native {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            opacity: 0;
+            overflow: hidden;
+            pointer-events: none;
+            clip: rect(0 0 0 0);
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
         .nlb-wo-foot { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: .85rem 1.25rem; border-top: 1px solid #E2E8F0; background: #FCFDFD; }
-        .nlb-wo-btn { display: inline-flex; align-items: center; gap: .35rem; padding: .5rem 1rem; border-radius: .45rem; font-size: .75rem; font-weight: 700; cursor: pointer; transition: background .15s ease, color .15s ease, border-color .15s ease; }
-        .nlb-wo-btn-ghost { color: #475569; background: #FFFFFF; border: 1px solid #CBD5E1; }
-        .nlb-wo-btn-ghost:hover { background: #F1F5F9; color: #0F172A; }
-        .nlb-wo-btn-primary { color: #FFFFFF; background: #0F172A; border: 1px solid #0F172A; }
-        .nlb-wo-btn-primary:hover { background: #1E293B; }
+        .nlb-wo-btn { display: inline-flex; align-items: center; gap: .35rem; padding: .5rem 1rem; border-radius: .45rem; font-size: .75rem; font-weight: 700; cursor: pointer; transition: transform .18s cubic-bezier(.4,0,.2,1), box-shadow .18s ease, border-color .18s ease, color .18s ease; }
+        .nlb-wo-btn-ghost { color: #475569; background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(248,250,252,.58)); border: 1px solid rgba(255,255,255,.88); box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 1px 2px rgba(15,23,42,.06), 0 10px 24px -14px rgba(15,23,42,.35); backdrop-filter: blur(14px) saturate(1.6); -webkit-backdrop-filter: blur(14px) saturate(1.6); }
+        .nlb-wo-btn-ghost:hover { color: #0F172A; border-color: rgba(255,255,255,.98); transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.95), 0 16px 30px -14px rgba(15,23,42,.45); }
+        .nlb-wo-btn-primary { color: #FFFFFF; background: linear-gradient(180deg, rgba(16,185,129,.92), rgba(5,150,105,.88)); border: 1px solid rgba(255,255,255,.2); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 1px 2px rgba(4,120,87,.22), 0 12px 26px -14px rgba(4,120,87,.55); backdrop-filter: blur(14px) saturate(1.6); -webkit-backdrop-filter: blur(14px) saturate(1.6); }
+        .nlb-wo-btn-primary:hover { border-color: rgba(255,255,255,.34); transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 16px 30px -14px rgba(4,120,87,.5); }
+        .nlb-wo-btn:focus-visible { outline: 2px solid var(--brand-lime); outline-offset: 2px; }
+        .nlb-wo-btn:active { transform: translateY(0); }
         .nlb-wo-btn .material-symbols-outlined { font-size: 1rem; line-height: 1; }
 
         /* Update Current Metric popup */
@@ -1077,6 +1490,327 @@
         .nlb-spec-stat-label { color: #94A3B8; font-size: .56rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
         .nlb-spec-stat-value { margin-top: .3rem; color: #0F172A; font-size: .8rem; font-weight: 700; word-break: break-word; }
 
+        /* ============================================================
+           GLASS BUTTON DESIGN SYSTEM
+           ------------------------------------------------------------
+           One place defines what a button looks like. Each variant
+           only restates a handful of custom properties, so the
+           frosted recipe (translucent gradient + real backdrop blur +
+           hairline top highlight + layered contact/ambient shadow)
+           is never re-implemented per component.
+
+           Sizing is deliberately NOT set here -- the Tailwind
+           padding/radius utilities on each button keep their own
+           rhythm. Only the surface treatment is unified.
+           ============================================================ */
+        .nlb-btn {
+            --nlb-btn-fg: #0F172A;
+            --nlb-btn-top: rgba(255, 255, 255, .78);
+            --nlb-btn-bot: rgba(248, 250, 252, .55);
+            --nlb-btn-border: rgba(255, 255, 255, .85);
+            --nlb-btn-edge: rgba(15, 23, 42, .10);
+            --nlb-btn-shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 10px 24px -14px rgba(15, 23, 42, .38);
+            --nlb-btn-blur: blur(14px) saturate(1.6);
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .4rem;
+            padding: .5rem .95rem;
+            border: 1px solid var(--nlb-btn-border);
+            border-radius: .55rem;
+            color: var(--nlb-btn-fg);
+            background: linear-gradient(180deg, var(--nlb-btn-top), var(--nlb-btn-bot));
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, .9),
+                var(--nlb-btn-shadow);
+            backdrop-filter: var(--nlb-btn-blur);
+            -webkit-backdrop-filter: var(--nlb-btn-blur);
+            font: inherit;
+            font-weight: 600;
+            line-height: 1.2;
+            text-align: center;
+            cursor: pointer;
+            transition:
+                transform .18s cubic-bezier(.4, 0, .2, 1),
+                box-shadow .18s ease,
+                border-color .18s ease,
+                color .18s ease;
+        }
+
+        /* --- variants: only the tokens change ------------------------- */
+        /* Brand emerald primary -- the reference "Adopt Style" green.
+           Alpha stays high so white text keeps AA contrast over the
+           light page bleeding through the frosted panel. */
+        .nlb-btn--primary {
+            --nlb-btn-fg: #FFFFFF;
+            --nlb-btn-top: rgba(16, 185, 129, .92);
+            --nlb-btn-bot: rgba(5, 150, 105, .88);
+            --nlb-btn-border: rgba(255, 255, 255, .20);
+            --nlb-btn-edge: rgba(255, 255, 255, .14);
+            --nlb-btn-shadow: 0 1px 2px rgba(4, 120, 87, .22), 0 12px 26px -14px rgba(4, 120, 87, .55);
+        }
+
+        /* Brand lime accent. Dark text: lime is far too light for white. */
+        .nlb-btn--accent {
+            --nlb-btn-fg: var(--brand-forest-dark);
+            --nlb-btn-top: rgba(193, 248, 36, .92);
+            --nlb-btn-bot: rgba(180, 241, 5, .82);
+            --nlb-btn-border: rgba(255, 255, 255, .55);
+            --nlb-btn-edge: rgba(5, 28, 18, .16);
+            --nlb-btn-shadow: 0 1px 2px rgba(5, 28, 18, .12), 0 12px 26px -14px rgba(5, 28, 18, .5);
+        }
+
+        .nlb-btn--success {
+            --nlb-btn-fg: #FFFFFF;
+            --nlb-btn-top: rgba(16, 185, 129, .92);
+            --nlb-btn-bot: rgba(5, 150, 105, .88);
+            --nlb-btn-border: rgba(255, 255, 255, .20);
+            --nlb-btn-edge: rgba(255, 255, 255, .14);
+            --nlb-btn-shadow: 0 1px 2px rgba(4, 120, 87, .22), 0 12px 26px -14px rgba(4, 120, 87, .55);
+        }
+
+        .nlb-btn--danger {
+            --nlb-btn-fg: #BE123C;
+            --nlb-btn-top: rgba(255, 241, 242, .9);
+            --nlb-btn-bot: rgba(255, 228, 230, .78);
+            --nlb-btn-border: rgba(255, 255, 255, .8);
+            --nlb-btn-edge: rgba(225, 29, 72, .18);
+            --nlb-btn-shadow: 0 1px 2px rgba(190, 18, 60, .1), 0 10px 24px -14px rgba(190, 18, 60, .45);
+        }
+
+        .nlb-btn--ghost {
+            --nlb-btn-fg: #334155;
+            --nlb-btn-top: rgba(255, 255, 255, .5);
+            --nlb-btn-bot: rgba(248, 250, 252, .32);
+            --nlb-btn-border: rgba(255, 255, 255, .6);
+            --nlb-btn-edge: rgba(15, 23, 42, .08);
+            --nlb-btn-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+        }
+
+        /* Square icon-only control (the three-dot trigger, close buttons). */
+        .nlb-btn--icon { padding: 0; }
+
+        /* --- interaction states ---------------------------------------
+           Hover lifts the button and brightens the border; :active
+           presses it back down. The lift is what sells the depth of a
+           real glass surface, so it is applied to every variant. */
+        .nlb-btn:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255, 255, 255, .98);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, .95),
+                0 2px 4px rgba(15, 23, 42, .08),
+                0 16px 30px -14px rgba(15, 23, 42, .45);
+        }
+
+        .nlb-btn:active {
+            transform: translateY(0);
+            box-shadow:
+                inset 0 2px 4px rgba(15, 23, 42, .12),
+                0 1px 2px rgba(15, 23, 42, .08);
+        }
+
+        /* Keyboard focus must be obvious; :focus-visible keeps it off
+           mouse clicks so the button does not look "stuck". */
+        .nlb-btn:focus-visible {
+            outline: 2px solid var(--brand-lime);
+            outline-offset: 2px;
+        }
+
+        .nlb-btn:disabled,
+        .nlb-btn[aria-disabled="true"] {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .nlb-btn, .nlb-btn:hover, .nlb-btn:active { transform: none; transition: none; }
+        }
+
+        /* ============================================================
+           ADOPTION LAYER
+           ------------------------------------------------------------
+           Buttons written with Tailwind utilities (bg-slate-900,
+           bg-emerald-600, bg-white border-slate-300, ...) are mapped
+           onto the glass system by matching their colour utilities.
+           This keeps ~140 hand-written buttons on-theme without a
+           risky find-and-replace of every class string.
+           `.nlb-glass-map` sits on <body> and is the opt-in scope.
+           ============================================================ */
+        .nlb-glass-map {
+            --nlb-btn-blur: blur(14px) saturate(1.6);
+            /* Default surface for every button that carries no colour
+               utility of its own (modal toggles, toolbar chips, the
+               registry view switch). Custom properties inherit, so the
+               token blocks below override these per button without any
+               specificity fight. */
+            --nlb-btn-fg: #334155;
+            --nlb-btn-top: rgba(255, 255, 255, .72);
+            --nlb-btn-bot: rgba(248, 250, 252, .52);
+            --nlb-btn-border: rgba(255, 255, 255, .85);
+            --nlb-btn-edge: rgba(15, 23, 42, .09);
+            --nlb-btn-shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 8px 20px -14px rgba(15, 23, 42, .38);
+        }
+
+        /* Primary (bg-slate-900 -- the app's main CTAs). Repointed from
+           near-black to the brand emerald so every primary action matches
+           the reference green. ~= keeps "hover:bg-slate-800" from being
+           read as a base fill. */
+        .nlb-glass-map button[class~="bg-slate-900"] {
+            --nlb-btn-fg: #FFFFFF;
+            --nlb-btn-top: rgba(16, 185, 129, .92);
+            --nlb-btn-bot: rgba(5, 150, 105, .88);
+            --nlb-btn-border: rgba(255, 255, 255, .20);
+            --nlb-btn-edge: rgba(255, 255, 255, .14);
+            --nlb-btn-shadow: 0 1px 2px rgba(4, 120, 87, .22), 0 12px 26px -14px rgba(4, 120, 87, .55);
+        }
+
+        /* Success (bg-emerald-600 / -700). Same ramp as the primary so the
+           greens never read as two different brands. */
+        .nlb-glass-map button[class~="bg-emerald-600"],
+        .nlb-glass-map button[class~="bg-emerald-700"] {
+            --nlb-btn-fg: #FFFFFF;
+            --nlb-btn-top: rgba(16, 185, 129, .92);
+            --nlb-btn-bot: rgba(5, 150, 105, .88);
+            --nlb-btn-border: rgba(255, 255, 255, .20);
+            --nlb-btn-edge: rgba(255, 255, 255, .14);
+            --nlb-btn-shadow: 0 1px 2px rgba(4, 120, 87, .22), 0 12px 26px -14px rgba(4, 120, 87, .55);
+        }
+
+        /* Info (bg-sky-600). */
+        .nlb-glass-map button[class~="bg-sky-600"] {
+            --nlb-btn-fg: #FFFFFF;
+            --nlb-btn-top: rgba(2, 132, 199, .92);
+            --nlb-btn-bot: rgba(7, 89, 133, .88);
+            --nlb-btn-border: rgba(255, 255, 255, .18);
+            --nlb-btn-edge: rgba(255, 255, 255, .12);
+            --nlb-btn-shadow: 0 1px 2px rgba(7, 89, 133, .2), 0 12px 26px -14px rgba(7, 89, 133, .55);
+        }
+
+        /* Destructive, FILLED (bg-rose-700 is a solid dark red: needs
+           white text, not the rose-tinted glass below). Matched with
+           ~= so "hover:bg-rose-50" is NOT mistaken for a base fill. */
+        .nlb-glass-map button[class~="bg-rose-700"] {
+            --nlb-btn-fg: #FFFFFF;
+            --nlb-btn-top: rgba(225, 29, 72, .92);
+            --nlb-btn-bot: rgba(190, 18, 60, .88);
+            --nlb-btn-border: rgba(255, 255, 255, .18);
+            --nlb-btn-edge: rgba(255, 255, 255, .12);
+            --nlb-btn-shadow: 0 1px 2px rgba(190, 18, 60, .2), 0 12px 26px -14px rgba(190, 18, 60, .55);
+        }
+
+        /* Destructive, tinted or text-only. */
+        .nlb-glass-map button[class~="bg-rose-50"],
+        .nlb-glass-map button[class~="text-rose-500"],
+        .nlb-glass-map button[class~="text-rose-600"] {
+            --nlb-btn-fg: #BE123C;
+            --nlb-btn-top: rgba(255, 241, 242, .82);
+            --nlb-btn-bot: rgba(255, 228, 230, .64);
+            --nlb-btn-border: rgba(255, 255, 255, .75);
+            --nlb-btn-edge: rgba(225, 29, 72, .16);
+            --nlb-btn-shadow: 0 1px 2px rgba(190, 18, 60, .08), 0 10px 24px -14px rgba(190, 18, 60, .4);
+        }
+
+        /* Success, tinted (bg-emerald-50 -- the Work Order Accept button).
+           Dark green text: a pale mint surface cannot carry white text. */
+        .nlb-glass-map button[class~="bg-emerald-50"] {
+            --nlb-btn-fg: #047857;
+            --nlb-btn-top: rgba(236, 253, 245, .92);
+            --nlb-btn-bot: rgba(209, 250, 229, .8);
+            --nlb-btn-border: rgba(255, 255, 255, .82);
+            --nlb-btn-edge: rgba(4, 120, 87, .16);
+            --nlb-btn-shadow: 0 1px 2px rgba(4, 120, 87, .1), 0 10px 24px -14px rgba(4, 120, 87, .45);
+        }
+
+        /* Light / secondary (bg-white, bg-slate-100, bg-slate-50). */
+        .nlb-glass-map button[class~="bg-white"],
+        .nlb-glass-map button[class~="bg-slate-100"],
+        .nlb-glass-map button[class~="bg-slate-50"] {
+            --nlb-btn-fg: #334155;
+            --nlb-btn-top: rgba(255, 255, 255, .78);
+            --nlb-btn-bot: rgba(248, 250, 252, .58);
+            --nlb-btn-border: rgba(255, 255, 255, .88);
+            --nlb-btn-edge: rgba(15, 23, 42, .1);
+            --nlb-btn-shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 10px 24px -14px rgba(15, 23, 42, .35);
+        }
+
+        /* The shared surface recipe, applied to EVERY button in the app.
+           Excluded, and why:
+             .mod-tab        - sidebar navigation, styled as a tab list
+             [class*=under..]- inline text links, not controls
+             .login-submit   - owns the full-bleed forest sign-in bar
+             .topbar-menu-btn- mobile drawer trigger, brand-lime on hover
+             .nlb-wo-*       - Work Order modal + card controls
+             .nlb-row-menu-* - the three-dot overflow menu
+             .nlb-btn        - the standalone .nlb-btn component API
+           Everything else inherits its tokens from .nlb-glass-map and is
+           repainted here, so no button in the app is left unglassed. */
+        .nlb-glass-map button:not(:is(.mod-tab, [class*="underline"], .login-submit, .topbar-menu-btn, .nlb-wo-close, .nlb-wo-btn, .nlb-wo-btn-ghost, .nlb-wo-btn-primary, .nlb-row-menu-trigger, .nlb-row-menu-item, .nlb-wo-card-btn, .nlb-wo-card-btn--accept, .nlb-btn)) {
+            position: relative;
+            border: 1px solid var(--nlb-btn-border);
+            color: var(--nlb-btn-fg);
+            background: linear-gradient(180deg, var(--nlb-btn-top), var(--nlb-btn-bot));
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, .9),
+                var(--nlb-btn-shadow);
+            backdrop-filter: var(--nlb-btn-blur);
+            -webkit-backdrop-filter: var(--nlb-btn-blur);
+            transition:
+                transform .18s cubic-bezier(.4, 0, .2, 1),
+                box-shadow .18s ease,
+                border-color .18s ease,
+                color .18s ease;
+        }
+
+        .nlb-glass-map button:not(:is(.mod-tab, [class*="underline"], .login-submit, .topbar-menu-btn, .nlb-wo-close, .nlb-wo-btn, .nlb-wo-btn-ghost, .nlb-wo-btn-primary, .nlb-row-menu-trigger, .nlb-row-menu-item, .nlb-wo-card-btn, .nlb-wo-card-btn--accept, .nlb-btn)):hover {
+            transform: translateY(-1px);
+            border-color: rgba(255, 255, 255, .98);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, .95),
+                0 2px 4px rgba(15, 23, 42, .08),
+                0 16px 30px -14px rgba(15, 23, 42, .45);
+        }
+
+        .nlb-glass-map button:not(:is(.mod-tab, [class*="underline"], .login-submit, .topbar-menu-btn, .nlb-wo-close, .nlb-wo-btn, .nlb-wo-btn-ghost, .nlb-wo-btn-primary, .nlb-row-menu-trigger, .nlb-row-menu-item, .nlb-wo-card-btn, .nlb-wo-card-btn--accept, .nlb-btn)):active {
+            transform: translateY(0);
+            box-shadow:
+                inset 0 2px 4px rgba(15, 23, 42, .12),
+                0 1px 2px rgba(15, 23, 42, .08);
+        }
+
+        .nlb-glass-map button:not(:is(.mod-tab, [class*="underline"], .login-submit, .topbar-menu-btn, .nlb-wo-close, .nlb-wo-btn, .nlb-wo-btn-ghost, .nlb-wo-btn-primary, .nlb-row-menu-trigger, .nlb-row-menu-item, .nlb-wo-card-btn, .nlb-wo-card-btn--accept, .nlb-btn)):focus-visible {
+            outline: 2px solid var(--brand-lime);
+            outline-offset: 2px;
+        }
+
+        .nlb-glass-map button:not(:is(.mod-tab, [class*="underline"], .login-submit, .topbar-menu-btn, .nlb-wo-close, .nlb-wo-btn, .nlb-wo-btn-ghost, .nlb-wo-btn-primary, .nlb-row-menu-trigger, .nlb-row-menu-item, .nlb-wo-card-btn, .nlb-wo-card-btn--accept, .nlb-btn)):disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Superseded: text-only action buttons used to be forced flat and
+           only picked up a chip on hover. They now inherit the default
+           glass from .nlb-glass-map like every other control, so there is
+           nothing left to special-case here. */
+
+        /* Underlined text buttons are inline links, not controls. Keep
+           them flat so the underline still communicates "navigate". */
+        .nlb-glass-map button[class*="underline"]:hover {
+            transform: none;
+            border-color: transparent;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .nlb-glass-map button { transition: none; }
+            .nlb-glass-map button:hover, .nlb-glass-map button:active { transform: none; }
+        }
+
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -1085,7 +1819,7 @@
     <!-- SheetJS Library for Excel Upload -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased nlb-glass-map">
 
     <div id="auth-overlay" class="login-screen hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div class="login-shell">
@@ -1633,22 +2367,32 @@
                             </div>
                         </div>
 
-                        <div id="wo-list-wrap" class="bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
-                            <div class="overflow-x-auto w-full">
-                                <table class="w-full text-left border-collapse text-xs min-w-[700px]">
+                        <div id="wo-list-wrap" class="nlb-wo-table-shell">
+                            <div class="nlb-wo-scroll">
+                                <table class="nlb-wo-table">
+                                    <colgroup>
+                                        <col class="nlb-wo-col-id">
+                                        <col class="nlb-wo-col-asset">
+                                        <col class="nlb-wo-col-metric">
+                                        <col class="nlb-wo-col-remain">
+                                        <col>
+                                        <col class="nlb-wo-col-tech">
+                                        <col class="nlb-wo-col-status">
+                                        <col class="nlb-wo-col-act">
+                                    </colgroup>
                                     <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide uppercase">
-                                            <th class="p-4">Order ID / Date</th>
-                                            <th class="p-4">Equipment Asset / Serial</th>
-                                            <th class="p-4">Current / Target Metric</th>
-                                            <th class="p-4">Remaining Hours / Info</th>
-                                            <th class="p-4">Reason</th>
-                                            <th class="p-4">Technician(s)</th>
-                                            <th class="p-4">Status</th>
-                                            <th class="p-4 text-center w-56">Actions</th>
+                                        <tr>
+                                            <th>Order ID / Date</th>
+                                            <th>Equipment Asset / Serial</th>
+                                            <th>Current / Target Metric</th>
+                                            <th>Remaining Hours / Info</th>
+                                            <th>Reason</th>
+                                            <th>Technician(s)</th>
+                                            <th>Status</th>
+                                            <th class="nlb-wo-th-act">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="rows-wo" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                                    <tbody id="rows-wo"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -2111,63 +2855,90 @@
         </footer>
     </div>
 
-    <div id="modal-add-fleet" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border border-slate-200 rounded-lg w-full max-w-md p-6 space-y-4 shadow-xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <h3 id="modal-title" class="text-sm font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+    <div id="modal-add-fleet" class="nlb-fleet-overlay fixed inset-0 hidden items-center justify-center p-4 z-50">
+        <div class="nlb-fleet-panel">
+            <div class="nlb-fleet-head">
+                <h3 id="modal-title" class="nlb-fleet-title">
                     <span class="material-symbols-outlined text-slate-700">playlist_add</span> Register Asset Specifications
                 </h3>
-                <button onclick="toggleModal('modal-add-fleet', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
+                <button type="button" aria-label="Close asset form" onclick="toggleModal('modal-add-fleet', false)" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">×</button>
             </div>
-            <form id="form-fleet" onsubmit="executeFleetSubmission(event)" class="space-y-3.5 text-xs">
+            <form id="form-fleet" onsubmit="executeFleetSubmission(event)" class="nlb-fleet-form">
                 <input type="hidden" id="in-f-mode" value="create">
                 <input type="hidden" id="in-f-old-id" value="">
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Asset ID (Primary Key Identification) *</label>
-                    <input type="text" id="in-f-id" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. WJ-001">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Equipment Name</label>
-                    <input type="text" id="in-f-equipment-name" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. High Pressure Water Jet">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Model Number *</label>
-                    <input type="text" id="in-f-model" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. NLB-225-40K">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1">Make/Brand</label>
-                    <input type="text" id="in-f-description" required class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 focus:outline-none focus:border-slate-900" placeholder="e.g. High Pressure Hydro-Jetting Rig System">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Max Pressure</label>
-                    <input type="text" id="in-f-pressure" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. 40,000 PSI">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Serial Number</label>
-                    <input type="text" id="in-f-serial" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. SN-987654">
-                </div>
-                <div>
-                    <label class="block text-slate-600 font-medium mb-1 font-code">Current Metric</label>
-                    <input type="text" id="in-f-current-metric" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-slate-900 uppercase font-code focus:outline-none focus:border-slate-900" placeholder="e.g. 1,250 Hrs">
-                </div>
-                <div>
-                    <label class="block text-slate-400 font-medium mb-1 font-code">Location (Controlled by Operations)</label>
-                    <input type="text" id="in-f-location" readonly class="w-full bg-slate-100 border border-slate-300 rounded p-2 text-slate-500 uppercase font-code cursor-not-allowed outline-none" placeholder="WORKSHOP">
-                </div>
-                <div>
-                    <label class="block text-slate-400 font-medium mb-1">Operational Status (Controlled by Operations)</label>
-                    <select id="in-f-status" disabled class="w-full bg-slate-100 border border-slate-300 rounded p-2 text-slate-500 cursor-not-allowed outline-none">
-                        <option value="Operational">Operational</option>
-                        <option value="In Maintenance">In Maintenance</option>
-                        <option value="Down">Down</option>
-                        <option value="Standby">Standby</option>
-                        <option value="Dispatched">Dispatched</option>
-                        <option value="Request Dispatch">Request Dispatch</option>
-                    </select>
-                </div>
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="toggleModal('modal-add-fleet', false)" class="bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2 rounded font-medium cursor-pointer">Cancel</button>
-                    <button type="submit" id="btn-submit-text" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded font-bold cursor-pointer">Commit Asset Spec</button>
+                <section class="nlb-fleet-section">
+                    <div class="nlb-fleet-section-head"><h4>Identity</h4></div>
+                    <div class="nlb-fleet-grid">
+                        <div>
+                            <label class="nlb-fleet-label" for="in-f-id">Asset ID <span class="nlb-fleet-hint">(Primary Key)</span> <span class="nlb-fleet-req">*</span></label>
+                            <input type="text" id="in-f-id" required class="nlb-fleet-input nlb-fleet-input--mono" placeholder="e.g. WJ-001">
+                        </div>
+                        <div>
+                            <label class="nlb-fleet-label" for="in-f-equipment-name">Equipment Name</label>
+                            <input type="text" id="in-f-equipment-name" class="nlb-fleet-input" placeholder="e.g. High Pressure Water Jet">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="nlb-fleet-section">
+                    <div class="nlb-fleet-section-head"><h4>Specification</h4></div>
+                    <div class="nlb-fleet-grid">
+                        <div>
+                            <label class="nlb-fleet-label" for="in-f-model">Model Number <span class="nlb-fleet-req">*</span></label>
+                            <input type="text" id="in-f-model" required class="nlb-fleet-input nlb-fleet-input--mono" placeholder="e.g. NLB-225-40K">
+                        </div>
+                        <div>
+                            <label class="nlb-fleet-label" for="in-f-description">Make / Brand <span class="nlb-fleet-req">*</span></label>
+                            <input type="text" id="in-f-description" required class="nlb-fleet-input" placeholder="e.g. High Pressure Hydro-Jetting Rig System">
+                        </div>
+                        <div>
+                            <label class="nlb-fleet-label" for="in-f-pressure">Max Pressure</label>
+                            <input type="text" id="in-f-pressure" class="nlb-fleet-input nlb-fleet-input--mono" placeholder="e.g. 40,000 PSI">
+                        </div>
+                        <div>
+                            <label class="nlb-fleet-label" for="in-f-serial">Serial Number</label>
+                            <input type="text" id="in-f-serial" class="nlb-fleet-input nlb-fleet-input--mono" placeholder="e.g. SN-987654">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="nlb-fleet-section">
+                    <div class="nlb-fleet-section-head"><h4>Tracking</h4></div>
+                    <div class="nlb-fleet-grid">
+                        <div>
+                            <label class="nlb-fleet-label" for="in-f-current-metric">Current Metric</label>
+                            <input type="text" id="in-f-current-metric" class="nlb-fleet-input nlb-fleet-input--mono" placeholder="e.g. 1,250 Hrs">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="nlb-fleet-locked">
+                    <p class="nlb-fleet-locked-note"><span class="material-symbols-outlined">lock</span> Managed by Operations</p>
+                    <div class="nlb-fleet-grid">
+                        <div>
+                            <label class="nlb-fleet-label" for="in-f-location">Location</label>
+                            <input type="text" id="in-f-location" readonly class="nlb-fleet-input nlb-fleet-input--lock nlb-fleet-input--mono" placeholder="WORKSHOP">
+                        </div>
+                        <div>
+                            <label class="nlb-fleet-label" for="in-f-status">Operational Status</label>
+                            <select id="in-f-status" disabled class="nlb-fleet-input nlb-fleet-input--lock">
+                                <option value="Operational">Operational</option>
+                                <option value="In Maintenance">In Maintenance</option>
+                                <option value="Down">Down</option>
+                                <option value="Standby">Standby</option>
+                                <option value="Dispatched">Dispatched</option>
+                                <option value="Request Dispatch">Request Dispatch</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="nlb-fleet-foot">
+                    <p class="nlb-fleet-foot-note"><span class="material-symbols-outlined text-[15px]">info</span> Location and status are assigned by Operations once the asset is registered.</p>
+                    <div class="nlb-fleet-foot-actions">
+                        <button type="button" onclick="toggleModal('modal-add-fleet', false)" class="nlb-fleet-btn bg-slate-100 text-slate-700">Cancel</button>
+                        <button type="submit" id="btn-submit-text" class="nlb-fleet-btn bg-slate-900">Commit Asset Spec</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -2461,10 +3232,17 @@
                         <h4 class="nlb-wo-section-title"><span class="material-symbols-outlined">build_circle</span>Equipment &amp; Tracking</h4>
                         <div class="nlb-wo-grid">
 
-                            <div class="nlb-wo-field" id="wrapper-wo-asset" style="grid-column: 1 / -1;">
-                                <label class="nlb-wo-label" for="in-w-asset">Target Equipment Asset <span class="nlb-wo-req">*</span></label>
-                                <input type="text" id="in-w-search-asset" oninput="filterDropdownSearch('in-w-search-asset', 'in-w-asset')" placeholder="Type to filter the equipment list..." class="nlb-wo-control nlb-wo-mono" style="margin-bottom: .4rem;">
-                                <select id="in-w-asset" required onchange="autoFillCurrentMetricFromAsset(); autoFillTargetMetricFromRecentLog();" class="nlb-wo-control nlb-wo-select nlb-wo-mono"></select>
+                            <div class="nlb-wo-field nlb-epick" id="wrapper-wo-asset" data-epick style="grid-column: 1 / -1;">
+                                <label class="nlb-wo-label" for="in-w-search-asset">Target Equipment Asset <span class="nlb-wo-req">*</span></label>
+                                <div class="nlb-epick__control">
+                                    <span class="material-symbols-outlined nlb-epick__lead" aria-hidden="true">search</span>
+                                    <input type="text" id="in-w-search-asset" class="nlb-epick__input" role="combobox" aria-expanded="false" aria-controls="in-w-asset-list" aria-autocomplete="list" aria-describedby="in-w-asset-hint" autocomplete="off" placeholder="Search by ID, name, model, serial or location...">
+                                    <button type="button" class="nlb-epick__clear" tabindex="-1" aria-label="Clear selected equipment"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                                    <span class="material-symbols-outlined nlb-epick__caret" aria-hidden="true">expand_more</span>
+                                </div>
+                                <div class="nlb-epick__menu" id="in-w-asset-list" role="listbox" aria-label="Equipment results" hidden></div>
+                                <p class="nlb-epick__hint" id="in-w-asset-hint" aria-live="polite"></p>
+                                <select id="in-w-asset" required onchange="autoFillCurrentMetricFromAsset(); autoFillTargetMetricFromRecentLog();" class="nlb-epick__native" tabindex="-1" aria-hidden="true"></select>
                             </div>
 
                             <div class="nlb-wo-field" id="wrapper-wo-tracking" style="grid-column: 1 / -1;">
@@ -5753,6 +6531,10 @@
                 if (typeSelect) typeSelect.value = "none";
                 toggleMetricInputs('none');
             }
+
+            // The asset select was cleared directly (no change event), so the
+            // picker's visible label needs an explicit refresh.
+            if (typeof window.syncEquipmentPickers === 'function') window.syncEquipmentPickers();
         }
 
         function filterDropdownSearch(inputId, selectId) {
@@ -5769,6 +6551,267 @@
                 }
             }
         }
+
+        /* ==================================================================
+           EQUIPMENT PICKER (combobox) — Work Order form
+           The native equipment select stays the single source of truth:
+           populateEquipmentDropdown() still fills it, the onchange autofills
+           still run, and `required` still validates it. This layer only
+           mirrors that value into a richer UI and writes back on pick, so no
+           existing call site or handler had to change.
+           ================================================================== */
+        const equipmentPickers = [];
+
+        function escapeEpickHtml(value) {
+            return String(value === null || value === undefined ? '' : value)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // Searchable text for an asset, from whichever fields exist.
+        function equipmentHaystack(asset) {
+            return [asset.id, asset.equipmentName, asset.name, asset.model, asset.serial,
+                    asset.description, asset.make, asset.pressure, asset.location,
+                    asset.status, asset.currentMetric, asset.targetMetric]
+                .filter(Boolean).join(' ').toLowerCase();
+        }
+
+        function highlightEpickMatch(text, query) {
+            const safe = escapeEpickHtml(text);
+            if (!query) return safe;
+            const at = safe.toLowerCase().indexOf(query.toLowerCase());
+            if (at === -1) return safe;
+            return safe.slice(0, at) + '<mark>' + safe.slice(at, at + query.length) + '</mark>' + safe.slice(at + query.length);
+        }
+
+        function createEquipmentPicker(wrap) {
+            const input = wrap.querySelector('.nlb-epick__input');
+            const menu = wrap.querySelector('.nlb-epick__menu');
+            const hint = wrap.querySelector('.nlb-epick__hint');
+            const clearBtn = wrap.querySelector('.nlb-epick__clear');
+            const select = wrap.querySelector('select');
+            if (!input || !menu || !select) return null;
+
+            const p = {
+                wrap, input, menu, hint, clearBtn, select,
+                items: [], hits: [], active: -1, committed: ''
+            };
+
+            // Mirrors the select's options, enriched from memory.assets so the
+            // search also matches name / serial / location / status.
+            p.readItems = function () {
+                const out = [];
+                for (const opt of select.options) {
+                    if (!opt.value) continue;
+                    const rec = (memory.assets || []).find(a => String(a.id) === String(opt.value)) || null;
+                    out.push({
+                        value: opt.value,
+                        id: rec && rec.id ? rec.id : opt.value,
+                        name: (rec && (rec.equipmentName || rec.name)) || '',
+                        model: (rec && rec.model) || '',
+                        serial: (rec && rec.serial) || '',
+                        location: (rec && rec.location) || '',
+                        status: (rec && rec.status) || '',
+                        hay: rec ? equipmentHaystack(rec) : opt.textContent.toLowerCase()
+                    });
+                }
+                p.items = out;
+            };
+
+            p.label = function () {
+                const hit = p.items.find(i => i.value === p.committed);
+                if (!hit) return '';
+                return hit.id + (hit.name ? ' — ' + hit.name : '');
+            };
+
+            p.syncLabel = function () {
+                p.input.value = p.label();
+                p.wrap.classList.toggle('has-value', !!p.committed);
+            };
+
+            p.refresh = function () {
+                p.readItems();
+                p.committed = select.value || '';
+                p.syncLabel();
+                if (!p.menu.hidden) p.render();
+            };
+
+            p.render = function () {
+                const raw = p.input.value;
+                // While the committed label is still showing, treat it as "no query".
+                const q = (raw === p.label()) ? '' : raw.trim().toLowerCase();
+                p.hits = p.items.filter(i => i.hay.indexOf(q) > -1);
+
+                if (!p.hits.length) {
+                    p.menu.innerHTML = '<div class="nlb-epick__none">' + (p.items.length
+                        ? 'No equipment matches "' + escapeEpickHtml(raw.trim()) + '"'
+                        : 'No equipment registered yet') + '</div>';
+                } else {
+                    p.menu.innerHTML = p.hits.map((it, i) => {
+                        const chosen = it.value === p.committed;
+                        const meta = [it.model, it.serial ? 'SN: ' + it.serial : '', it.location]
+                            .filter(Boolean)
+                            .map(part => '<span>' + highlightEpickMatch(part, q) + '</span>')
+                            .join('<span class="text-slate-300">&middot;</span>');
+                        return '<div class="nlb-epick__opt" role="option" id="' + menu.id + '-opt-' + i + '"' +
+                            (chosen ? ' aria-selected="true"' : '') +
+                            ' data-value="' + escapeEpickHtml(it.value) + '">' +
+                            '<span class="nlb-epick__opt-top">' +
+                                '<span class="nlb-epick__opt-id">' + highlightEpickMatch(it.id, q) + '</span>' +
+                                '<span class="nlb-epick__opt-name">' + highlightEpickMatch(it.name || it.model || '—', q) + '</span>' +
+                                (it.status ? '<span class="nlb-epick__opt-status">' + escapeEpickHtml(it.status) + '</span>' : '') +
+                                (chosen ? '<span class="material-symbols-outlined nlb-epick__opt-check" aria-hidden="true">check</span>' : '') +
+                            '</span>' +
+                            (meta ? '<span class="nlb-epick__opt-sub">' + meta + '</span>' : '') +
+                            '</div>';
+                    }).join('');
+                }
+                p.setActive(-1, false);
+                p.hint.classList.remove('is-error');
+                p.hint.textContent = p.hits.length
+                    ? p.hits.length + (p.hits.length === 1 ? ' asset found' : ' assets found')
+                    : '';
+            };
+
+            p.setActive = function (index, scroll) {
+                p.active = index;
+                const nodes = p.menu.querySelectorAll('.nlb-epick__opt');
+                nodes.forEach((n, i) => {
+                    n.classList.toggle('is-active', i === index);
+                    if (i === index) {
+                        p.input.setAttribute('aria-activedescendant', n.id);
+                        if (scroll !== false && n.scrollIntoView) n.scrollIntoView({ block: 'nearest' });
+                    }
+                });
+                if (index === -1) p.input.removeAttribute('aria-activedescendant');
+            };
+
+            p.open = function () {
+                if (p.menu.hidden) {
+                    p.menu.hidden = false;
+                    p.wrap.classList.add('is-open');
+                    p.input.setAttribute('aria-expanded', 'true');
+                    if (p.committed) p.input.select();
+                }
+                p.render();
+            };
+
+            p.close = function () {
+                p.menu.hidden = true;
+                p.wrap.classList.remove('is-open');
+                p.input.setAttribute('aria-expanded', 'false');
+                p.input.removeAttribute('aria-activedescendant');
+                p.active = -1;
+                p.syncLabel();
+            };
+
+            p.clearError = function () {
+                p.wrap.classList.remove('is-invalid');
+                p.hint.classList.remove('is-error');
+            };
+
+            p.markInvalid = function () {
+                // The select is visually collapsed, so take over its native bubble.
+                // open() runs first because render() refreshes the hint line and
+                // would otherwise wipe the message we are about to write.
+                p.open();
+                p.wrap.classList.add('is-invalid');
+                p.hint.classList.add('is-error');
+                p.hint.textContent = 'Select an equipment asset to continue.';
+                p.input.focus();
+            };
+
+            p.commit = function (value) {
+                p.select.value = value;
+                p.committed = value;
+                p.clearError();
+                p.close();
+                // Fire change so the onchange autofills still run.
+                p.select.dispatchEvent(new Event('change', { bubbles: true }));
+                p.input.focus();
+            };
+
+            // ---- wiring ----------------------------------------------------
+            p.input.addEventListener('focus', function () { p.open(); });
+
+            p.input.addEventListener('input', function () {
+                p.committed = '';
+                p.wrap.classList.remove('has-value');
+                p.clearError();
+                if (p.menu.hidden) p.open(); else p.render();
+            });
+
+            p.input.addEventListener('keydown', function (e) {
+                const total = p.hits.length;
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (p.menu.hidden) { p.open(); if (e.key === 'ArrowDown' && total) p.setActive(0, true); return; }
+                    if (!total) return;
+                    if (e.key === 'ArrowDown') p.setActive(p.active + 1 >= total ? 0 : p.active + 1, true);
+                    else p.setActive(p.active - 1 < 0 ? total - 1 : p.active - 1, true);
+                    return;
+                }
+                if (e.key === 'Enter') {
+                    if (!p.menu.hidden && p.active > -1 && p.hits[p.active]) {
+                        e.preventDefault();
+                        p.commit(p.hits[p.active].value);
+                    }
+                    return;
+                }
+                if (e.key === 'Escape') { if (!p.menu.hidden) { e.preventDefault(); p.close(); } return; }
+                if (e.key === 'Tab') p.close();
+            });
+
+            if (clearBtn) clearBtn.addEventListener('click', function () { p.commit(''); });
+
+            // Keep focus in the text field so clicking an option does not blur first.
+            p.menu.addEventListener('mousedown', function (e) { e.preventDefault(); });
+            p.menu.addEventListener('click', function (e) {
+                const opt = e.target.closest('.nlb-epick__opt');
+                if (opt) p.commit(opt.getAttribute('data-value'));
+            });
+
+            // The select stays authoritative, so mirror its changes both ways.
+            p.select.addEventListener('change', function () {
+                p.committed = p.select.value || '';
+                p.syncLabel();
+            });
+            p.select.addEventListener('invalid', function (e) {
+                e.preventDefault();
+                p.markInvalid();
+            });
+
+            // Any repopulation of the select (populateEquipmentDropdown,
+            // reloads, imports) refreshes the visible label with no call-site change.
+            if (window.MutationObserver) {
+                new MutationObserver(function () { p.refresh(); })
+                    .observe(p.select, { childList: true });
+            }
+
+            return p;
+        }
+
+        /* Boot every [data-epick] and close them on outside click.
+           syncEquipmentPickers() is also called after toggleWoCategory(),
+           which clears the select directly without firing a change event. */
+        window.syncEquipmentPickers = function () {
+            document.querySelectorAll('[data-epick]').forEach(function (wrap) {
+                if (equipmentPickers.some(p => p.wrap === wrap)) return;
+                const p = createEquipmentPicker(wrap);
+                if (!p) return;
+                equipmentPickers.push(p);
+                p.refresh();
+            });
+            equipmentPickers.forEach(function (p) { p.refresh(); });
+        };
+
+        document.addEventListener('click', function (e) {
+            equipmentPickers.forEach(function (p) {
+                if (!p.wrap.contains(e.target)) p.close();
+            });
+        });
+
+        window.syncEquipmentPickers();
 
         function toggleAllPmChecklistItems(isChecked) {
             const checkboxes = document.querySelectorAll('input[name="pm-checks"]');
@@ -6986,6 +8029,24 @@
             }[status] || '#CBD5E1';
         }
 
+        // Free-text fields (a work order reason can contain quotes or angle
+        // brackets) go into title="" attributes, so they need escaping before
+        // they are interpolated into markup.
+        // The double quote comes from a char code instead of a literal inside a
+        // regex pattern: the test harness slices these function bodies with a
+        // simple scanner that does not understand regex literals, so a bare
+        // quote in a pattern would read as a string opener and truncate the
+        // slice. Kept self-contained because the harness lifts only function
+        // declarations, never module-level constants.
+        function escAttr(value) {
+            const quote = String.fromCharCode(34);
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .split(quote).join('&quot;');
+        }
+
         function getWorkOrderStatusBadgeClass(status) {
             switch (status) {
                 case 'Pending': return 'bg-slate-100 text-slate-700 border border-slate-300';
@@ -7154,6 +8215,9 @@
             if (currentActiveModule === "wo") {
                 const container = document.getElementById('rows-wo');
                 container.innerHTML = "";
+                if (memory.workOrders.length === 0) {
+                    container.innerHTML = `<tr class="nlb-wo-empty-row"><td colspan="8"><div class="nlb-wo-empty"><strong>No work orders yet</strong><p>Create a work order to start tracking maintenance against your fleet.</p></div></td></tr>`;
+                }
                 memory.workOrders.forEach(w => {
                     
                     // --- ADDED LOGIC FOR SERIAL NUMBER ---
@@ -7201,22 +8265,21 @@
                         woActionButton = `<span class="text-slate-300 font-normal italic pointer-events-none">No Action</span>`;
                     }
                     
-                    let woStatusClass = "bg-slate-100 text-slate-700 border border-slate-200";
-                    if (w.status === "Pending") woStatusClass = "bg-slate-100 text-slate-700 border border-slate-300";
-                    else if (w.status === "In Progress") woStatusClass = "bg-blue-100 text-blue-800 border border-blue-200";
-                    else if (w.status === "Check-up/Inspection") woStatusClass = "bg-amber-100 text-amber-800 border border-amber-200";
-                    else if (w.status === "Completed") woStatusClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
-                    else if (w.status === "Cancelled") woStatusClass = "bg-rose-100 text-rose-800 border border-rose-200";
+                    // Status colour comes from the same helpers the grid cards
+                    // use, so the list rail and the card header can never drift.
+                    const woAccent = getWorkOrderStatusAccent(w.status);
+                    const woBadge = getWorkOrderStatusBadgeClass(w.status);
+                    const woReason = w.reason || 'N/A';
 
                     container.innerHTML += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-4" title="${w.id || 'N/A'} - ${formatDisplayDate(w.date) || 'N/A'}"><div class="font-bold font-code text-slate-900">${w.id || 'N/A'}</div><div class="text-[10px] text-slate-400 font-code font-normal mt-0.5">${formatDisplayDate(w.date) || 'N/A'}</div></td>
+                        <tr class="nlb-wo-row" style="--nlb-wo-accent: ${woAccent};">
+                            <td class="p-4" title="${escAttr((w.id || 'N/A') + ' - ' + (formatDisplayDate(w.date) || 'N/A'))}"><div class="font-bold font-code text-slate-900">${w.id || 'N/A'}</div><div class="text-[10px] text-slate-400 font-code font-normal mt-0.5">${formatDisplayDate(w.date) || 'N/A'}</div></td>
                             <td class="p-4 font-code font-medium">${isAccessoryWo ? 'Accessory' : w.assetId}<div class="text-[10px] text-slate-400 font-normal mt-0.5">S/N: ${serialNumber}</div></td>
                             <td class="p-4 font-code" title="Current: ${metricInfo} | Target: ${targetInfo}">${metricCell}</td>
-                            <td class="p-4 font-medium text-slate-500">${diffInfo}</td>
-                            <td class="p-4 text-xs">${w.reason || 'N/A'}</td>
-                            <td class="p-4 text-xs" title="${techNames.join(', ') || 'No technician assigned'}">${techInfo}</td>
-                            <td class="p-4"><span class="px-2 py-1 rounded text-[11px] font-bold ${woStatusClass}">${w.status}</span></td>
+                            <td class="p-4 nlb-wo-remain">${diffInfo}</td>
+                            <td class="p-4" title="${escAttr(woReason)}"><div class="nlb-wo-reason">${woReason}</div></td>
+                            <td class="p-4 nlb-wo-tech" title="${escAttr(techNames.join(', ') || 'No technician assigned')}">${techInfo}</td>
+                            <td class="p-4"><span class="nlb-wo-pill ${woBadge}"><i></i>${w.status}</span></td>
                             <td class="p-4 text-center">
                                 <div class="nlb-wo-actions">
                                     ${woActionButton}
