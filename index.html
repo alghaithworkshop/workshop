@@ -2,504 +2,913 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Al Ghaith Asset Management Hub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#062E1B">
+    <meta name="description" content="Al Ghaith Trading &amp; Industrial Services - Enterprise Operations &amp; Asset Management Command Center">
+    <title>Al Ghaith Enterprise Operations Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="main.css">
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-        }
-        .font-mono-tech {
-            font-family: 'JetBrains Mono', monospace;
+        /* ------------------------------------------------------------------
+           AL GHAITH - INDUSTRIAL OPERATIONS COMMAND CENTER
+           Design tokens (brand identity for the command center hub only)
+        ------------------------------------------------------------------ */
+        :root {
+            --ag-forest-900: #062E1B;
+            --ag-forest-700: #0B4D2C;
+            --ag-forest-500: #176B3A;
+            --ag-lime: #B4F105;
+            --ag-lime-soft: rgba(180, 241, 5, 0.16);
+            --ag-lime-line: rgba(180, 241, 5, 0.40);
+            --ag-bg: #E7EDE9;
+            --ag-card: #F8FAF9;
+            --ag-text: #10251A;
+            --ag-muted: #60736A;
+            --ag-line: rgba(6, 46, 27, 0.12);
+            --ag-shadow-sm: 0 2px 10px rgba(6, 46, 27, 0.06);
+            --ag-shadow-md: 0 12px 30px rgba(6, 46, 27, 0.10);
+            --ag-shadow-lg: 0 24px 56px rgba(6, 46, 27, 0.16);
+            --ag-ease: 250ms cubic-bezier(0.22, 0.61, 0.36, 1);
         }
 
-        /* Professional Technical Blueprint & Ambient Glow Background */
-        .bg-executive {
-            background-color: #030712;
-            background-image: 
-                radial-gradient(circle at 15% 20%, rgba(225, 29, 72, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.07) 0%, transparent 40%),
-                radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
-                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+        * { box-sizing: border-box; }
+
+        .ag-mono, .font-mono-tech {
+            font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+
+        /* ------------------------------------------------------------------
+           PAGE CANVAS - subtle technical-industrial background
+        ------------------------------------------------------------------ */
+        body.ag-portal {
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--ag-text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--ag-bg);
+            background-image:
+                radial-gradient(circle at 10% -8%, rgba(11, 77, 44, 0.10) 0%, transparent 42%),
+                radial-gradient(circle at 92% -4%, rgba(180, 241, 5, 0.14) 0%, transparent 38%),
+                radial-gradient(circle at 50% 118%, rgba(23, 107, 58, 0.10) 0%, transparent 55%),
+                linear-gradient(to right, rgba(6, 46, 27, 0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(6, 46, 27, 0.045) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 44px 44px, 44px 44px;
             background-attachment: fixed;
         }
 
-        .animate-fade-in {
-            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        body.bg-executive {
-            background: #E7EDE9 !important;
-            color: var(--text-main) !important;
+        /* Faint blueprint frame */
+        body.ag-portal::before {
+            content: '';
+            position: fixed;
+            inset: 14px;
+            border: 1px solid rgba(6, 46, 27, 0.05);
+            border-radius: 22px;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        body.bg-executive > .fixed.inset-0.pointer-events-none {
-            display: none;
+        .ag-layer { position: relative; z-index: 1; }
+        .ag-shell { width: 100%; max-width: 1480px; margin: 0 auto; padding: 0 clamp(14px, 3vw, 28px); }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            line-height: 1;
+        }
+        /* ------------------------------------------------------------------
+           EXECUTIVE STICKY HEADER
+        ------------------------------------------------------------------ */
+        .ag-header {
+            position: sticky;
+            top: 0;
+            z-index: 60;
+            background: linear-gradient(115deg, #062E1B 0%, #0B4D2C 58%, #123F28 100%);
+            box-shadow: 0 12px 34px rgba(6, 46, 27, 0.22);
+        }
+        .ag-header::after {
+            content: '';
+            display: block;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(180, 241, 5, 0), rgba(180, 241, 5, 0.75), rgba(180, 241, 5, 0));
         }
 
-        #hub-view {
-            max-width: 1440px;
-            padding-top: 1.5rem;
+        .ag-head-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 13px 0 11px;
+            flex-wrap: wrap;
         }
 
-        #hub-view > header > div {
-            background: var(--brand-forest-dark) !important;
-            border: 1px solid var(--brand-forest-light) !important;
-            border-radius: 14px !important;
-            box-shadow: var(--shadow-md) !important;
-            backdrop-filter: none;
-        }
+        .ag-brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
 
-        #hub-view > header > div > div:first-child {
-            background: var(--brand-lime) !important;
-        }
-
-        #hub-view h1 {
-            color: #FFFFFF !important;
-        }
-
-        #hub-view header p.text-slate-400 {
-            color: #B8C8C0 !important;
-        }
-
-        #hub-view header .bg-rose-500\/10 {
-            color: var(--brand-forest-dark) !important;
-            background: var(--brand-lime) !important;
-            border-color: var(--brand-lime-hover) !important;
-            text-shadow: none !important;
-        }
-
-        #hub-view header .bg-slate-950\/80 {
-            background: rgba(0, 0, 0, 0.2) !important;
-            border-color: rgba(255, 255, 255, 0.12) !important;
-            color: #B8C8C0 !important;
-        }
-
-        #hub-view header .text-slate-300,
-        #hub-view header .text-slate-400,
-        #hub-view header .text-emerald-400 {
-            color: #B8C8C0 !important;
-        }
-
-        #hub-view > main > button {
-            min-height: 320px;
-            background: #F8FAF9 !important;
-            border-color: var(--border-light) !important;
-            border-radius: 14px !important;
-            box-shadow: var(--shadow-md) !important;
-        }
-
-        #hub-view > main > button:hover {
-            border-color: var(--brand-lime) !important;
-            box-shadow: var(--shadow-lg) !important;
-        }
-
-        #hub-view > main > button > div.absolute.inset-0 > img {
-            opacity: 0.16 !important;
-        }
-
-        #hub-view > main > button > div.absolute.inset-0 > div {
-            background: linear-gradient(to top, rgba(226, 234, 229, 0.98), rgba(239, 244, 241, 0.82), rgba(248, 250, 249, 0.28)) !important;
-        }
-
-        #hub-view > main > button h2 {
-            color: var(--text-main) !important;
-        }
-
-        #hub-view > main > button p.text-slate-300 {
-            color: var(--text-muted-green) !important;
-        }
-
-        #hub-view > main > button .border-slate-800\/80 {
-            border-color: var(--border-light) !important;
-        }
-
-        #hub-view > main > button .bg-slate-900\/90 {
-            background: #F8FAF9 !important;
-            border-color: var(--border-light) !important;
-        }
-
-        #hub-view > main > button .text-rose-400,
-        #hub-view > main > button .text-sky-400,
-        #hub-view > main > button .text-amber-400,
-        #hub-view > main > button .text-purple-400,
-        #hub-view > main > button .text-emerald-400 {
-            color: var(--brand-forest-medium) !important;
-        }
-
-        #hub-view > main > button h2,
-        #hub-view > main > button p.text-slate-300,
-        #hub-view > main > button > div.relative > div:last-child,
-        #hub-view > main > button > div.relative > div:last-child span {
-            color: var(--brand-forest-medium) !important;
-        }
-
-        #hub-view > main > button p.text-slate-300 {
-            color: var(--text-muted-green) !important;
-        }
-
-        #hub-footer {
-            color: var(--text-muted-green) !important;
-            background: #DDE6E0 !important;
-            border-color: var(--border-light) !important;
-        }
-
-        #hub-footer .text-slate-500 {
-            color: var(--text-muted-green) !important;
-        }
-
-        #system-online-popup {
-            background: rgba(5, 28, 18, .58);
-            backdrop-filter: blur(5px);
-        }
-
-        #system-online-popup .system-online-card {
-            width: min(100%, 520px);
-            max-height: min(90vh, 760px);
-            overflow-y: auto;
-            border: 1px solid rgba(180, 241, 5, .38);
-            border-radius: 14px;
+        .ag-logo {
+            flex: 0 0 auto;
+            width: 54px;
+            height: 54px;
+            padding: 6px;
+            border-radius: 15px;
             background: #FFFFFF;
-            box-shadow: 0 24px 70px rgba(5, 28, 18, .24);
-            animation: systemPopupIn .35s cubic-bezier(.16, 1, .3, 1) both;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 0 0 1px rgba(180, 241, 5, 0.35), 0 12px 24px rgba(0, 0, 0, 0.30);
+            transition: var(--ag-ease);
+        }
+        .ag-brand:hover .ag-logo { transform: translateY(-1px); box-shadow: 0 0 0 2px var(--ag-lime), 0 14px 28px rgba(0, 0, 0, 0.34); }
+        .ag-logo img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; }
+
+        .ag-brand-text { min-width: 0; }
+        .ag-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #062E1B;
+            background: var(--ag-lime);
+            padding: 3px 8px;
+            border-radius: 5px;
+            margin-bottom: 6px;
+        }
+        .ag-brand-name {
+            margin: 0;
+            color: #FFFFFF;
+            font-size: 14.5px;
+            font-weight: 800;
+            letter-spacing: 0.055em;
+            text-transform: uppercase;
+            line-height: 1.18;
+        }
+        .ag-brand-sub { margin: 3px 0 0; color: #A9C3B6; font-size: 11.5px; font-weight: 500; }
+
+        .ag-head-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        .ag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.055);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #C3D7CB;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+        }
+        .ag-pill strong { color: #FFFFFF; font-weight: 700; }
+        .ag-pill .material-symbols-outlined { font-size: 15px; color: var(--ag-lime); }
+        /* animated operational status dot */
+        .ag-dot {
+            flex: 0 0 auto;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--ag-lime);
+            box-shadow: 0 0 0 3px var(--ag-lime-soft);
+            animation: agPulse 2.2s ease-in-out infinite;
+        }
+        .ag-dot--plain { background: #3DDC84; box-shadow: 0 0 0 3px rgba(61, 220, 132, 0.18); }
+        @keyframes agPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.82); }
         }
 
-        #system-online-popup .system-online-icon {
-            width: 48px;
-            height: 48px;
+        .ag-clock { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.25; }
+        .ag-clock-date { font-size: 10.5px; font-weight: 600; color: #A9C3B6; }
+        .ag-clock-time { font-size: 14.5px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.07em; }
+
+        .ag-icon-btn {
+            position: relative;
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            color: #D6E6DC;
+            cursor: pointer;
+            transition: var(--ag-ease);
+            font-family: inherit;
+        }
+        .ag-icon-btn:hover,
+        .ag-icon-btn:focus-visible {
+            background: rgba(180, 241, 5, 0.16);
+            border-color: var(--ag-lime-line);
+            color: #FFFFFF;
+            transform: translateY(-1px);
+        }
+        .ag-icon-btn .material-symbols-outlined { font-size: 20px; }
+        .ag-icon-btn .ag-badge-dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--ag-lime);
+            box-shadow: 0 0 0 2px #0B4D2C;
+        }
+
+        /* Utility navigation bar */
+        .ag-nav { display: flex; gap: 4px; overflow-x: auto; padding: 0 0 10px; scrollbar-width: none; -ms-overflow-style: none; }
+        .ag-nav::-webkit-scrollbar { display: none; }
+        .ag-nav-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 14px;
+            border-radius: 9px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #B4C9BF;
+            font-family: inherit;
+            font-size: 11.5px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--ag-ease);
+        }
+        .ag-nav-btn .material-symbols-outlined { font-size: 17px; }
+        .ag-nav-btn:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.07); }
+        .ag-nav-btn:focus-visible { outline: 2px solid var(--ag-lime); outline-offset: 2px; }
+        .ag-nav-btn.is-active { color: #062E1B; background: var(--ag-lime); font-weight: 700; }
+        /* ------------------------------------------------------------------
+           HERO / WELCOME COMMAND CENTER
+        ------------------------------------------------------------------ */
+        .ag-hero {
+            margin: 22px 0 26px;
+            padding: clamp(18px, 2.4vw, 28px);
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 24px;
+            background: rgba(248, 250, 249, 0.82);
+            border: 1px solid var(--ag-line);
+            border-left: 3px solid var(--ag-lime);
+            border-radius: 18px;
+            box-shadow: var(--ag-shadow-md);
+            backdrop-filter: blur(6px);
+        }
+        .ag-hero-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 9.5px;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ag-forest-500);
+        }
+        .ag-hero-kicker .material-symbols-outlined { font-size: 15px; }
+        .ag-hero-title {
+            margin: 8px 0 0;
+            font-size: clamp(22px, 2.6vw, 30px);
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            color: var(--ag-forest-900);
+            line-height: 1.1;
+        }
+        .ag-hero-sub {
+            margin: 10px 0 0;
+            max-width: 64ch;
+            color: var(--ag-muted);
+            font-size: 13.5px;
+            line-height: 1.65;
+        }
+
+        .ag-metrics { display: grid; grid-template-columns: repeat(3, minmax(118px, 1fr)); gap: 10px; }
+        .ag-metric {
+            padding: 12px 14px;
+            background: var(--ag-card);
+            border: 1px solid var(--ag-line);
+            border-radius: 14px;
+            box-shadow: var(--ag-shadow-sm);
+        }
+        .ag-metric-label {
+            display: block;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ag-muted);
+        }
+        .ag-metric-value {
+            display: block;
+            margin-top: 5px;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--ag-forest-700);
+            letter-spacing: -0.01em;
+        }
+        .ag-metric-value--status { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+
+        /* ------------------------------------------------------------------
+           SECTION HEADINGS
+        ------------------------------------------------------------------ */
+        .ag-section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 0 0 16px;
+        }
+        .ag-section-title {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--ag-forest-900);
+        }
+        .ag-section-title .material-symbols-outlined { font-size: 22px; color: var(--ag-forest-500); }
+        .ag-section-note { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--ag-muted); }
+        /* ------------------------------------------------------------------
+           PORTAL CARD GRID
+        ------------------------------------------------------------------ */
+        .ag-grid { display: grid; grid-template-columns: 1fr; gap: 18px; margin-bottom: 30px; }
+
+        .ag-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-height: 340px;
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid rgba(6, 46, 27, 0.16);
+            border-radius: 18px;
+            background: #0B2A1C;
+            color: #FFFFFF;
+            text-align: left;
+            font-family: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            isolation: isolate;
+            box-shadow: var(--ag-shadow-md);
+            transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1), border-color 300ms ease, box-shadow 300ms ease;
+        }
+        .ag-card:hover,
+        .ag-card:focus-visible {
+            transform: translateY(-6px);
+            border-color: var(--ag-lime);
+            box-shadow: 0 26px 54px rgba(6, 46, 27, 0.28);
+        }
+        .ag-card:focus-visible { outline: 2px solid var(--ag-lime); outline-offset: 3px; }
+
+        .ag-card-media { position: absolute; inset: 0; z-index: -2; display: block; overflow: hidden; }
+        .ag-card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transform: scale(1.02);
+            filter: saturate(0.85) contrast(1.02);
+            transition: transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+        .ag-card:hover .ag-card-media img { transform: scale(1.09); }
+
+        .ag-card-scrim {
+            position: absolute;
+            inset: 0;
+            display: block;
+            background: linear-gradient(to top, rgba(4, 26, 16, 0.96) 0%, rgba(6, 38, 23, 0.85) 42%, rgba(6, 38, 23, 0.42) 72%, rgba(6, 38, 23, 0.30) 100%);
+            transition: background 300ms ease;
+        }
+        .ag-card:hover .ag-card-scrim {
+            background: linear-gradient(to top, rgba(3, 20, 12, 0.98) 0%, rgba(4, 30, 18, 0.92) 45%, rgba(4, 30, 18, 0.55) 75%, rgba(4, 30, 18, 0.42) 100%);
+        }
+
+        .ag-card-body {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            width: 100%;
+            padding: 20px;
+        }
+        .ag-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+        .ag-card-icon {
+            flex: 0 0 auto;
+            width: 44px;
+            height: 44px;
             display: grid;
             place-items: center;
             border-radius: 12px;
-            color: var(--brand-forest-dark);
-            background: var(--brand-lime);
+            background: rgba(180, 241, 5, 0.12);
+            border: 1px solid rgba(180, 241, 5, 0.34);
+            color: var(--ag-lime);
+            transition: var(--ag-ease);
+        }
+        .ag-card-icon .material-symbols-outlined { font-size: 24px; }
+        .ag-card:hover .ag-card-icon {
+            background: var(--ag-lime);
+            border-color: var(--ag-lime);
+            color: #062E1B;
+            transform: translateY(-2px) scale(1.05);
+        }
+        .ag-badge {
+            display: inline-block;
+            max-width: 58%;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #E4F3EA;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-align: right;
+            line-height: 1.35;
+        }
+        .ag-card-title {
+            display: block;
+            margin: 15px 0 0;
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.33;
+            letter-spacing: -0.012em;
+            color: #EFF6F1;
+            transition: color 250ms ease;
+        }
+        .ag-card:hover .ag-card-title { color: #FFFFFF; }
+        .ag-card-desc {
+            display: block;
+            margin: 8px 0 0;
+            font-size: 12.5px;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #B6CDC1;
+            transition: color 250ms ease;
+        }
+        .ag-card:hover .ag-card-desc { color: #D3E4DA; }
+        .ag-card-foot {
+            margin-top: auto;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.13);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .ag-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: #DDEBE3;
+            white-space: nowrap;
+        }
+        .ag-open {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10.5px;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            color: var(--ag-lime);
+            white-space: nowrap;
+        }
+        .ag-open .material-symbols-outlined { font-size: 16px; transition: transform 300ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+        .ag-card:hover .ag-open .material-symbols-outlined { transform: translateX(5px); }
+        /* ------------------------------------------------------------------
+           QUICK ACCESS BAR
+        ------------------------------------------------------------------ */
+        .ag-quick {
+            margin-bottom: 26px;
+            padding: 18px 20px;
+            background: rgba(248, 250, 249, 0.85);
+            border: 1px solid var(--ag-line);
+            border-radius: 18px;
+            box-shadow: var(--ag-shadow-sm);
+        }
+        .ag-quick-row {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .ag-quick-row::-webkit-scrollbar { display: none; }
+        .ag-quick-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--ag-line);
+            background: #FFFFFF;
+            color: var(--ag-forest-700);
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: -0.005em;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: var(--ag-shadow-sm);
+            transition: var(--ag-ease);
+        }
+        .ag-quick-btn .material-symbols-outlined { font-size: 18px; color: var(--ag-forest-500); transition: var(--ag-ease); }
+        .ag-quick-btn:hover,
+        .ag-quick-btn:focus-visible {
+            background: var(--ag-forest-700);
+            border-color: var(--ag-forest-700);
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(6, 46, 27, 0.20);
+        }
+        .ag-quick-btn:hover .material-symbols-outlined,
+        .ag-quick-btn:focus-visible .material-symbols-outlined { color: var(--ag-lime); }
+
+        /* ------------------------------------------------------------------
+           FLOATING RETURN CONTROL
+        ------------------------------------------------------------------ */
+        .ag-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 20px;
+            border-radius: 999px;
+            background: rgba(6, 46, 27, 0.96);
+            border: 1px solid var(--ag-lime-line);
+            color: #FFFFFF;
+            font-family: inherit;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: 0 18px 40px rgba(6, 46, 27, 0.34);
+            backdrop-filter: blur(6px);
+            transition: var(--ag-ease);
+        }
+        .ag-back .material-symbols-outlined { font-size: 18px; color: var(--ag-lime); transition: transform 400ms ease; }
+        .ag-back:hover { background: var(--ag-forest-700); transform: translateY(-2px); }
+        .ag-back:hover .material-symbols-outlined { transform: rotate(180deg); }
+        .ag-back:focus-visible { outline: 2px solid var(--ag-lime); outline-offset: 3px; }
+
+        /* ------------------------------------------------------------------
+           FOOTER
+        ------------------------------------------------------------------ */
+        .ag-footer {
+            position: relative;
+            z-index: 10;
+            margin-top: auto;
+            background: linear-gradient(115deg, #062E1B 0%, #0B4D2C 60%, #062E1B 100%);
+            border-top: 1px solid rgba(180, 241, 5, 0.30);
+            color: #A9C3B6;
+        }
+        .ag-footer-inner {
+            max-width: 1480px;
+            margin: 0 auto;
+            padding: 16px clamp(14px, 3vw, 28px);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 11.5px;
+        }
+        .ag-footer strong { color: #E4F3EA; font-weight: 700; }
+        .ag-footer-center { font-weight: 600; letter-spacing: 0.05em; color: #B8C8C0; }
+        .ag-footer-right { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; letter-spacing: 0.05em; color: #DDEBE3; }
+
+        /* ------------------------------------------------------------------
+           ANIMATIONS
+        ------------------------------------------------------------------ */
+        @keyframes agRise {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .ag-rise { animation: agRise 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        /* ------------------------------------------------------------------
+           STRUCTURE
+        ------------------------------------------------------------------ */
+        #hub-view { flex: 1 1 auto; width: 100%; padding-bottom: 10px; }
+        #hub-view .ag-shell { padding-top: 0; }
+
+        /* ------------------------------------------------------------------
+           RESPONSIVE - mobile (1 col) / tablet (2 col) / desktop (3 col)
+        ------------------------------------------------------------------ */
+        @media (min-width: 640px) { .ag-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (min-width: 1024px) { .ag-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
+        @media (min-width: 1500px) {
+            .ag-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+            .ag-card { min-height: 336px; }
         }
 
-        @keyframes systemPopupIn {
-            from { opacity: 0; transform: translateY(12px) scale(.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        @media (max-width: 1023px) {
+            .ag-hero { grid-template-columns: 1fr; gap: 20px; }
+            .ag-head-row { flex-wrap: wrap; }
+        }
+        @media (max-width: 767px) {
+            .ag-clock { align-items: flex-start; }
+            .ag-head-right { gap: 8px; }
         }
 
+        /* ------------------------------------------------------------------
+           RESPONSIVE - mobile
+        ------------------------------------------------------------------ */
         @media (max-width: 640px) {
-            #hub-view {
-                padding-top: 0.75rem;
-            }
+            body.ag-portal::before { display: none; }
+            .ag-logo { width: 46px; height: 46px; padding: 5px; border-radius: 13px; }
+            .ag-brand-name { font-size: 12.5px; }
+            .ag-brand-sub { font-size: 10.5px; }
+            .ag-head-row { gap: 12px; padding: 11px 0 9px; }
+            .ag-head-right { width: 100%; justify-content: space-between; gap: 8px; }
+            .ag-icon-btn { width: 36px; height: 36px; }
+            .ag-pill { padding: 6px 10px; font-size: 10px; }
+            .ag-hero { margin: 16px 0 20px; padding: 18px; gap: 18px; }
+            .ag-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+            .ag-metric { padding: 10px; }
+            .ag-metric-label { font-size: 8px; letter-spacing: 0.1em; }
+            .ag-metric-value { font-size: 15px; }
+            .ag-metric-value--status { font-size: 12px; }
+            .ag-section-title { font-size: 17px; }
+            .ag-card { min-height: 268px; }
+            .ag-card-body { padding: 16px; }
+            .ag-card-title { font-size: 16px; }
+            .ag-card-icon { width: 40px; height: 40px; }
+            .ag-quick { padding: 15px 16px; }
+            .ag-footer-inner { flex-direction: column; text-align: center; gap: 6px; }
+            #floating-back-btn { bottom: max(0.9rem, env(safe-area-inset-bottom)); max-width: calc(100% - 1.5rem); }
+            #portal-frame-container, #portal-iframe { height: 100dvh; }
+        }
 
-            #hub-view > header > div {
-                padding: 1.25rem !important;
+        /* ------------------------------------------------------------------
+           ACCESSIBILITY / MOTION PREFERENCES
+        ------------------------------------------------------------------ */
+        .ag-card, .ag-quick-btn, .ag-nav-btn, .ag-icon-btn, .ag-back {
+            -webkit-tap-highlight-color: transparent;
+        }
+        .ag-card:focus-visible, .ag-quick-btn:focus-visible,
+        .ag-icon-btn:focus-visible, .ag-back:focus-visible {
+            outline: 2px solid var(--ag-lime);
+            outline-offset: 2px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+                scroll-behavior: auto !important;
             }
+            .ag-card:hover { transform: none; }
+            .ag-card:hover .ag-card-media img { transform: scale(1.02); }
+        }
+        /* ------------------------------------------------------------------
+           CRITICAL LAYOUT (self-contained - no CDN utilities required)
+        ------------------------------------------------------------------ */
+        .hidden { display: none; }
 
-            #hub-view h1 {
-                font-size: 1.25rem !important;
-            }
+        #hub-view.hidden,
+        #hub-footer.hidden,
+        #portal-frame-container.hidden,
+        #floating-back-btn.hidden { display: none; }
+
+        .ag-ambient { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .ag-ambient-orb { position: absolute; border-radius: 50%; }
+        .ag-ambient-orb--a {
+            top: -6rem; left: -6rem; width: 20rem; height: 20rem;
+            background: radial-gradient(circle, rgba(11, 77, 44, 0.10), transparent 70%);
+        }
+        .ag-ambient-orb--b {
+            top: 25%; right: -6rem; width: 24rem; height: 24rem;
+            background: radial-gradient(circle, rgba(180, 241, 5, 0.10), transparent 70%);
+        }
+
+        #floating-back-btn {
+            position: fixed;
+            left: 50%;
+            bottom: 1rem;
+            transform: translateX(-50%);
+            z-index: 50;
+        }
+        @media (min-width: 640px) { #floating-back-btn { bottom: 1.5rem; } }
+
+        #portal-frame-container {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 40;
+            background: #062E1B;
+        }
+        #portal-iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            overflow: hidden;
         }
     </style>
 </head>
-<body class="bg-executive text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-rose-500 selection:text-white relative">
-
-    <!-- Subtle Background Ambient Light Orbs -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div class="absolute -top-32 -left-32 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute top-1/3 -right-32 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+<body class="ag-portal">
+    <!-- Ambient industrial accents -->
+    <div class="ag-ambient" aria-hidden="true">
+        <span class="ag-ambient-orb ag-ambient-orb--a"></span>
+        <span class="ag-ambient-orb ag-ambient-orb--b"></span>
     </div>
 
-    <!-- Floating Navigation Return Button -->
-    <div id="floating-back-btn" class="hidden fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
-        <button onclick="returnToHub()" class="group flex items-center space-x-2 bg-slate-900/95 text-slate-100 hover:bg-rose-600 border border-slate-700/80 hover:border-rose-500 font-semibold text-xs px-4 py-2 sm:px-5 sm:py-2.5 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 backdrop-blur-md cursor-pointer whitespace-nowrap">
-            <span class="material-symbols-outlined text-base group-hover:rotate-180 transition-transform duration-500">grid_view</span>
-            <span class="tracking-wide">Switch Portal Menu</span>
+    <!-- Floating Navigation Return Button (preserved behaviour) -->
+    <div id="floating-back-btn" class="hidden">
+        <button type="button" onclick="returnToHub()" class="ag-back" aria-label="Return to the portal menu">
+            <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
+            <span>Switch Portal Menu</span>
         </button>
     </div>
 
-    <!-- System availability announcement -->
-    <div id="system-online-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="system-online-title">
-        <div class="system-online-card p-6 sm:p-7">
-            <div class="flex items-start justify-between gap-4">
-                <div class="flex items-start gap-3">
-                    <div class="system-online-icon shrink-0">
-                        <span class="material-symbols-outlined text-2xl">check_circle</span>
-                    </div>
-                    <div>
-                        <p class="font-mono-tech text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700">System Status</p>
-                        <h2 id="system-online-title" class="mt-1 text-xl font-extrabold tracking-tight text-slate-900">The system is back online</h2>
-                    </div>
-                </div>
-                <button type="button" onclick="closeSystemOnlinePopup()" class="text-slate-400 hover:text-slate-900 cursor-pointer" aria-label="Close system status announcement">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-            <p class="mt-5 text-sm leading-6 text-slate-600">Al Ghaith operations services are available again. The latest platform updates have been applied and the portals are ready for use.</p>
-            <div class="mt-4 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">Status: Operational</div>
-            <div class="mt-5">
-                <p class="font-mono-tech text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">What changed</p>
-                <ul class="mt-2 divide-y divide-slate-100 text-xs text-slate-600">
-                    <li class="flex gap-2 py-2"><span class="material-symbols-outlined text-sm text-emerald-700">dashboard</span><span><strong class="text-slate-900">Dashboard:</strong> added live counts for assets, pending work orders, maintenance/down assets, dispatches, mobilization requests, and upcoming certificate expiry.</span></li>
-                    <li class="flex gap-2 py-2"><span class="material-symbols-outlined text-sm text-emerald-700">inventory_2</span><span><strong class="text-slate-900">Asset Registry:</strong> added Equipment Name, improved search, asset details, print reports, and Excel export.</span></li>
-                    <li class="flex gap-2 py-2"><span class="material-symbols-outlined text-sm text-emerald-700">local_shipping</span><span><strong class="text-slate-900">Dispatch tracking:</strong> active dispatch count now matches the latest active outbound or site-transfer records.</span></li>
-                    <li class="flex gap-2 py-2"><span class="material-symbols-outlined text-sm text-emerald-700">directions_car</span><span><strong class="text-slate-900">Vehicle portal:</strong> redesigned login, header, grouped sidebar, fixed scrolling, auto-hide navigation, and vehicle Excel export.</span></li>
-                    <li class="flex gap-2 py-2"><span class="material-symbols-outlined text-sm text-emerald-700">engineering</span><span><strong class="text-slate-900">Maintenance:</strong> added a dedicated site-maintenance notice and documented operational update details.</span></li>
-                    <li class="flex gap-2 py-2"><span class="material-symbols-outlined text-sm text-emerald-700">print</span><span><strong class="text-slate-900">Print documents:</strong> added branded asset detail reports with history tables, headers, and signature areas.</span></li>
-                    <li class="flex gap-2 py-2"><span class="material-symbols-outlined text-sm text-emerald-700">login</span><span><strong class="text-slate-900">Access:</strong> separated full-access and restricted operations login routes, with dedicated maintenance and operations pages.</span></li>
-                    <li class="flex gap-2 py-2"><span class="material-symbols-outlined text-sm text-emerald-700">warehouse</span><span><strong class="text-slate-900">Inventory:</strong> updated the login, sidebar navigation, grouped menu, header, colors, and fixed dashboard layout to match the operations design.</span></li>
-                    <li class="flex gap-2 py-2"><span class="material-symbols-outlined text-sm text-emerald-700">design_services</span><span><strong class="text-slate-900">Interface:</strong> standardized branding, colors, typography, animations, responsive layouts, and independent sidebar/content scrolling.</span></li>
-                </ul>
-            </div>
-            <div class="mt-6 flex justify-end">
-                <button type="button" onclick="closeSystemOnlinePopup()" class="inline-flex items-center gap-2 rounded-lg bg-brand-forest-medium px-4 py-2.5 text-xs font-bold text-white transition hover:bg-brand-forest-dark cursor-pointer" style="background: var(--brand-forest-medium);">
-                    Continue to portal
-                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Hub View -->
-    <div id="hub-view" class="flex-1 flex flex-col justify-between max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 lg:px-8 animate-fade-in z-10 relative">
-        
-        <!-- Executive Glass Header -->
-        <header class="mb-8 pt-2">
-            <div class="bg-slate-900/70 border border-slate-800/80 backdrop-blur-2xl rounded-2xl p-6 sm:p-7 shadow-2xl relative overflow-hidden">
-                <!-- Executive Accent Line -->
-                <div class="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-rose-500/60 to-transparent"></div>
-
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                    
-                    <!-- Brand & Title Block -->
-                    <div class="flex items-center gap-5">
-                        
-                        <!-- Executive Premium Logo Container -->
-                        <div class="relative group shrink-0">
-                            <!-- Soft Ambient Backlight Glow -->
-                            <div class="absolute -inset-1 bg-gradient-to-r from-rose-500/30 to-slate-500/20 rounded-2xl blur-md opacity-70 group-hover:opacity-100 transition duration-500"></div>
-                            
-                            <!-- Crisp Glassmorphic Logo Pod -->
-                            <div class="relative p-3.5 bg-white rounded-2xl shadow-2xl border border-slate-200/50 ring-1 ring-white/20 flex items-center justify-center">
-                                <img src="alghaithlogo.jpg" alt="Al Ghaith Logo" class="h-11 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiBmaWxsPSIjZTExZDQ4IiB4eT0iMCIgeT0iMCIgcng9IjQiLz48dGV4dCB4PSIxOCIgeT0iMjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+PC9zdmc+'">
-                            </div>
+    <!-- Command Center Hub View -->
+    <div id="hub-view" class="ag-layer ag-rise">
+        <!-- Executive Sticky Header -->
+        <header class="ag-header">
+            <div class="ag-shell">
+                <div class="ag-head-row">
+                    <!-- Brand -->
+                    <div class="ag-brand">
+                        <div class="ag-logo">
+                            <img src="alghaithlogo.jpg" alt="Al Ghaith Trading &amp; Industrial Services logo"
+                                 onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 rx=%228%22 fill=%22%230B4D2C%22/%3E%3Ctext x=%2220%22 y=%2227%22 font-family=%22Arial%22 font-size=%2220%22 font-weight=%22bold%22 fill=%22%23B4F105%22 text-anchor=%22middle%22%3EA%3C/text%3E%3C/svg%3E'">
                         </div>
-                        
-                        <!-- Title Typography -->
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="font-mono-tech text-[10px] uppercase font-semibold text-rose-400 tracking-wider bg-rose-500/10 px-2.5 py-0.5 rounded border border-rose-500/20">
-                                    RLC Workshop Division
-                                </span>
-                                <span class="text-slate-600"></span>
-                                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-widest"></span>
-                            </div>
-                            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white uppercase">
-                                Al Ghaith Trading & Industrial Services
-                            </h1>
-                            <p class="text-xs sm:text-sm text-slate-400 font-medium tracking-wide mt-0.5">
-                                Enterprise Operations & Asset Management Command Center
-                            </p>
+                        <div class="ag-brand-text">
+                            <span class="ag-kicker"><span class="material-symbols-outlined" style="font-size:12px" aria-hidden="true">verified</span>RLC Workshop Division</span>
+                            <h1 class="ag-brand-name">Al Ghaith Trading &amp; Industrial Services</h1>
+                            <p class="ag-brand-sub">Enterprise Operations &amp; Asset Management Command Center</p>
                         </div>
                     </div>
 
-                    <!-- Telemetry & Status Panel -->
-                    <div class="flex flex-wrap items-center gap-3 self-start lg:self-auto pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-800/80">
-                        <div class="flex items-center gap-2 bg-slate-950/80 border border-slate-800 px-3.5 py-2 rounded-xl text-xs font-mono-tech">
-                            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-slate-300 font-semibold tracking-wide">SYSTEM:</span>
-                            <span class="text-emerald-400 font-bold">ONLINE</span>
+                    <!-- Operational telemetry & controls -->
+                    <div class="ag-head-right">
+                        <div class="ag-pill" role="status" aria-live="polite">
+                            <span class="ag-dot" aria-hidden="true"></span>
+                            <strong>SYSTEM ONLINE</strong>
                         </div>
-
-                        <div class="hidden sm:flex items-center gap-2 bg-slate-950/80 border border-slate-800 px-3.5 py-2 rounded-xl text-xs font-mono-tech text-slate-400">
-                            <span class="material-symbols-outlined text-sm text-slate-500">verified_user</span>
+                        <div class="ag-pill">
+                            <span class="material-symbols-outlined" aria-hidden="true">shield_lock</span>
                             <span>SECURE GATEWAY</span>
                         </div>
+                        <div class="ag-clock" aria-label="Current date and time">
+                            <span class="ag-clock-date" id="ag-clock-date">&mdash;</span>
+                            <span class="ag-clock-time ag-mono" id="ag-clock-time">--:--:--</span>
+                        </div>
+                        
                     </div>
-
                 </div>
+
+                
             </div>
         </header>
-
-        <!-- Visual Image Card Grid -->
-        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 my-auto py-2">
-            
-            <!-- Card 1: High Pressure Pump Portal -->
-            <button onclick="openPortal('information')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-rose-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-rose-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="hppump.jpg" alt="High Pressure Pump" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
+        <!-- Welcome / operational status -->
+        <div class="ag-shell">
+            <section class="ag-hero" aria-labelledby="ag-hero-title">
+                <div>
+                    <span class="ag-hero-kicker ag-mono">
+                        <span class="material-symbols-outlined" aria-hidden="true">terminal</span>
+                        Enterprise Operations Platform
+                    </span>
+                    <h2 id="ag-hero-title" class="ag-hero-title">Operations Command Center</h2>
+                    <p class="ag-hero-sub">
+                        Access technician, vehicle maintenance and inventory portals from one centralized platform.
+                    </p>
                 </div>
-
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-400 flex items-center justify-center backdrop-blur-md group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">precision_manufacturing</span>
-                            </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-rose-400 px-2.5 py-1 rounded-full">Equipment and Vehicle</span>
-                        </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-rose-300 transition-colors">
-                            Industrial Equipment and Company Vehicle Information
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Monitor and track location, maintenance work orders, dispatch histories, and certificates.
-                        </p>
+                <div class="ag-metrics" role="group" aria-label="Operational status summary">
+                    <div class="ag-metric">
+                        <span class="ag-metric-label ag-mono">System Status</span>
+                        <span class="ag-metric-value ag-metric-value--status">
+                            <span class="ag-dot ag-dot--plain" aria-hidden="true"></span>OPERATIONAL
+                        </span>
                     </div>
-
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-rose-400 group-hover:text-rose-300">
-                        <span>Access Information</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+                    <div class="ag-metric">
+                        <span class="ag-metric-label ag-mono">Active Portals</span>
+                        <span class="ag-metric-value ag-mono">03</span>
+                    </div>
+                    <div class="ag-metric">
+                        <span class="ag-metric-label ag-mono">Last System Update</span>
+                        <span class="ag-metric-value">Today</span>
                     </div>
                 </div>
-            </button>
+            </section>
+        </div>
 
-            <!-- Card 2: Vehicle Management Portal -->
-            <button onclick="openPortal('mobilize')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-sky-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="vehicle.jpg" alt="Fleet Vehicle" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
+        <!-- Portal module grid -->
+        <div class="ag-shell">
+            <div class="ag-section-head">
+                <h2 class="ag-section-title">
+                    <span class="material-symbols-outlined" aria-hidden="true">lan</span>
+                    Portal Modules
+                </h2>
+                <span class="ag-section-note ag-mono">03 ACTIVE PORTALS</span>
+            </div>
 
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-sky-500/20 border border-sky-500/30 text-sky-400 flex items-center justify-center backdrop-blur-md group-hover:bg-sky-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">directions_car</span>
-                            </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-sky-400 px-2.5 py-1 rounded-full">Equipment Mobilization</span>
-                        </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-sky-300 transition-colors">
-                            Equipment Mobilization Portal
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Deploying high-pressure pumps, field units, and heavy machinery to job sites.
-                        </p>
-                    </div>
+            <main class="ag-grid">
+                <!-- NLB Technician Login -->
+                <a class="ag-card" href="https://alghaith-workshop.web.app/" target="_blank" rel="noopener noreferrer"
+                   aria-label="Open the NLB Technician Login portal">
+                    <span class="ag-card-media" aria-hidden="true">
+                        <img src="technician.jpg" alt="">
+                        <span class="ag-card-scrim"></span>
+                    </span>
+                    <span class="ag-card-body">
+                        <span class="ag-card-head">
+                            <span class="ag-card-icon"><span class="material-symbols-outlined" aria-hidden="true">engineering</span></span>
+                            <span class="ag-badge">Technician</span>
+                        </span>
+                        <span class="ag-card-title">NLB Technician Login</span>
+                        <span class="ag-card-desc">Secure terminal for technician teams to update active work orders and complete field logs.</span>
+                        <span class="ag-card-foot">
+                            <span class="ag-status"><span class="ag-dot" aria-hidden="true"></span>ACTIVE</span>
+                            <span class="ag-open">OPEN PORTAL<span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+                        </span>
+                    </span>
+                </a>
 
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-sky-400 group-hover:text-sky-300">
-                        <span>Login</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
+                <!-- Vehicle Mechanic Login -->
+                <button type="button" class="ag-card" onclick="openPortal('mechanic')"
+                        aria-label="Open the Vehicle Mechanic Login portal">
+                    <span class="ag-card-media" aria-hidden="true">
+                        <img src="mechanic.jpg" alt="" onerror="this.onerror=null;this.src='vehicle.jpg'">
+                        <span class="ag-card-scrim"></span>
+                    </span>
+                    <span class="ag-card-body">
+                        <span class="ag-card-head">
+                            <span class="ag-card-icon"><span class="material-symbols-outlined" aria-hidden="true">car_repair</span></span>
+                            <span class="ag-badge">Mechanic</span>
+                        </span>
+                        <span class="ag-card-title">Vehicle Mechanic Login</span>
+                        <span class="ag-card-desc">Dedicated terminal for vehicle mechanics to view service tickets, update repairs and document maintenance.</span>
+                        <span class="ag-card-foot">
+                            <span class="ag-status"><span class="ag-dot" aria-hidden="true"></span>ACTIVE</span>
+                            <span class="ag-open">OPEN PORTAL<span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+                        </span>
+                    </span>
+                </button>
 
-            <!-- Card 3: NLB Technician Login -->
-            <button onclick="openPortal('tech')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-amber-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="technician.jpg" alt="Technician" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
+                <!-- Inventory Control Portal -->
+                <button type="button" class="ag-card" onclick="openPortal('inventory')"
+                        aria-label="Open the Inventory Control Portal">
+                    <span class="ag-card-media" aria-hidden="true">
+                        <img src="inventory.png" alt="">
+                        <span class="ag-card-scrim"></span>
+                    </span>
+                    <span class="ag-card-body">
+                        <span class="ag-card-head">
+                            <span class="ag-card-icon"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span></span>
+                            <span class="ag-badge">Warehouse</span>
+                        </span>
+                        <span class="ag-card-title">Inventory Control Portal</span>
+                        <span class="ag-card-desc">Track workshop spare parts, monitor warehouse stock thresholds and coordinate asset distribution.</span>
+                        <span class="ag-card-foot">
+                            <span class="ag-status"><span class="ag-dot" aria-hidden="true"></span>OPERATIONAL</span>
+                            <span class="ag-open">OPEN PORTAL<span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></span>
+                        </span>
+                    </span>
+                </button>
 
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center backdrop-blur-md group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">engineering</span>
-                            </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-amber-400 px-2.5 py-1 rounded-full">Technician</span>
-                        </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-amber-300 transition-colors">
-                            NLB Technician Login
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Secure terminal for Technician teams to update active work orders and complete field logs.
-                        </p>
-                    </div>
-
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-amber-400 group-hover:text-amber-300">
-                        <span>Login</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
-
-            <!-- Card 4: Vehicle Mechanic Login -->
-            <button onclick="openPortal('mechanic')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-purple-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="mechanic.jpg" alt="Vehicle Mechanic" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700" onerror="this.src='vehicle.jpg'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
-
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-400 flex items-center justify-center backdrop-blur-md group-hover:bg-purple-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">car_repair</span>
-                            </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-purple-400 px-2.5 py-1 rounded-full">Mechanic</span>
-                        </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-purple-300 transition-colors">
-                            Vehicle Mechanic Login
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Dedicated terminal for vehicle mechanics to view service tickets, update repairs, and document maintenance actions.
-                        </p>
-                    </div>
-
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-purple-400 group-hover:text-purple-300">
-                        <span>Login</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
-
-            <!-- Card 5: Inventory Control Portal -->
-            <button onclick="openPortal('inventory')" class="group relative flex flex-col justify-between text-left bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-emerald-500/80 rounded-2xl transition-all duration-500 shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1.5 cursor-pointer overflow-hidden min-h-[340px]">
-                <div class="absolute inset-0 z-0">
-                    <img src="inventory.png" alt="Inventory Racks" class="w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 group-hover:scale-110 transition-all duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/20"></div>
-                </div>
-
-                <div class="relative z-10 p-6 flex flex-col justify-between h-full w-full">
-                    <div>
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="h-10 w-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center backdrop-blur-md group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-2xl">inventory_2</span>
-                            </div>
-                            <span class="text-[10px] font-bold tracking-wider uppercase bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-emerald-400 px-2.5 py-1 rounded-full">Warehouse</span>
-                        </div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-emerald-300 transition-colors">
-                            Inventory Control Portal
-                        </h2>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Track workshop spare parts, monitor warehouse stock thresholds, and coordinate asset distribution.
-                        </p>
-                    </div>
-
-                    <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">
-                        <span>Login</span>
-                        <span class="material-symbols-outlined text-base transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
-                    </div>
-                </div>
-            </button>
-
-        </main>
-
-        <div class="mt-6"></div>
+            </main>
+        </div>
+        
     </div>
-
-    <!-- Embedded Portal Container -->
-    <div id="portal-frame-container" class="hidden fixed inset-0 w-full h-full bg-slate-950 z-40">
-        <iframe id="portal-iframe" src="" class="w-full h-full border-0 m-0 p-0 overflow-hidden" allow="autoplay; clipboard-write"></iframe>
+    <!-- Embedded Portal Container (preserved architecture) -->
+    <div id="portal-frame-container" class="hidden">
+        <iframe id="portal-iframe" src="" title="Al Ghaith operations portal" allow="autoplay; clipboard-write"></iframe>
     </div>
 
     <!-- Global Footer -->
-    <footer id="hub-footer" class="py-5 border-t border-slate-800/80 text-center text-xs text-slate-500 relative z-10 bg-slate-950/90 backdrop-blur-md w-full mt-auto">
-        <div class="flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto px-6 gap-2">
-            <div>&copy; 2026 Al Ghaith Trading & Industrial Services. All Rights Reserved.</div>
-            
+    <footer id="hub-footer" class="ag-footer">
+        <div class="ag-footer-inner">
+            <div>&copy; 2026 <strong>Al Ghaith Trading &amp; Industrial Services</strong></div>
+            <div class="ag-footer-center">Enterprise Operations Platform</div>
+            <div class="ag-footer-right">
+                <span class="ag-dot" aria-hidden="true"></span>
+                System Operational
+            </div>
         </div>
     </footer>
-
-    <!-- App Router Logic -->
+<!-- App Router Logic (preserved) -->
     <script>
         const config = {
-            information: "information.html",
-            mobilize: "logino.html",
-            tech: "loginn.html",
             mechanic: "vehicle.html",
             inventory: "inventory.html"
         };
@@ -539,29 +948,44 @@
             if (hubFooter) hubFooter.classList.remove('hidden');
         }
 
-        function closeSystemOnlinePopup() {
-            const popup = document.getElementById('system-online-popup');
-            if (popup) popup.classList.add('hidden');
+        /* --------------------------------------------------------------
+           Command center helpers (additive - do not alter routing)
+        -------------------------------------------------------------- */
+        function handleNav(button, target) {
+            if (target === 'dashboard') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                openPortal(target);
+            }
+
+            document.querySelectorAll('.ag-nav-btn').forEach(function (btn) {
+                const isCurrent = btn === button;
+                btn.classList.toggle('is-active', isCurrent);
+                if (isCurrent) {
+                    btn.setAttribute('aria-current', 'page');
+                } else {
+                    btn.removeAttribute('aria-current');
+                }
+            });
         }
 
-        function initializeSystemOnlinePopup() {
-            const popup = document.getElementById('system-online-popup');
-            if (!popup) return;
+        function updateCommandClock() {
+            const now = new Date();
+            const dateEl = document.getElementById('ag-clock-date');
+            const timeEl = document.getElementById('ag-clock-time');
 
-            const announcementDate = new Date('2026-09-17T00:00:00');
-            const expiryDate = new Date(announcementDate);
-            expiryDate.setDate(expiryDate.getDate() + 7);
-
-            if (new Date() >= expiryDate) {
-                popup.remove();
+            if (dateEl) {
+                dateEl.textContent = now.toLocaleDateString('en-GB', {
+                    weekday: 'short', day: '2-digit', month: 'short', year: 'numeric'
+                });
+            }
+            if (timeEl) {
+                timeEl.textContent = now.toLocaleTimeString('en-GB', { hour12: false });
             }
         }
+        updateCommandClock();
+        setInterval(updateCommandClock, 1000);
 
-        initializeSystemOnlinePopup();
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') closeSystemOnlinePopup();
-        });
     </script>
 </body>
 </html>
